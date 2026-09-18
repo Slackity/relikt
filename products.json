@@ -30,15 +30,15 @@
         "active": true
       }
     ],
-    "orderWebhook": "",
-    "orderSecret": "",
-    "yandexApiKey": "",
-    "cdekApiKey": "",
-    "cdekServicePath": "",
+    "orderWebhook": "relikt-orders.gleb-bugay.workers.dev",
+    "orderSecret": "reliktshop0726",
+    "yandexApiKey": "b2edf830-90de-413b-94f6-b91458200986 2d68c950-dd78-449d-8b7a-c444effb3f18",
+    "cdekApiKey": "b2edf830-90de-413b-94f6-b91458200986",
+    "cdekServicePath": "relikt-orders.gleb-bugay.workers.dev/cdek",
     "cdekFrom": "Москва",
-    "paymentBank": "",
-    "paymentDetails": "",
-    "paymentNote": "После перевода прикрепите чек."
+    "paymentBank": "ТБАНК ИВАН ИВАНОВ",
+    "paymentDetails": "88005553535",
+    "paymentNote": "После перевода пожалуйста прикрепите чек!"
   },
   "products": [
     {
