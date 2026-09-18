@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>RELIKT — панель</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Forum&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -15,15 +16,17 @@
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 body{margin:0;font-family:Inter,system-ui,sans-serif;background:var(--void);color:var(--bone);font-size:15px;line-height:1.55}
+html{min-height:100%;background:var(--void)}
+body{min-height:var(--app-h,100vh);overflow-x:hidden}
 body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.5;
   background:radial-gradient(90% 50% at 50% -10%, rgba(163,18,31,.18), transparent 60%)}
 button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
 input,select,textarea{font:inherit;color:inherit}
 .hidden{display:none!important}
-.wrap{max-width:840px;margin:0 auto;padding:0 16px 150px;position:relative;z-index:1}
+.wrap{max-width:1100px;margin:0 auto;padding:0 16px 150px;position:relative;z-index:1}
 
 .head{position:sticky;top:0;z-index:10;background:rgba(10,9,11,.93);backdrop-filter:blur(12px);border-bottom:1px solid var(--line);padding:14px 16px}
-.head .in{max-width:840px;margin:0 auto;display:flex;align-items:center;gap:12px}
+.head .in{max-width:1100px;margin:0 auto;display:flex;align-items:center;gap:12px}
 .logo{font-family:Forum,serif;letter-spacing:.3em;font-size:19px}
 .logo small{display:block;font-family:Inter;letter-spacing:.2em;font-size:10px;color:var(--dim);margin-top:3px}
 .dot{width:8px;height:8px;background:var(--dim);margin-left:auto;flex:none;transform:rotate(45deg)}
@@ -86,13 +89,27 @@ input,select,textarea{font:inherit;color:inherit}
 
 .log{font-size:12px;color:var(--dim);background:var(--pitch);border:1px solid var(--line);padding:11px;margin-top:14px;white-space:pre-wrap;max-height:180px;overflow:auto}
 .dock{position:fixed;left:0;right:0;bottom:0;z-index:20;background:linear-gradient(180deg,rgba(10,9,11,.6),var(--void) 45%);border-top:1px solid var(--line);padding:12px 16px calc(12px + env(safe-area-inset-bottom,0px))}
-.dock .in{max-width:840px;margin:0 auto;display:flex;gap:12px;align-items:center}
+.dock .in{max-width:1100px;margin:0 auto;display:flex;gap:12px;align-items:center}
 .dock .status{font-size:11px;color:var(--dim);flex:1;letter-spacing:.06em}
 .modal{position:fixed;inset:0;background:var(--void);z-index:40;display:none;overflow-y:auto}
 .modal.open{display:block}
 .mhead{position:sticky;top:0;background:rgba(10,9,11,.93);backdrop-filter:blur(12px);border-bottom:1px solid var(--line);padding:14px 16px;display:flex;align-items:center;gap:13px;z-index:2}
 .mhead b{font-family:Forum,serif;font-size:15px;font-weight:400;letter-spacing:.16em}
 .hint{font-size:12px;color:var(--dim);margin-top:6px}
+@media(max-width:720px){
+  .wrap{padding-left:12px;padding-right:12px}
+  .head{padding-left:12px;padding-right:12px}
+  .head .in{gap:8px}
+  .logo{font-size:16px;letter-spacing:.22em}
+  .logo small{font-size:8px;letter-spacing:.14em}
+  .panel{padding:14px;margin-bottom:11px}
+  .actions .btn{flex:1 1 auto;justify-content:center}
+  .item{gap:9px;padding:9px}
+  .item .ph{width:44px;height:58px}
+  .dock .in{flex-wrap:wrap}
+  .dock .status{flex-basis:100%}
+}
+@media(min-width:721px){.wrap{padding-left:20px;padding-right:20px}}
 :focus-visible{outline:1px solid var(--accent);outline-offset:3px}
 </style>
 </head>
@@ -291,7 +308,17 @@ let DATA = { settings: {}, products: [] };
 let SHA = null, DIRTY = false, EDIT = null;
 const CONN = JSON.parse(localStorage.getItem('relikt_conn') || '{}');
 const ADMIN_ID='315859108';
-const tg=window.Telegram?.WebApp;
+
+const tg = window.Telegram?.WebApp;
+try { tg?.ready(); tg?.expand(); } catch (e) {}
+try {
+  const h = Number(tg?.viewportStableHeight || tg?.viewportHeight || 0);
+  if (h) document.documentElement.style.setProperty('--app-h', h + 'px');
+  tg?.onEvent?.('viewportChanged', () => {
+    const h2 = Number(tg?.viewportStableHeight || tg?.viewportHeight || 0);
+    if (h2) document.documentElement.style.setProperty('--app-h', h2 + 'px');
+  });
+} catch (e) {}
 if(tg){tg.ready();tg.expand();}
 const uid=String(tg?.initDataUnsafe?.user?.id || sessionStorage.getItem('relikt_admin_uid') || '');
 if(uid!==ADMIN_ID){document.body.innerHTML='<div style="padding:40px;font-family:Inter,sans-serif;background:#0A090B;color:#E7E1D5;min-height:100vh"><h1>Доступ закрыт</h1><p>Панель доступна только владельцу магазина в Telegram.</p><button onclick="history.back()" style="padding:12px 18px">← НАЗАД</button></div>'; throw new Error('admin_access_denied');}

@@ -21,8 +21,13 @@
   --line:rgba(231,225,213,.13);
   --line-2:rgba(231,225,213,.06);
   --safe-b:env(safe-area-inset-bottom,0px);
-  --pad:16px;
+  --safe-t:env(safe-area-inset-top,0px);
+  --pad:clamp(12px,2vw,24px);
+  --app-h:100vh;
 }
+html{min-height:100%;background:var(--void)}
+body{min-height:var(--app-h);overflow-x:hidden}
+#app{min-height:var(--app-h);padding-bottom:var(--safe-b)}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;padding:0}
 body{
@@ -47,6 +52,7 @@ a{color:inherit}
 
 /* ---------- ШАПКА ---------- */
 .top{
+  max-width:1320px;margin:0 auto;
   padding:calc(16px + env(safe-area-inset-top,0px)) var(--pad) 0;
   background:linear-gradient(180deg,rgba(163,18,31,.14),transparent 78%);
 }
@@ -89,7 +95,7 @@ a{color:inherit}
 .search svg{width:17px;height:17px;color:var(--dim);flex:none}
 
 /* ---------- ФИЛЬТРЫ ---------- */
-.chips{display:flex;gap:8px;overflow-x:auto;padding:16px var(--pad) 0;scrollbar-width:none}
+.chips{max-width:1320px;margin:0 auto;display:flex;gap:8px;overflow-x:auto;padding:16px var(--pad) 0;scrollbar-width:none}
 .chips::-webkit-scrollbar{display:none}
 .chip{
   flex:none;padding:9px 15px;background:transparent;border:1px solid var(--line);
@@ -97,7 +103,7 @@ a{color:inherit}
   clip-path:polygon(7px 0,100% 0,100% calc(100% - 7px),calc(100% - 7px) 100%,0 100%,0 7px);
 }
 .chip[aria-pressed="true"]{background:var(--bone);color:var(--void);border-color:var(--bone);font-weight:600}
-.toolbar{display:flex;align-items:center;gap:12px;padding:14px var(--pad) 0;font-size:12px;color:var(--ash);letter-spacing:.05em}
+.toolbar{max-width:1320px;margin:0 auto;display:flex;align-items:center;gap:12px;padding:14px var(--pad) 0;font-size:12px;color:var(--ash);letter-spacing:.05em}
 .toolbar select{
   margin-left:auto;background:var(--pitch);border:1px solid var(--line);
   padding:8px 11px;font-size:12px;outline:0;color:var(--bone);border-radius:0;
@@ -116,9 +122,11 @@ a{color:inherit}
 .count{padding:18px var(--pad) 12px;font-size:11px;letter-spacing:.24em;color:var(--dim)}
 
 /* ---------- СЕТКА ---------- */
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:11px;padding:0 var(--pad) 130px}
-@media(min-width:620px){.grid{grid-template-columns:repeat(3,1fr);gap:14px}}
-@media(min-width:900px){.grid{grid-template-columns:repeat(4,1fr)}}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px;padding:0 var(--pad) 130px;max-width:1320px;margin:0 auto}
+@media(min-width:620px){.grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}}
+@media(min-width:900px){.grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}}
+@media(min-width:1280px){.grid{grid-template-columns:repeat(5,minmax(0,1fr));gap:18px}}
+@media(max-width:420px){.grid{gap:8px}.cardbody{padding:9px 9px 11px}.name{font-size:12px}.price{font-size:18px}.buybtn{height:36px;font-size:10px}.thumb{aspect-ratio:2.9/4}}
 .card{
   background:var(--slab);border:1px solid var(--line);
   display:flex;flex-direction:column;text-align:left;position:relative;overflow:hidden;
@@ -282,6 +290,16 @@ a{color:inherit}
 }
 .toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
 :focus-visible{outline:1px solid var(--accent);outline-offset:3px}
+@media(max-width:560px){
+  .wordmark{font-size:31px}
+  .tagline{font-size:9px;letter-spacing:.28em}
+  .search{margin-top:14px}
+  .toolbar{padding-top:12px}
+}
+@media(min-width:900px){
+  .top{padding-left:clamp(20px,3vw,40px);padding-right:clamp(20px,3vw,40px)}
+  .search{max-width:760px;margin-left:auto;margin-right:auto}
+}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
 
 .buybtn{width:100%;margin-top:10px;height:38px;background:var(--accent);color:#fff;font-size:11px;font-weight:600;letter-spacing:.08em;clip-path:polygon(8px 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%,0 8px)}
@@ -494,16 +512,48 @@ function toast(msg) {
 }
 
 /* ---------- Старт ---------- */
+function syncTelegramViewport() {
+  try {
+    const h = Number(tg?.viewportStableHeight || tg?.viewportHeight || 0);
+    if (h > 0) document.documentElement.style.setProperty('--app-h', h + 'px');
+  } catch (e) {}
+}
+
+async function loadCatalog() {
+  const url = new URL('products.json', document.baseURI);
+  url.searchParams.set('v', String(Date.now()));
+  const res = await fetch(url.href, { cache: 'no-store' });
+  if (!res.ok) throw new Error('HTTP ' + res.status);
+  const data = await res.json();
+  if (!data || !Array.isArray(data.products)) throw new Error('Некорректный products.json');
+  return data;
+}
+
+function showCatalogError(err) {
+  console.error('[RELIKT] Не удалось загрузить каталог:', err);
+  const g = $('#grid');
+  if (g) g.innerHTML = `<div class="empty"><b>КАТАЛОГ НЕ ЗАГРУЗИЛСЯ</b><span>Проверьте, что products.json находится рядом с index.html.</span><br><button class="buybtn" style="max-width:240px" onclick="location.reload()">ОБНОВИТЬ</button></div>`;
+  toast('Не удалось загрузить каталог');
+}
+
 async function boot() {
   if (tg) {
-    tg.ready(); tg.expand();
+    try { tg.ready(); } catch (e) {}
+    try { tg.expand(); } catch (e) {}
+    syncTelegramViewport();
+    tg.onEvent?.('viewportChanged', syncTelegramViewport);
+    tg.onEvent?.('safeAreaChanged', syncTelegramViewport);
     const uid = String(tg.initDataUnsafe?.user?.id || '');
     if (uid === '315859108') { $('#adminBtn').classList.remove('hidden'); $('#adminBtn').onclick = () => { sessionStorage.setItem('relikt_admin_uid', uid); location.href='admin.html'; }; }
     try { tg.setHeaderColor('#0A090B'); tg.setBackgroundColor('#0A090B'); } catch (e) {}
   }
   try {
-    DATA = await (await fetch('products.json?v=' + Date.now())).json();
-  } catch (e) { toast('Каталог не загрузился. Обновите страницу.'); return; }
+    DATA = await loadCatalog();
+    try { localStorage.setItem('relikt_catalog_cache', JSON.stringify(DATA)); } catch (e) {}
+  } catch (e) {
+    try { DATA = JSON.parse(localStorage.getItem('relikt_catalog_cache') || 'null'); } catch (_) { DATA = null; }
+    if (!DATA || !Array.isArray(DATA.products)) { showCatalogError(e); return; }
+  }
 
   const s = DATA.settings || {};
   if (s.accent) document.documentElement.style.setProperty('--accent', s.accent);
