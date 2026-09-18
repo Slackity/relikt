@@ -208,7 +208,7 @@ input,select,textarea{font:inherit;color:inherit}
     <div class="panel">
       <h2>Приём заказов</h2>
       <p class="sub">Если заполнить оба поля — кнопка «Отправить заказ» будет присылать заказ вам в Telegram сама, без действий покупателя. Пусто — сработает запасной способ: покупателю откроется чат с менеджером с готовым текстом. Как получить эти значения — см. README, раздел «Автоматическая отправка заказов».</p>
-      <div class="field"><label for="sWebhook">АДРЕС ПРИЁМНИКА (URL WORKER'А)</label><input id="sWebhook" placeholder="https://relikt-orders.ваш-логин.workers.dev"></div>
+      <div class="field"><label for="sWebhook">АДРЕС ПРИЁМНИКА (URL WORKER'А)</label><input id="sWebhook" placeholder="https://relikt-orders.ваш-логин.workers.dev"><div class="hint" style="margin-top:6px">Можно вставить просто домен воркера — путь <code>/order</code> подставится автоматически. Если указываете путь вручную, используйте именно <code>/order</code>.</div></div>
       <div class="field"><label for="sSecret">СЕКРЕТ</label><input id="sSecret" placeholder="та же строка, что в APP_SECRET у воркера"></div>
     </div>
   </section>
