@@ -4,7 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>RELIKT</title>
-<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<script src="https://telegram.org/js/telegram-web-app.js?63"></script>
+<meta name="relikt-build" content="20260918-1725">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Forum&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -365,7 +366,7 @@ a{color:inherit}
       <path d="M129 9c16 0 24-5 42-5 14 0 24 3 34 5-10 2-20 5-34 5-18 0-26-5-42-5z" opacity=".7"/>
     </svg>
     <div id="footLinks"></div>
-    <div style="margin-top:12px">ТВОЙ ЛИЧНЫЙ ИМПОРТ</div>
+    <div style="margin-top:12px">ОДНА ВЕЩЬ — ОДИН ЭКЗЕМПЛЯР</div>
   </footer>
 </div>
 
@@ -488,6 +489,18 @@ a{color:inherit}
    ===================================================================== */
 
 const tg = window.Telegram?.WebApp;
+const RELIKT_BUILD = '20260918-1725';
+(function enforceAppVersion() {
+  try {
+    const u = new URL(location.href);
+    if (u.searchParams.get('v') !== RELIKT_BUILD) {
+      u.searchParams.set('v', RELIKT_BUILD);
+      history.replaceState(null, '', u.href);
+    }
+  } catch (e) {}
+})();
+
+
 const $  = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 
@@ -521,7 +534,7 @@ function syncTelegramViewport() {
 
 async function loadCatalog() {
   const url = new URL('products.json', document.baseURI);
-  url.searchParams.set('v', String(Date.now()));
+  url.searchParams.set('v', RELIKT_BUILD + '-' + Date.now());
   const res = await fetch(url.href, { cache: 'no-store' });
   if (!res.ok) throw new Error('HTTP ' + res.status);
   const data = await res.json();
@@ -544,7 +557,7 @@ async function boot() {
     tg.onEvent?.('viewportChanged', syncTelegramViewport);
     tg.onEvent?.('safeAreaChanged', syncTelegramViewport);
     const uid = String(tg.initDataUnsafe?.user?.id || '');
-    if (uid === '315859108') { $('#adminBtn').classList.remove('hidden'); $('#adminBtn').onclick = () => { sessionStorage.setItem('relikt_admin_uid', uid); location.href='admin.html'; }; }
+    if (uid === '315859108') { $('#adminBtn').classList.remove('hidden'); $('#adminBtn').onclick = () => { sessionStorage.setItem('relikt_admin_uid', uid); location.href='admin.html?v=20260918-1725'; }; }
     try { tg.setHeaderColor('#0A090B'); tg.setBackgroundColor('#0A090B'); } catch (e) {}
   }
   try {
