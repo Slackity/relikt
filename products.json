@@ -44,7 +44,11 @@
       "size": "M",
       "condition": "Новое",
       "desc": "Новое худи Ed Hardy с фирменной принт-графикой. Плотный хлопок, ровные швы, бирки на месте.",
-      "images": [],
+      "images": [
+        "images/p1-mu6zt3uu-0.jpg",
+        "images/p1-mu6zt58q-1.jpg",
+        "images/p1-mu6zt667-2.jpg"
+      ],
       "status": "in",
       "featured": true,
       "createdAt": "2026-09-10"
