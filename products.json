@@ -30,8 +30,8 @@
         "active": true
       }
     ],
-    "orderWebhook": "",
-    "orderSecret": "",
+    "orderWebhook": "https://relikt-orders.gleb-bugay.workers.dev/",
+    "orderSecret": "reliktshop0726",
     "paymentBank": "",
     "paymentDetails": "",
     "paymentNote": "После перевода прикрепите чек.",
