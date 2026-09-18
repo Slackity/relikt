@@ -773,6 +773,12 @@ $$('[data-close]').forEach(b => b.onclick = () => { buzz(); closeSheet(b.dataset
 function openLink(url) { tg?.openTelegramLink ? tg.openTelegramLink(url) : window.open(url, '_blank'); }
 
 /* ---------- Заказ ---------- */
+// Превращает относительный путь картинки ("images/xxx.jpg") в полную ссылку,
+// которая открывается из любого чата — Telegram сам покажет по ней превью фото.
+function absUrl(rel) {
+  try { return new URL(rel, window.location.href).href; } catch (e) { return rel; }
+}
+
 function orderText() {
   const t = totals();
   const u = tg?.initDataUnsafe?.user;
@@ -787,7 +793,11 @@ function orderText() {
     'Пункт выдачи: ' + $('#fPickup').value.trim(),
     '',
     'Товары:',
-    ...t.items.map((p, i) => `${i + 1}. ${p.brand ? p.brand + ' — ' : ''}${p.title}${p.size ? ' (' + p.size + ')' : ''} — ${money(p.price)}`),
+    ...t.items.map((p, i) => {
+      const line  = `${i + 1}. ${p.brand ? p.brand + ' — ' : ''}${p.title}${p.size ? ' (' + p.size + ')' : ''} — ${money(p.price)}`;
+      const photo = p.images?.[0] ? '\n   Фото: ' + absUrl(p.images[0]) : '';
+      return line + photo;
+    }),
     '',
     'Сумма: ' + money(t.sub)
   ];
@@ -814,19 +824,20 @@ async function sendOrder() {
   const btn = $('#sendOrder');
   btn.disabled = true; btn.textContent = 'ОТПРАВЛЯЕМ…';
 
-  // Если в настройках указан приёмник заказов — заказ уходит менеджеру
-  // автоматически, без действий покупателя.
-  let delivered = false;
+  // Если приёмник заказов настроен — пробуем отправить через него в фоне.
+  // Не ждём его долго: если он не ответит за 2.5 сек или упадёт с ошибкой,
+  // ниже всё равно откроется чат с менеджером — покупатель без заказа не останется.
   if (DATA.settings.orderWebhook) {
     try {
-      const res = await fetch(DATA.settings.orderWebhook, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ secret: DATA.settings.orderSecret || '', text })
-      });
-      const data = await res.json().catch(() => null);
-      delivered = res.ok && data && data.ok;
-    } catch (e) { delivered = false; }
+      await Promise.race([
+        fetch(DATA.settings.orderWebhook, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ secret: DATA.settings.orderSecret || '', text })
+        }),
+        new Promise((_, rej) => setTimeout(rej, 2500))
+      ]);
+    } catch (e) { /* не критично, страхуемся ссылкой ниже */ }
   }
 
   try { tg?.sendData?.(JSON.stringify({ type: 'order', text })); } catch (e) {}
@@ -834,14 +845,12 @@ async function sendOrder() {
   buzz('heavy');
   btn.disabled = false; btn.textContent = 'ОТПРАВИТЬ ЗАКАЗ';
 
-  if (delivered) {
-    toast('Заказ отправлен продавцу — он свяжется с вами в Telegram');
-  } else {
-    // Запасной вариант: открываем окно выбора чата с готовым текстом заказа
-    const share = 'https://t.me/share/url?url=' + encodeURIComponent(text) + '&text=';
-    toast('Выберите @' + manager + ' и отправьте');
-    setTimeout(() => openLink(share), 500);
-  }
+  // Открываем чат с менеджером напрямую, с уже готовым текстом заказа в поле
+  // ввода — остаётся только нажать «Отправить». Фото первого товара в каждой
+  // позиции Telegram покажет как превью прямо в сообщении.
+  const chatLink = 'https://t.me/' + manager + '?text=' + encodeURIComponent(text);
+  toast('Откроется чат с @' + manager + ' — нажмите «Отправить»');
+  setTimeout(() => openLink(chatLink), 400);
 }
 
 /* ---------- События ---------- */
