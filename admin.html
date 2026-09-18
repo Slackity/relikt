@@ -94,28 +94,12 @@ input,select,textarea{font:inherit;color:inherit}
 .mhead b{font-family:Forum,serif;font-size:15px;font-weight:400;letter-spacing:.16em}
 .hint{font-size:12px;color:var(--dim);margin-top:6px}
 :focus-visible{outline:1px solid var(--accent);outline-offset:3px}
-
-/* --- RELIKT: quantities, pickup map, payment --- */
-.qty{display:inline-flex;align-items:center;border:1px solid var(--line);background:var(--pitch);height:34px}
-.qty button{width:34px;height:34px;font-size:18px;color:var(--bone)}
-.qty span{min-width:32px;text-align:center;font-size:13px}
-.pickupbox{background:var(--slab);border:1px solid var(--line);padding:12px;margin:8px 0 14px}
-.pickup-actions{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
-.pickup-map{height:310px;background:var(--pitch);border:1px solid var(--line);overflow:hidden}
-.pickup-map > div{width:100%;height:100%}
-.pickup-selected{font-size:12px;color:var(--ash);margin-top:9px;white-space:pre-wrap}
-.paybox{background:var(--pitch);border:1px solid var(--line);padding:14px;margin-top:10px}
-.paybox .requisites{white-space:pre-wrap;font-family:ui-monospace,SFMono-Regular,monospace;font-size:13px;line-height:1.6;padding:10px;background:var(--void);border:1px solid var(--line);user-select:text}
-.paybank{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-@media(max-width:560px){.paybank{grid-template-columns:1fr}}
-.stepnote{font-size:11px;color:var(--dim);letter-spacing:.08em;margin:5px 0 12px}
-
 </style>
 </head>
 <body>
 
 <div class="head">
-  <div class="in">
+  <div class="in"><button class="btn ghost small" id="backMain">← НАЗАД</button>
     <div class="logo">RELIKT<small>ПАНЕЛЬ УПРАВЛЕНИЯ</small></div>
     <span class="dot" id="dot" title="Связь с GitHub"></span>
   </div>
@@ -189,17 +173,20 @@ input,select,textarea{font:inherit;color:inherit}
       <div class="field"><textarea id="sCats"></textarea></div>
     </div>
     <div class="panel">
-      <h2>Оплата и ПВЗ</h2>
-      <p class="sub">Эти данные показываются покупателю перед прикреплением чека.</p>
-      <div class="row">
-        <div class="field"><label for="sPayBank">БАНК</label><input id="sPayBank" placeholder="Сбер / Т-Банк / Альфа"></div>
-        <div class="field"><label for="sPayRecipient">ПОЛУЧАТЕЛЬ</label><input id="sPayRecipient" placeholder="ФИО"></div>
-      </div>
-      <div class="field"><label for="sPayReq">РЕКВИЗИТЫ</label><textarea id="sPayReq" placeholder="Номер карты / счёта / СБП…"></textarea></div>
-      <div class="field"><label for="sPayNote">ИНСТРУКЦИЯ ПО ОПЛАТЕ</label><textarea id="sPayNote" placeholder="После перевода прикрепите чек"></textarea></div>
-      <div class="field"><label for="sYandex">API-КЛЮЧ ЯНДЕКС КАРТ</label><input id="sYandex" placeholder="Ключ JavaScript API"></div>
+      <h2>Карты и доставка</h2>
+      <p class="sub">Ключ Яндекс используется для карты и поиска. CDEK API key — ключ Яндекс Карт, который разрешён для домена Mini App.</p>
+      <div class="field"><label for="sYandex">ЯНДЕКС API KEY</label><input id="sYandex" placeholder="Ключ JavaScript API и HTTP Геокодер"></div>
+      <div class="field"><label for="sCdekApi">CDEK / YANDEX API KEY</label><input id="sCdekApi" placeholder="Ключ Яндекс Карт для CDEK Widget"></div>
+      <div class="field"><label for="sCdekPath">CDEK SERVICE PATH</label><input id="sCdekPath" placeholder="https://ваш-worker.workers.dev/cdek"></div>
+      <div class="field"><label for="sCdekFrom">ГОРОД ОТПРАВИТЕЛЯ CDEK</label><input id="sCdekFrom" placeholder="Москва"></div>
     </div>
-
+    <div class="panel">
+      <h2>Оплата</h2>
+      <p class="sub">Эти данные увидит покупатель перед прикреплением чека.</p>
+      <div class="field"><label for="sPayBank">БАНК / ПОЛУЧАТЕЛЬ</label><input id="sPayBank" placeholder="Т-Банк · Иван Иванов"></div>
+      <div class="field"><label for="sPayDetails">РЕКВИЗИТЫ</label><textarea id="sPayDetails" placeholder="Номер карты / СБП / счёт"></textarea></div>
+      <div class="field"><label for="sPayNote">ИНСТРУКЦИЯ</label><textarea id="sPayNote" placeholder="После перевода прикрепите чек"></textarea></div>
+    </div>
     <div class="panel">
       <h2>Приём заказов</h2>
       <p class="sub">Если заполнить оба поля — кнопка «Отправить заказ» будет присылать заказ вам в Telegram сама, без действий покупателя. Пусто — сработает запасной способ: покупателю откроется чат с менеджером с готовым текстом. Как получить эти значения — см. README, раздел «Автоматическая отправка заказов».</p>
@@ -268,8 +255,8 @@ input,select,textarea{font:inherit;color:inherit}
         <div class="field"><label for="edCond">СОСТОЯНИЕ</label><input id="edCond" placeholder="Новое / Винтаж"></div>
       </div>
       <div class="field"><label for="edDesc">ТЕКСТ ОПИСАНИЯ</label><textarea id="edDesc" placeholder="Замеры, состояние, детали"></textarea></div>
-      <div class="row3">
-        <div class="field"><label for="edStock">КОЛИЧЕСТВО ШТУК</label><input id="edStock" type="number" min="0" step="1" inputmode="numeric" placeholder="1"></div>
+      <div class="row">
+        <div class="field"><label for="edStock">КОЛИЧЕСТВО</label><input id="edStock" type="number" min="0" step="1" value="1"></div>
         <div class="field"><label for="edStatus">НАЛИЧИЕ</label>
           <select id="edStatus"><option value="in">В наличии</option><option value="hold">Бронь</option><option value="sold">Продано</option></select>
         </div>
@@ -299,29 +286,15 @@ input,select,textarea{font:inherit;color:inherit}
 
 const $  = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
-const ADMIN_ID = '315859108';
-const tg = window.Telegram?.WebApp;
-let telegramUserId = String(tg?.initDataUnsafe?.user?.id || '');
-let telegramInitData = String(tg?.initData || '');
-try {
-  telegramUserId = telegramUserId || String(sessionStorage.getItem('relikt_tg_user_id') || '');
-  telegramInitData = telegramInitData || String(sessionStorage.getItem('relikt_tg_init_data') || '');
-} catch (_) {}
-if (telegramUserId !== ADMIN_ID) {
-  document.body.innerHTML='<div style="padding:40px;max-width:640px;margin:auto;font-family:Inter,sans-serif;color:#E7E1D5;background:#0A090B;min-height:100vh"><h1>Доступ закрыт</h1><p>Панель доступна только владельцу магазина в Telegram.</p></div>';
-  throw new Error('admin_forbidden');
-}
-tg?.ready();
-tg?.expand();
-try {
-  if (telegramUserId) sessionStorage.setItem('relikt_tg_user_id', telegramUserId);
-  if (telegramInitData) sessionStorage.setItem('relikt_tg_init_data', telegramInitData);
-} catch (_) {}
-
 
 let DATA = { settings: {}, products: [] };
 let SHA = null, DIRTY = false, EDIT = null;
 const CONN = JSON.parse(localStorage.getItem('relikt_conn') || '{}');
+const ADMIN_ID='315859108';
+const tg=window.Telegram?.WebApp;
+if(tg){tg.ready();tg.expand();}
+const uid=String(tg?.initDataUnsafe?.user?.id || sessionStorage.getItem('relikt_admin_uid') || '');
+if(uid!==ADMIN_ID){document.body.innerHTML='<div style="padding:40px;font-family:Inter,sans-serif;background:#0A090B;color:#E7E1D5;min-height:100vh"><h1>Доступ закрыт</h1><p>Панель доступна только владельцу магазина в Telegram.</p><button onclick="history.back()" style="padding:12px 18px">← НАЗАД</button></div>'; throw new Error('admin_access_denied');}
 
 const log = m => { const el = $('#log'); el.textContent = new Date().toLocaleTimeString('ru-RU') + '  ' + m + '\n' + el.textContent; };
 const setStatus = t => $('#status').textContent = t;
@@ -366,7 +339,7 @@ function renderList() {
     <div class="item" data-id="${p.id}">
       <div class="ph">${p.images?.[0] ? `<img src="${p.images[0]}" alt="">` : (p.brand || 'R')[0]}</div>
       <div class="t"><b>${p.title}</b>
-        <span>${[p.brand, p.size && 'р. ' + p.size, new Intl.NumberFormat('ru-RU').format(p.price) + ' ₽', 'остаток ' + Number(p.stock ?? 1) + ' шт.'].filter(Boolean).join(' · ')}</span>
+        <span>${[p.brand, p.size && 'р. ' + p.size, new Intl.NumberFormat('ru-RU').format(p.price) + ' ₽'].filter(Boolean).join(' · ')}</span>
       </div>
       <span class="pill ${p.status}">${p.status === 'in' ? 'В НАЛИЧИИ' : p.status === 'hold' ? 'БРОНЬ' : 'ПРОДАНО'}</span>
     </div>`).join('')
@@ -421,9 +394,8 @@ function renderSettings() {
   $('#sContact').value = s.contact || ''; $('#sChannel').value = s.channel || ''; $('#sFeedback').value = s.feedback || '';
   $('#sCats').value = (s.categories || []).join('\n');
   $('#sWebhook').value = s.orderWebhook || ''; $('#sSecret').value = s.orderSecret || '';
-  $('#sPayBank').value = s.payment?.bankName || ''; $('#sPayRecipient').value = s.payment?.recipientName || '';
-  $('#sPayReq').value = s.payment?.requisites || ''; $('#sPayNote').value = s.payment?.note || '';
-  $('#sYandex').value = s.yandexApiKey || '';
+  $('#sYandex').value=s.yandexApiKey||''; $('#sCdekApi').value=s.cdekApiKey||''; $('#sCdekPath').value=s.cdekServicePath||''; $('#sCdekFrom').value=s.cdekFrom||'';
+  $('#sPayBank').value=s.paymentBank||''; $('#sPayDetails').value=s.paymentDetails||''; $('#sPayNote').value=s.paymentNote||'';
 }
 function collectSettings() {
   DATA.settings = { ...DATA.settings,
@@ -436,11 +408,8 @@ function collectSettings() {
     categories: $('#sCats').value.split('\n').map(x => x.trim()).filter(Boolean),
     orderWebhook: $('#sWebhook').value.trim(),
     orderSecret: $('#sSecret').value.trim(),
-    yandexApiKey: $('#sYandex').value.trim(),
-    payment: {
-      bankName: $('#sPayBank').value.trim(), recipientName: $('#sPayRecipient').value.trim(),
-      requisites: $('#sPayReq').value.trim(), note: $('#sPayNote').value.trim()
-    }
+    yandexApiKey: $('#sYandex').value.trim(), cdekApiKey: $('#sCdekApi').value.trim(), cdekServicePath: $('#sCdekPath').value.trim(), cdekFrom: $('#sCdekFrom').value.trim(),
+    paymentBank: $('#sPayBank').value.trim(), paymentDetails: $('#sPayDetails').value.trim(), paymentNote: $('#sPayNote').value.trim()
   };
 }
 $$('#tab-settings input, #tab-settings textarea').forEach(el => el.oninput = () => { collectSettings(); markDirty(); });
@@ -458,9 +427,9 @@ function openEditor(p) {
   $('#edDelete').classList.toggle('hidden', !p);
   $('#edCat').innerHTML = (DATA.settings.categories || []).map(c => `<option ${c === EDIT.category ? 'selected' : ''}>${c}</option>`).join('');
   $('#edName').value = EDIT.title; $('#edBrand').value = EDIT.brand || '';
-  $('#edPrice').value = EDIT.price || ''; $('#edOld').value = EDIT.oldPrice || ''; $('#edStock').value = EDIT.stock ?? 1;
+  $('#edPrice').value = EDIT.price || ''; $('#edOld').value = EDIT.oldPrice || '';
   $('#edSize').value = EDIT.size || ''; $('#edCond').value = EDIT.condition || '';
-  $('#edDesc').value = EDIT.desc || ''; $('#edStatus').value = EDIT.status || 'in';
+  $('#edDesc').value = EDIT.desc || ''; $('#edStock').value = EDIT.stock ?? 1; $('#edStatus').value = EDIT.status || 'in';
   $('#edFeat').value = EDIT.featured ? 'yes' : 'no'; $('#edUpStatus').textContent = '';
   renderPhotos();
   $('#editor').classList.add('open'); document.body.style.overflow = 'hidden';
@@ -515,9 +484,9 @@ $('#edSave').onclick = () => {
   if (!title) { alert('Впишите название товара'); return; }
   if (!price) { alert('Впишите цену'); return; }
   Object.assign(EDIT, { title, price,
-    brand: $('#edBrand').value.trim(), oldPrice: parseInt($('#edOld').value, 10) || null, stock: Math.max(0, parseInt($('#edStock').value,10) || 0),
+    brand: $('#edBrand').value.trim(), oldPrice: parseInt($('#edOld').value, 10) || null,
     category: $('#edCat').value, size: $('#edSize').value.trim(), condition: $('#edCond').value.trim(),
-    desc: $('#edDesc').value.trim(), status: $('#edStatus').value, featured: $('#edFeat').value === 'yes' });
+    desc: $('#edDesc').value.trim(), stock: Math.max(0, parseInt($('#edStock').value,10)||0), status: $('#edStatus').value, featured: $('#edFeat').value === 'yes' });
   const i = DATA.products.findIndex(p => p.id === EDIT.id);
   i > -1 ? DATA.products[i] = EDIT : DATA.products.unshift(EDIT);
   closeEditor(); renderList(); markDirty();
@@ -531,6 +500,7 @@ $('#closeEd').onclick = closeEditor;
 $('#addNew').onclick = () => openEditor(null);
 
 /* ---------- Вкладки ---------- */
+$('#backMain').onclick=()=>{location.href='index.html';};
 $$('.tab').forEach(t => t.onclick = () => {
   $$('.tab').forEach(x => x.setAttribute('aria-pressed', x === t));
   $$('#tab-goods,#tab-promo,#tab-settings,#tab-conn').forEach(s => s.classList.add('hidden'));
