@@ -283,6 +283,22 @@ a{color:inherit}
 .toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
 :focus-visible{outline:1px solid var(--accent);outline-offset:3px}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+
+/* --- RELIKT: quantities, pickup map, payment --- */
+.qty{display:inline-flex;align-items:center;border:1px solid var(--line);background:var(--pitch);height:34px}
+.qty button{width:34px;height:34px;font-size:18px;color:var(--bone)}
+.qty span{min-width:32px;text-align:center;font-size:13px}
+.pickupbox{background:var(--slab);border:1px solid var(--line);padding:12px;margin:8px 0 14px}
+.pickup-actions{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.pickup-map{height:310px;background:var(--pitch);border:1px solid var(--line);overflow:hidden}
+.pickup-map > div{width:100%;height:100%}
+.pickup-selected{font-size:12px;color:var(--ash);margin-top:9px;white-space:pre-wrap}
+.paybox{background:var(--pitch);border:1px solid var(--line);padding:14px;margin-top:10px}
+.paybox .requisites{white-space:pre-wrap;font-family:ui-monospace,SFMono-Regular,monospace;font-size:13px;line-height:1.6;padding:10px;background:var(--void);border:1px solid var(--line);user-select:text}
+.paybank{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:560px){.paybank{grid-template-columns:1fr}}
+.stepnote{font-size:11px;color:var(--dim);letter-spacing:.08em;margin:5px 0 12px}
+
 </style>
 </head>
 <body>
@@ -341,7 +357,8 @@ a{color:inherit}
       <path d="M111 9c-16 0-24-5-42-5-14 0-24 3-34 5 10 2 20 5 34 5 18 0 26-5 42-5z" opacity=".7"/>
       <path d="M129 9c16 0 24-5 42-5 14 0 24 3 34 5-10 2-20 5-34 5-18 0-26-5-42-5z" opacity=".7"/>
     </svg>
-    <div id="footLinks"></div>
+    <div id="adminLink" class="hidden" style="margin-top:12px"><a href="admin.html">АДМИН-ПАНЕЛЬ</a></div>
+  <div id="footLinks"></div>
     <div style="margin-top:12px">ОДНА ВЕЩЬ — ОДИН ЭКЗЕМПЛЯР</div>
   </footer>
 </div>
@@ -413,33 +430,54 @@ a{color:inherit}
     <button class="iconbtn" data-close="checkout" aria-label="Назад">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 5l-7 7 7 7"/></svg>
     </button>
-    <h2>ОФОРМЛЕНИЕ</h2>
+    <h2 id="checkoutTitle">ОФОРМЛЕНИЕ</h2>
   </div>
-  <div class="form">
+
+  <div class="form" id="deliveryStep">
+    <div class="stepnote">ШАГ 1 · ДАННЫЕ И ПУНКТ ВЫДАЧИ</div>
     <div class="field"><label for="fName">ИМЯ <span class="req">*</span></label><input id="fName" placeholder="Как к вам обращаться"></div>
     <div class="field"><label for="fTg">ТЕЛЕГРАМ <span class="req">*</span></label><input id="fTg" placeholder="@username"></div>
     <div class="field"><label for="fCity">ГОРОД <span class="req">*</span></label><input id="fCity" placeholder="Москва"></div>
     <div class="field">
-      <label for="fDeliv">ДОСТАВКА</label>
+      <label for="fDeliv">СЛУЖБА ДОСТАВКИ</label>
       <select id="fDeliv">
-        <option>Ozon</option>
-        <option>Wildberries</option>
-        <option>Яндекс Доставка</option>
-        <option>СДЭК</option>
+        <option>Ozon</option><option>Wildberries</option><option>Яндекс Доставка</option><option>СДЭК</option>
       </select>
     </div>
-    <div class="field">
-      <label for="fPickup">АДРЕС ПУНКТА ВЫДАЧИ ЗАКАЗОВ <span class="req">*</span></label>
-      <textarea id="fPickup" placeholder="Город, улица, дом — как указано в приложении службы доставки"></textarea>
+    <div class="pickupbox">
+      <div class="pickup-actions">
+        <button class="btn small" id="choosePickup">ВЫБРАТЬ ПВЗ НА КАРТЕ</button>
+        <button class="btn ghost small" id="searchPickup">ПОИСК АДРЕСА</button>
+      </div>
+      <div class="pickup-map hidden" id="pickupMap"><div id="ymap"></div></div>
+      <div class="pickup-selected" id="pickupSelected">Пункт не выбран</div>
+      <input id="fPickup" type="hidden">
+      <input id="fPickupLat" type="hidden"><input id="fPickupLon" type="hidden">
     </div>
-    <div class="field">
-      <label for="fPhone">НОМЕР ТЕЛЕФОНА <span class="req">*</span></label>
-      <input id="fPhone" type="tel" inputmode="tel" placeholder="+7 900 000-00-00">
-    </div>
+    <div class="field"><label for="fPhone">НОМЕР ТЕЛЕФОНА <span class="req">*</span></label><input id="fPhone" type="tel" inputmode="tel" placeholder="+7 900 000-00-00"></div>
     <div class="sumbox" id="coSum" style="margin:6px 0 0"></div>
-    <p class="hint">Кнопка откроет Telegram с готовым текстом заказа — выберите в списке менеджера и отправьте. Текст заодно скопируется в буфер.</p>
   </div>
-  <div class="dock"><button class="bigbtn" id="sendOrder">ОТПРАВИТЬ ЗАКАЗ</button></div>
+
+  <div class="form hidden" id="paymentStep">
+    <div class="stepnote">ШАГ 2 · ОПЛАТА</div>
+    <div class="paybox">
+      <div class="hint" id="paymentBank"></div>
+      <div style="font-family:Forum,serif;font-size:25px;margin:6px 0 10px" id="paymentRecipient"></div>
+      <div class="requisites" id="paymentRequisites"></div>
+      <div class="hint" id="paymentNote"></div>
+      <button class="btn ghost small" id="copyRequisites" style="margin-top:10px">СКОПИРОВАТЬ РЕКВИЗИТЫ</button>
+    </div>
+    <div class="paybank">
+      <div class="field"><label for="fBank">БАНК, С КОТОРОГО ПЕРЕВЕЛИ *</label><input id="fBank" placeholder="Тинькофф, Сбер, Альфа…"></div>
+      <div class="field"><label for="fReceipt">ЧЕК ОБ ОПЛАТЕ *</label><input id="fReceipt" type="file" accept="image/*,application/pdf"></div>
+    </div>
+    <div class="sumbox" id="paySum" style="margin:6px 0 0"></div>
+  </div>
+
+  <div class="dock">
+    <button class="bigbtn" id="nextPayment">ПЕРЕЙТИ К ОПЛАТЕ</button>
+    <button class="bigbtn hidden" id="sendOrder">ОТПРАВИТЬ ЗАКАЗ</button>
+  </div>
 </section>
 
 <div class="toast" id="toast"></div>
@@ -454,7 +492,8 @@ const $  = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 
 let DATA  = { settings: {}, products: [] };
-let CART  = JSON.parse(localStorage.getItem('relikt_cart') || '[]');
+let CART = JSON.parse(localStorage.getItem('relikt_cart') || '{}');
+if (Array.isArray(CART)) { const old = CART; CART = {}; old.forEach(id => CART[id] = (CART[id] || 0) + 1); }
 let FAVS  = JSON.parse(localStorage.getItem('relikt_favs') || '[]');
 let PROMO = null;                                  // применённый промокод
 let state = { cat: 'all', q: '', onlyIn: true, sort: 'new', current: null };
@@ -482,13 +521,20 @@ async function boot() {
     DATA = await (await fetch('products.json?v=' + Date.now())).json();
   } catch (e) { toast('Каталог не загрузился. Обновите страницу.'); return; }
 
+  (DATA.products||[]).forEach(p=>{ if(p.stock===undefined) p.stock=p.status==='sold'?0:1; });
   const s = DATA.settings || {};
+  if (s.yandexApiKey) {
+    const ys = document.createElement('script');
+    ys.src = 'https://api-maps.yandex.ru/2.1/?apikey=' + encodeURIComponent(s.yandexApiKey) + '&lang=ru_RU';
+    ys.async = true; document.head.appendChild(ys);
+  }
   if (s.accent) document.documentElement.style.setProperty('--accent', s.accent);
   $('#wordmark').textContent = s.shopName || 'RELIKT';
   $('#tagline').textContent  = s.tagline || '';
   document.title = s.shopName || 'RELIKT';
   if (s.notice) { $('#notice').textContent = s.notice; $('#notice').classList.remove('hidden'); }
 
+  if (String(s.adminId || '315859108') === String(tg?.initDataUnsafe?.user?.id || '')) $('#adminLink').classList.remove('hidden');
   $('#footLinks').innerHTML = [
     s.channel  ? `<a href="https://t.me/${s.channel}">КАНАЛ</a>`   : '',
     s.contact  ? `<a href="https://t.me/${s.contact}">МЕНЕДЖЕР</a>` : '',
@@ -538,7 +584,7 @@ function cardHTML(p) {
     <div class="cardbody">
       <div class="brand">${(p.brand || '').toUpperCase()}</div>
       <div class="name">${p.title}</div>
-      <div class="meta">${p.condition || p.category || ''}</div>
+      <div class="meta">${p.condition || p.category || ''}${p.status !== 'sold' ? ' · ' + stockOf(p) + ' шт.' : ''}</div>
       <div class="pricerow">
         <span class="price">${money(p.price)}</span>
         ${p.oldPrice ? `<span class="old">${money(p.oldPrice)}</span>` : ''}
@@ -670,16 +716,35 @@ function openPDP(id) {
 
   const btn = $('#pdpAdd');
   if (p.status === 'sold') { btn.className = 'bigbtn ghost'; btn.textContent = 'ПРОДАНО — ОТКРЫТЬ КАНАЛ'; btn.onclick = () => openLink('https://t.me/' + DATA.settings.channel); }
-  else if (CART.includes(p.id)) { btn.className = 'bigbtn ghost'; btn.textContent = 'УЖЕ В КОРЗИНЕ — ПЕРЕЙТИ'; btn.onclick = () => { closeSheet('pdp'); openSheet('cart'); }; }
-  else { btn.className = 'bigbtn'; btn.textContent = 'В КОРЗИНУ'; btn.onclick = () => { addToCart(p.id); openPDP(p.id); }; }
+  else if (cartQty(p.id) > 0) { btn.className = 'bigbtn ghost'; btn.textContent = 'УЖЕ В КОРЗИНЕ — ПЕРЕЙТИ'; btn.onclick = () => { closeSheet('pdp'); openSheet('cart'); }; }
+  else { btn.className = 'bigbtn'; btn.textContent = 'В КОРЗИНУ · ' + stockOf(p) + ' ШТ. ДОСТУПНО'; btn.onclick = () => { addToCart(p.id); openPDP(p.id); }; }
 
   openSheet('pdp');
 }
 
 /* ---------- Корзина и промокод ---------- */
-function addToCart(id) { if (!CART.includes(id)) CART.push(id); save(); buzz('medium'); updateCounters(); renderCart(); toast('Добавлено в корзину'); }
-function removeFromCart(id) { CART = CART.filter(x => x !== id); save(); updateCounters(); renderCart(); }
-function cartItems() { return CART.map(id => (DATA.products || []).find(p => p.id === id)).filter(Boolean); }
+function stockOf(p) { return Math.max(0, Number(p?.stock ?? 1)); }
+function cartQty(id) { return Number(CART[id] || 0); }
+function addToCart(id, qty = 1) {
+  const p = (DATA.products || []).find(x => x.id === id);
+  if (!p || p.status === 'sold') return;
+  const next = Math.min(stockOf(p), cartQty(id) + qty);
+  if (next <= cartQty(id)) { toast('Больше этого товара нет в наличии'); return; }
+  CART[id] = next; save(); buzz('medium'); updateCounters(); render(); renderCart(); toast('Добавлено в корзину');
+}
+function setCartQty(id, qty) {
+  const p = (DATA.products || []).find(x => x.id === id);
+  qty = Math.max(0, Math.min(stockOf(p), Number(qty) || 0));
+  if (qty) CART[id] = qty; else delete CART[id];
+  save(); updateCounters(); renderCart(); render();
+}
+function removeFromCart(id) { delete CART[id]; save(); updateCounters(); renderCart(); }
+function cartItems() {
+  return Object.entries(CART).map(([id,qty]) => {
+    const p = (DATA.products || []).find(x => x.id === id);
+    return p ? {...p, _qty: Math.max(1, Number(qty)||1)} : null;
+  }).filter(Boolean);
+}
 
 function findPromo(code) {
   const c = (code || '').trim().toUpperCase();
@@ -689,7 +754,7 @@ function findPromo(code) {
 
 function totals() {
   const items = cartItems();
-  const sub = items.reduce((s, p) => s + p.price, 0);
+  const sub = items.reduce((s, p) => s + p.price * p._qty, 0);
   let cut = 0;
   if (PROMO) cut = PROMO.type === 'amount' ? Math.min(PROMO.value, sub) : Math.round(sub * PROMO.value / 100);
   return { items, sub, cut, total: Math.max(0, sub - cut) };
@@ -736,13 +801,18 @@ function renderCart() {
       <div class="info">
         <div class="brand">${(p.brand || '').toUpperCase()}</div>
         <div class="name">${p.title}</div>
-        <div class="meta">${p.size ? 'Размер ' + p.size : ''}</div>
-        <div class="price" style="margin-top:auto;font-size:16px">${money(p.price)}</div>
+        <div class="meta">${p.size ? 'Размер ' + p.size + ' · ' : ''}${p._qty} шт. · ${money(p.price)} / шт.</div>
+        <div class="price" style="margin-top:auto;font-size:16px">${money(p.price * p._qty)}</div>
+      </div>
+      <div class="qty">
+        <button data-minus="${p.id}">−</button><span>${p._qty}</span><button data-plus="${p.id}">+</button>
       </div>
       <button class="del" data-del="${p.id}">УБРАТЬ</button>
     </div>`).join('')
     : `<div class="empty"><b>КОРЗИНА ПУСТА</b>Выберите вещь в каталоге — бронь держим 24 часа.</div>`;
   $$('[data-del]').forEach(b => b.onclick = () => { removeFromCart(b.dataset.del); buzz(); });
+  $$('[data-minus]').forEach(b => b.onclick = () => { setCartQty(b.dataset.minus, cartQty(b.dataset.minus)-1); buzz(); });
+  $$('[data-plus]').forEach(b => b.onclick = () => { setCartQty(b.dataset.plus, cartQty(b.dataset.plus)+1); buzz(); });
 
   $('#cartSum').innerHTML = t.items.length ? sumBoxHTML() : '';
   $('#coSum').innerHTML   = sumBoxHTML();
@@ -753,7 +823,7 @@ function renderCart() {
 
 function updateCounters() {
   const c = $('#cartCount'), f = $('#favCount');
-  c.textContent = CART.length; c.classList.toggle('hidden', !CART.length);
+  c.textContent = Object.values(CART).reduce((a,n)=>a+Number(n||0),0); c.classList.toggle('hidden', !Object.keys(CART).length);
   f.textContent = FAVS.length; f.classList.toggle('hidden', !FAVS.length);
 }
 
@@ -779,80 +849,144 @@ function absUrl(rel) {
   try { return new URL(rel, window.location.href).href; } catch (e) { return rel; }
 }
 
-function orderText() {
-  const t = totals();
-  const u = tg?.initDataUnsafe?.user;
+function orderPayload() {
+  const t = totals(), u = tg?.initDataUnsafe?.user;
+  return {
+    customer: {
+      name: $('#fName').value.trim(), telegram: $('#fTg').value.trim(),
+      phone: $('#fPhone').value.trim(), city: $('#fCity').value.trim(),
+      telegramUserId: u?.id || null, username: u?.username || ''
+    },
+    delivery: {
+      provider: $('#fDeliv').value,
+      pickup: $('#fPickup').value.trim(),
+      lat: $('#fPickupLat').value || null, lon: $('#fPickupLon').value || null
+    },
+    items: t.items.map(p => ({id:p.id,title:p.title,brand:p.brand,size:p.size,price:p.price,qty:p._qty})),
+    subtotal:t.sub, discount:t.cut, total:t.total,
+    promo:PROMO?.code || null
+  };
+}
+function orderText(payload, bank) {
   const L = [
-    'ЗАКАЗ · ' + (DATA.settings.shopName || 'RELIKT'),
-    '',
-    'Имя: ' + $('#fName').value.trim(),
-    'Телеграм: ' + $('#fTg').value.trim() + (u?.username ? ' (вход как @' + u.username + ')' : ''),
-    'Телефон: ' + $('#fPhone').value.trim(),
-    'Город: ' + $('#fCity').value.trim(),
-    'Доставка: ' + $('#fDeliv').value,
-    'Пункт выдачи: ' + $('#fPickup').value.trim(),
-    '',
-    'Товары:',
-    ...t.items.map((p, i) => {
-      const line  = `${i + 1}. ${p.brand ? p.brand + ' — ' : ''}${p.title}${p.size ? ' (' + p.size + ')' : ''} — ${money(p.price)}`;
-      const photo = p.images?.[0] ? '\n   Фото: ' + absUrl(p.images[0]) : '';
-      return line + photo;
-    }),
-    '',
-    'Сумма: ' + money(t.sub)
+    'ЗАКАЗ · ' + (DATA.settings.shopName || 'RELIKT'), '',
+    'Имя: ' + payload.customer.name,
+    'Телеграм: ' + payload.customer.telegram + (payload.customer.username ? ' (@'+payload.customer.username+')' : ''),
+    'Telegram ID: ' + (payload.customer.telegramUserId || '—'),
+    'Телефон: ' + payload.customer.phone,
+    'Город: ' + payload.customer.city,
+    'Доставка: ' + payload.delivery.provider,
+    'ПВЗ: ' + payload.delivery.pickup,
+    payload.delivery.lat && payload.delivery.lon ? `Координаты: ${payload.delivery.lat}, ${payload.delivery.lon}` : '',
+    '', 'Товары:',
+    ...payload.items.map((p,i)=>`${i+1}. ${p.brand ? p.brand+' — ' : ''}${p.title}${p.size ? ' ('+p.size+')':''} × ${p.qty} — ${money(p.price*p.qty)}`),
+    '', 'Сумма: ' + money(payload.subtotal)
   ];
-  if (t.cut) L.push('Промокод ' + PROMO.code + ': −' + money(t.cut), 'К оплате: ' + money(t.total));
-  return L.join('\n');
+  if (payload.discount) L.push('Промокод '+payload.promo+': −'+money(payload.discount));
+  L.push('К ОПЛАТЕ: '+money(payload.total), 'Банк покупателя: '+bank);
+  return L.filter(Boolean).join('\n');
 }
 
-async function copyText(text) {
-  try { await navigator.clipboard.writeText(text); return; } catch (e) {}
-  const ta = document.createElement('textarea');
-  ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
-  document.body.appendChild(ta); ta.select();
-  try { document.execCommand('copy'); } catch (e) {}
-  ta.remove();
+let PICKUP = null, YMAP = null, YMARK = null;
+
+function ensureYandexMap() {
+  if (!window.ymaps) { toast('Яндекс Карты ещё загружаются'); return false; }
+  $('#pickupMap').classList.remove('hidden');
+  ymaps.ready(() => {
+    if (YMAP) return;
+    YMAP = new ymaps.Map('ymap', {center:[55.751244,37.618423], zoom:11, controls:['searchControl','zoomControl']});
+    YMAP.events.add('click', async e => {
+      const coords=e.get('coords');
+      try {
+        const r=await ymaps.geocode(coords,{results:1});
+        const obj=r.geoObjects.get(0);
+        selectPickup(obj ? obj.properties.get('text') : coords.join(', '), coords[0], coords[1]);
+      } catch(_){ selectPickup(coords.join(', '),coords[0],coords[1]); }
+    });
+  });
+  return true;
 }
+function selectPickup(address,lat,lon) {
+  PICKUP={address,lat,lon};
+  $('#fPickup').value=address; $('#fPickupLat').value=lat; $('#fPickupLon').value=lon;
+  $('#pickupSelected').textContent='✓ '+address;
+  if (YMAP) {
+    if (YMARK) YMAP.geoObjects.remove(YMARK);
+    YMARK=new ymaps.Placemark([lat,lon],{balloonContent:address},{preset:'islands#redIcon'});
+    YMAP.geoObjects.add(YMARK); YMAP.setCenter([lat,lon],15);
+  }
+}
+async function openPickupPicker() {
+  const provider=$('#fDeliv').value;
+  if (provider==='СДЭК') {
+    if (!window.ISDEKWidjet) {
+      const s=document.createElement('script'); s.src='https://widget.cdek.ru/widget/widjet.js'; s.async=true;
+      document.head.appendChild(s);
+      await new Promise(r=>{let n=0;const t=setInterval(()=>{if(window.ISDEKWidjet||++n>30){clearInterval(t);r();}},100);});
+    }
+    if (window.ISDEKWidjet) {
+      $('#pickupMap').classList.remove('hidden');
+      $('#ymap').innerHTML='<div id="cdekWidget" style="width:100%;height:100%"></div>';
+      try {
+        new ISDEKWidjet({defaultCity:$('#fCity').value.trim()||'Москва', cityFrom:$('#fCity').value.trim()||'Москва',
+          country:'Россия', link:'cdek-pickup', path:'https://widget.cdek.ru/widget/scripts/',
+          onChoose:function(wid){ selectPickup(wid.PVZ?.Address || wid.address || wid.PVZ?.Name || 'ПВЗ СДЭК', wid.PVZ?.coord?.y, wid.PVZ?.coord?.x); }
+        });
+        return;
+      } catch(e) {}
+    }
+    toast('Виджет СДЭК не загрузился');
+  }
+  ensureYandexMap();
+}
+$('#choosePickup').onclick=()=>openPickupPicker();
+$('#searchPickup').onclick=()=> {
+  if(!ensureYandexMap()) return;
+  setTimeout(()=>YMAP?.controls?.get('searchControl')?.search($('#fCity').value.trim()||'Москва'),300);
+};
+$('#fDeliv').onchange=()=>{ PICKUP=null; $('#fPickup').value=''; $('#pickupSelected').textContent='Пункт не выбран'; };
+
+function renderPayment() {
+  const p=DATA.settings.payment||{};
+  $('#paymentBank').textContent=p.bankName||'Банк для перевода';
+  $('#paymentRecipient').textContent=p.recipientName||'Получатель';
+  $('#paymentRequisites').textContent=p.requisites||'Реквизиты пока не указаны. Вернитесь в магазин и сообщите администратору.';
+  $('#paymentNote').textContent=p.note||'После перевода прикрепите чек.';
+  $('#paySum').innerHTML=sumBoxHTML();
+}
+function goPayment() {
+  const need=[['fName','имя'],['fTg','телеграм'],['fPhone','телефон'],['fCity','город'],['fPickup','ПВЗ']];
+  const miss=need.filter(([id])=>!$('#'+id).value.trim());
+  if(miss.length){buzz('heavy');toast('Заполните: '+miss.map(x=>x[1]).join(', '));return;}
+  renderPayment(); $('#deliveryStep').classList.add('hidden'); $('#paymentStep').classList.remove('hidden');
+  $('#nextPayment').classList.add('hidden'); $('#sendOrder').classList.remove('hidden'); $('#checkoutTitle').textContent='ОПЛАТА'; window.scrollTo(0,0);
+}
+$('#nextPayment').onclick=goPayment;
+$('#copyRequisites').onclick=()=>copyText($('#paymentRequisites').textContent);
 
 async function sendOrder() {
-  const need = [['fName', 'имя'], ['fTg', 'телеграм'], ['fPhone', 'телефон'], ['fCity', 'город'], ['fPickup', 'пункт выдачи']];
-  const miss = need.filter(([id]) => !$('#' + id).value.trim());
-  if (miss.length) { buzz('heavy'); toast('Заполните: ' + miss.map(m => m[1]).join(', ')); return; }
-
-  const text = orderText();
-  const manager = DATA.settings.contact || 'bloodydisaster';
-  const btn = $('#sendOrder');
-  btn.disabled = true; btn.textContent = 'ОТПРАВЛЯЕМ…';
-
-  // Если приёмник заказов настроен — пробуем отправить через него в фоне.
-  // Не ждём его долго: если он не ответит за 2.5 сек или упадёт с ошибкой,
-  // ниже всё равно откроется чат с менеджером — покупатель без заказа не останется.
-  if (DATA.settings.orderWebhook) {
-    try {
-      await Promise.race([
-        fetch(DATA.settings.orderWebhook, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ secret: DATA.settings.orderSecret || '', text })
-        }),
-        new Promise((_, rej) => setTimeout(rej, 2500))
-      ]);
-    } catch (e) { /* не критично, страхуемся ссылкой ниже */ }
+  const bank=$('#fBank').value.trim(), file=$('#fReceipt').files[0];
+  if(!bank){toast('Укажите банк, с которого сделали перевод');return;}
+  if(!file){toast('Прикрепите чек об оплате');return;}
+  const payload=orderPayload(), text=orderText(payload,bank), btn=$('#sendOrder');
+  btn.disabled=true; btn.textContent='ОТПРАВЛЯЕМ…';
+  try {
+    const fd=new FormData();
+    fd.append('secret',DATA.settings.orderSecret||'');
+    fd.append('initData',tg?.initData||'');
+    fd.append('payload',JSON.stringify(payload));
+    fd.append('text',text);
+    fd.append('receipt',file,file.name);
+    const r=await fetch(DATA.settings.orderWebhook,{method:'POST',body:fd});
+    const out=await r.json().catch(()=>({}));
+    if(!r.ok||!out.ok) throw new Error(out.error||'Не удалось отправить заказ');
+    CART={}; save(); updateCounters(); renderCart(); buzz('heavy'); toast('Заказ отправлен');
+    setTimeout(()=>closeSheet('checkout'),700);
+  } catch(e) {
+    btn.disabled=false; btn.textContent='ОТПРАВИТЬ ЗАКАЗ';
+    toast(e.message||'Ошибка отправки');
   }
-
-  try { tg?.sendData?.(JSON.stringify({ type: 'order', text })); } catch (e) {}
-  await copyText(text);
-  buzz('heavy');
-  btn.disabled = false; btn.textContent = 'ОТПРАВИТЬ ЗАКАЗ';
-
-  // Открываем чат с менеджером напрямую, с уже готовым текстом заказа в поле
-  // ввода — остаётся только нажать «Отправить». Фото первого товара в каждой
-  // позиции Telegram покажет как превью прямо в сообщении.
-  const chatLink = 'https://t.me/' + manager + '?text=' + encodeURIComponent(text);
-  toast('Откроется чат с @' + manager + ' — нажмите «Отправить»');
-  setTimeout(() => openLink(chatLink), 400);
 }
-
 /* ---------- События ---------- */
 $('#q').oninput      = e => { state.q = e.target.value; render(); };
 $('#sort').onchange  = e => { state.sort = e.target.value; render(); };

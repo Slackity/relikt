@@ -30,8 +30,17 @@
         "active": true
       }
     ],
-    "orderWebhook": "relikt-orders.gleb-bugay.workers.dev",
-    "orderSecret": "reliktshop0726"
+    "orderWebhook": "https://relikt-orders.gleb-bugay.workers.dev",
+    "orderSecret": "CHANGE_ME_APP_SECRET",
+    "adminId": 315859108,
+    "yandexApiKey": "",
+    "cdekWidget": true,
+    "payment": {
+      "bankName": "",
+      "recipientName": "",
+      "requisites": "",
+      "note": "После перевода прикрепите чек и укажите банк, из которого сделали перевод."
+    }
   },
   "products": [
     {
@@ -51,7 +60,8 @@
       ],
       "status": "in",
       "featured": true,
-      "createdAt": "2026-09-10"
+      "createdAt": "2026-09-10",
+      "stock": 1
     },
     {
       "id": "p2",
@@ -69,7 +79,8 @@
       ],
       "status": "in",
       "featured": false,
-      "createdAt": "2026-09-09"
+      "createdAt": "2026-09-09",
+      "stock": 1
     },
     {
       "id": "p3",
@@ -89,7 +100,8 @@
       ],
       "status": "in",
       "featured": true,
-      "createdAt": "2026-09-08"
+      "createdAt": "2026-09-08",
+      "stock": 1
     },
     {
       "id": "p4",
@@ -104,7 +116,8 @@
       "images": [],
       "status": "sold",
       "featured": false,
-      "createdAt": "2026-09-07"
+      "createdAt": "2026-09-07",
+      "stock": 0
     }
   ]
 }
