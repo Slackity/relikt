@@ -301,11 +301,22 @@ const $  = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 const ADMIN_ID = '315859108';
 const tg = window.Telegram?.WebApp;
-if (!tg || String(tg.initDataUnsafe?.user?.id || '') !== ADMIN_ID) {
+let telegramUserId = String(tg?.initDataUnsafe?.user?.id || '');
+let telegramInitData = String(tg?.initData || '');
+try {
+  telegramUserId = telegramUserId || String(sessionStorage.getItem('relikt_tg_user_id') || '');
+  telegramInitData = telegramInitData || String(sessionStorage.getItem('relikt_tg_init_data') || '');
+} catch (_) {}
+if (telegramUserId !== ADMIN_ID) {
   document.body.innerHTML='<div style="padding:40px;max-width:640px;margin:auto;font-family:Inter,sans-serif;color:#E7E1D5;background:#0A090B;min-height:100vh"><h1>Доступ закрыт</h1><p>Панель доступна только владельцу магазина в Telegram.</p></div>';
   throw new Error('admin_forbidden');
 }
-tg.ready(); tg.expand();
+tg?.ready();
+tg?.expand();
+try {
+  if (telegramUserId) sessionStorage.setItem('relikt_tg_user_id', telegramUserId);
+  if (telegramInitData) sessionStorage.setItem('relikt_tg_init_data', telegramInitData);
+} catch (_) {}
 
 
 let DATA = { settings: {}, products: [] };

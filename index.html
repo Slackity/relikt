@@ -488,6 +488,12 @@ a{color:inherit}
    ===================================================================== */
 
 const tg = window.Telegram?.WebApp;
+try {
+  if (tg?.initDataUnsafe?.user?.id) {
+    sessionStorage.setItem('relikt_tg_user_id', String(tg.initDataUnsafe.user.id));
+  }
+  if (tg?.initData) sessionStorage.setItem('relikt_tg_init_data', tg.initData);
+} catch (_) {}
 const $  = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 
@@ -534,7 +540,17 @@ async function boot() {
   document.title = s.shopName || 'RELIKT';
   if (s.notice) { $('#notice').textContent = s.notice; $('#notice').classList.remove('hidden'); }
 
-  if (String(s.adminId || '315859108') === String(tg?.initDataUnsafe?.user?.id || '')) $('#adminLink').classList.remove('hidden');
+  let currentTelegramUserId = String(tg?.initDataUnsafe?.user?.id || '');
+try { currentTelegramUserId = currentTelegramUserId || sessionStorage.getItem('relikt_tg_user_id') || ''; } catch (_) {}
+if (String(s.adminId || '315859108') === currentTelegramUserId) {
+  $('#adminLink').classList.remove('hidden');
+}
+$('#adminLink a')?.addEventListener('click', () => {
+  try {
+    if (tg?.initData) sessionStorage.setItem('relikt_tg_init_data', tg.initData);
+    if (currentTelegramUserId) sessionStorage.setItem('relikt_tg_user_id', currentTelegramUserId);
+  } catch (_) {}
+});
   $('#footLinks').innerHTML = [
     s.channel  ? `<a href="https://t.me/${s.channel}">КАНАЛ</a>`   : '',
     s.contact  ? `<a href="https://t.me/${s.contact}">МЕНЕДЖЕР</a>` : '',
