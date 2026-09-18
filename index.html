@@ -505,8 +505,20 @@ const $  = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 
 let DATA  = { settings: {}, products: [] };
-let CART  = (JSON.parse(localStorage.getItem('relikt_cart') || '[]') || []).map(x => typeof x === 'string' ? ({id:x,qty:1}) : x).filter(x=>x&&x.id);
-let FAVS  = JSON.parse(localStorage.getItem('relikt_favs') || '[]');
+function safeStorageJSON(key, fallback) {
+  try {
+    const raw = localStorage.getItem(key);
+    if (!raw) return fallback;
+    const parsed = JSON.parse(raw);
+    return parsed ?? fallback;
+  } catch (err) {
+    console.warn('[RELIKT] Сброшено повреждённое локальное значение:', key, err);
+    try { localStorage.removeItem(key); } catch (_) {}
+    return fallback;
+  }
+}
+let CART  = (safeStorageJSON('relikt_cart', []) || []).map(x => typeof x === 'string' ? ({id:x,qty:1}) : x).filter(x=>x&&x.id);
+let FAVS  = safeStorageJSON('relikt_favs', []);
 let PROMO = null;                                  // применённый промокод
 let state = { cat: 'all', q: '', onlyIn: true, sort: 'new', current: null };
 let PICKUP = null; let RECEIPT = null; let CDEK_WIDGET = null;
