@@ -565,6 +565,8 @@ function safeStorageJSON(key, fallback) {
 let CART  = (safeStorageJSON('relikt_cart', []) || []).map(x => typeof x === 'string' ? ({id:x,qty:1}) : x).filter(x=>x&&x.id);
 let FAVS  = safeStorageJSON('relikt_favs', []);
 let state = { cat: 'all', q: '', onlyIn: true, sort: 'new', current: null };
+// Количество товара в карточках каталога до добавления в корзину
+let CARD_QTY = {};
 let PICKUP = null; let RECEIPT = null; let CDEK_WIDGET = null;
 
 const money = n => new Intl.NumberFormat('ru-RU').format(Math.round(n)) + ' ' + (DATA.settings.currency || '₽');
