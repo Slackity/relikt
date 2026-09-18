@@ -30,12 +30,12 @@
         "active": true
       }
     ],
-    "orderWebhook": "",
-    "orderSecret": "",
-    "paymentBank": "",
-    "paymentDetails": "",
-    "paymentNote": "После перевода прикрепите чек.",
-    "paymentRecipient": ""
+    "orderWebhook": "relikt-orders.gleb-bugay.workers.dev",
+    "orderSecret": "reliktshop0726",
+    "paymentBank": "Т-БАНК",
+    "paymentDetails": "89883556446",
+    "paymentNote": "После перевода пожалуйста прикрепите чек!",
+    "paymentRecipient": "Иван Иванов"
   },
   "products": [
     {
