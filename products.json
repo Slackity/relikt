@@ -30,15 +30,15 @@
         "active": true
       }
     ],
-    "orderWebhook": "https://relikt-orders.gleb-bugay.workers.dev/",
-    "orderSecret": "reliktshop0726",
+    "orderWebhook": "https://relikt-orders.gleb-bugay.workers.dev",
+    "orderSecret": "CHANGE_ME_APP_SECRET",
     "adminId": 315859108,
-    "yandexApiKey": "b2edf830-90de-413b-94f6-b91458200986",
+    "yandexApiKey": "",
     "cdekWidget": true,
     "payment": {
-      "bankName": "Т-Банк",
-      "recipientName": "Глеб Б",
-      "requisites": "+79883556446",
+      "bankName": "",
+      "recipientName": "",
+      "requisites": "",
       "note": "После перевода прикрепите чек и укажите банк, из которого сделали перевод."
     }
   },
