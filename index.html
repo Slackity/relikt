@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>RELIKT</title>
 <script src="https://telegram.org/js/telegram-web-app.js?63"></script>
-<meta name="relikt-build" content="20260918-1815">
+<meta name="relikt-build" content="20260918-premium-ui">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Forum&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -348,6 +348,90 @@ a{color:inherit}
 .cdekroot{height:100%}
 #pickupCdekView{background:var(--void)}
 #pickupYandexView{background:var(--void)}
+
+/* === GOTHIC RELIKT ART DIRECTION OVERRIDE === */
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;800&family=UnifrakturCook:wght@700&display=swap');
+body{
+  background:
+    radial-gradient(circle at 50% 0%, rgba(130,0,20,.25), transparent 35%),
+    #070708;
+  font-family:Inter, sans-serif;
+}
+body::after{
+ content:"";position:fixed;inset:0;pointer-events:none;opacity:.18;z-index:0;
+ background-image:
+ linear-gradient(90deg,transparent 49%,rgba(255,255,255,.04) 50%,transparent 51%);
+}
+.wordmark{
+ font-family:'UnifrakturCook',Forum,serif!important;
+ font-size:42px!important;
+ letter-spacing:.08em!important;
+ text-shadow:0 0 20px rgba(163,18,31,.5);
+}
+.brandrow{align-items:center}
+.top{border-bottom:1px solid rgba(231,225,213,.12)}
+.quicklinks{font-family:Cinzel,serif!important}
+.search{
+ border:1px solid rgba(231,225,213,.25)!important;
+ background:#0d0c0e!important;
+ border-radius:0!important;
+}
+.cat,.filter,.sort{
+ border:1px solid rgba(231,225,213,.18)!important;
+ background:#0e0d10!important;
+ clip-path:polygon(4% 0,96% 0,100% 18%,100% 82%,96% 100%,4% 100%,0 82%,0 18%);
+ font-family:Cinzel,serif;
+}
+.product-card{
+ background:
+ linear-gradient(180deg,rgba(255,255,255,.03),transparent 25%),
+ #111013!important;
+ border:1px solid rgba(231,225,213,.2)!important;
+ border-radius:0!important;
+ box-shadow:0 0 0 1px rgba(163,18,31,.15),0 15px 35px #000;
+ position:relative;
+ overflow:hidden;
+}
+.product-card::before{
+ content:"";position:absolute;inset:0;pointer-events:none;
+ background-image:radial-gradient(circle,rgba(231,225,213,.12) 1px,transparent 1px);
+ background-size:18px 18px;opacity:.08;
+}
+.product-card img{
+ filter:contrast(1.05) saturate(.85);
+}
+.price,.product-title{
+ font-family:Cinzel,serif!important;
+}
+.buy,.button,.qty button{
+ background:#8f0713!important;
+ border-radius:0!important;
+ text-transform:uppercase;
+ letter-spacing:.12em;
+ font-family:Cinzel,serif;
+ border:1px solid #b52a33!important;
+}
+.buy:before{
+ content:"⚔ ";
+}
+
+/* PREMIUM UX LAYER */
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+@keyframes glowPulse{0%,100%{box-shadow:0 0 0 rgba(163,18,31,0)}50%{box-shadow:0 0 28px rgba(163,18,31,.28)}}
+@keyframes shimmer{from{background-position:-200% 0}to{background-position:200% 0}}
+.product-card{animation:fadeUp .45s ease both;transition:transform .25s ease,filter .25s ease,border-color .25s ease}
+.product-card:hover{transform:translateY(-5px);filter:brightness(1.08);border-color:rgba(163,18,31,.7)!important}
+.product-card:nth-child(2){animation-delay:.08s}.product-card:nth-child(3){animation-delay:.16s}
+.buybtn,.bigbtn{position:relative;overflow:hidden;animation:glowPulse 3s infinite}
+.buybtn::after,.bigbtn::after{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 30%,rgba(255,255,255,.22),transparent 70%);background-size:200% 100%;animation:shimmer 4s infinite;pointer-events:none}
+.iconbtn{transition:transform .2s ease,background .2s ease}
+.iconbtn:active,.buybtn:active,.bigbtn:active{transform:scale(.94)}
+.sheet{backdrop-filter:blur(14px);transition:transform .35s cubic-bezier(.2,.8,.2,1)}
+.chip,.switch,.sort{transition:all .2s ease}
+.chip:hover,.switch:hover{border-color:var(--accent);color:var(--bone)}
+.search{position:relative}
+.search input{transition:border-color .25s,box-shadow .25s}
+.search input:focus{border-color:var(--accent)!important;box-shadow:0 0 18px rgba(163,18,31,.25)}
 </style>
 </head>
 <body>
