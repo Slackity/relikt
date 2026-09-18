@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>RELIKT — панель</title>
 <script src="https://telegram.org/js/telegram-web-app.js?63"></script>
-<meta name="relikt-build" content="20260918-1725">
+<meta name="relikt-build" content="20260918-1815">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Forum&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -192,11 +192,13 @@ input,select,textarea{font:inherit;color:inherit}
     </div>
     <div class="panel">
       <h2>Карты и доставка</h2>
-      <p class="sub">Ключ Яндекс используется для карты и поиска. CDEK API key — ключ Яндекс Карт, который разрешён для домена Mini App.</p>
-      <div class="field"><label for="sYandex">ЯНДЕКС API KEY</label><input id="sYandex" placeholder="Ключ JavaScript API и HTTP Геокодер"></div>
-      <div class="field"><label for="sCdekApi">CDEK / YANDEX API KEY</label><input id="sCdekApi" placeholder="Ключ Яндекс Карт для CDEK Widget"></div>
+      <p class="sub">Яндекс API Key используется только для карты/поиска в Mini App. Токен Яндекс Доставки хранится в Cloudflare Worker и в HTML не попадает.</p>
+      <div class="field"><label for="sYandex">ЯНДЕКС MAPS API KEY</label><input id="sYandex" placeholder="JavaScript API Яндекс Карт"></div>
+      <div class="field"><label for="sYandexWorker">YANDEX DELIVERY WORKER URL</label><input id="sYandexWorker" placeholder="https://ваш-worker.workers.dev"></div>
+      <div class="field"><label for="sCdekApi">CDEK / YANDEX MAPS API KEY</label><input id="sCdekApi" placeholder="Ключ Яндекс Карт для CDEK Widget"></div>
       <div class="field"><label for="sCdekPath">CDEK SERVICE PATH</label><input id="sCdekPath" placeholder="https://ваш-worker.workers.dev/cdek"></div>
       <div class="field"><label for="sCdekFrom">ГОРОД ОТПРАВИТЕЛЯ CDEK</label><input id="sCdekFrom" placeholder="Москва"></div>
+      <div class="hint">Ozon и Wildberries не требуют отдельного API для этого режима: покупатель может вручную указать город, адрес ПВЗ, индекс и код пункта. Яндекс Доставка получает реальные ПВЗ через API, а СДЭК — через официальный виджет.</div>
     </div>
     <div class="panel">
       <h2>Оплата</h2>
@@ -311,7 +313,7 @@ const CONN = JSON.parse(localStorage.getItem('relikt_conn') || '{}');
 const ADMIN_ID='315859108';
 
 const tg = window.Telegram?.WebApp;
-const RELIKT_BUILD = '20260918-1725';
+const RELIKT_BUILD = '20260918-1815';
 (function enforceAppVersion() {
   try {
     const u = new URL(location.href);
@@ -434,7 +436,7 @@ function renderSettings() {
   $('#sContact').value = s.contact || ''; $('#sChannel').value = s.channel || ''; $('#sFeedback').value = s.feedback || '';
   $('#sCats').value = (s.categories || []).join('\n');
   $('#sWebhook').value = s.orderWebhook || ''; $('#sSecret').value = s.orderSecret || '';
-  $('#sYandex').value=s.yandexApiKey||''; $('#sCdekApi').value=s.cdekApiKey||''; $('#sCdekPath').value=s.cdekServicePath||''; $('#sCdekFrom').value=s.cdekFrom||'';
+  $('#sYandex').value=s.yandexApiKey||''; $('#sYandexWorker').value=s.yandexDeliveryWorker||''; $('#sCdekApi').value=s.cdekApiKey||''; $('#sCdekPath').value=s.cdekServicePath||''; $('#sCdekFrom').value=s.cdekFrom||'';
   $('#sPayBank').value=s.paymentBank||''; $('#sPayDetails').value=s.paymentDetails||''; $('#sPayNote').value=s.paymentNote||'';
 }
 function collectSettings() {
@@ -448,7 +450,7 @@ function collectSettings() {
     categories: $('#sCats').value.split('\n').map(x => x.trim()).filter(Boolean),
     orderWebhook: $('#sWebhook').value.trim(),
     orderSecret: $('#sSecret').value.trim(),
-    yandexApiKey: $('#sYandex').value.trim(), cdekApiKey: $('#sCdekApi').value.trim(), cdekServicePath: $('#sCdekPath').value.trim(), cdekFrom: $('#sCdekFrom').value.trim(),
+    yandexApiKey: $('#sYandex').value.trim(), yandexDeliveryWorker: $('#sYandexWorker').value.trim().replace(/\/$/, ''), cdekApiKey: $('#sCdekApi').value.trim(), cdekServicePath: $('#sCdekPath').value.trim(), cdekFrom: $('#sCdekFrom').value.trim(),
     paymentBank: $('#sPayBank').value.trim(), paymentDetails: $('#sPayDetails').value.trim(), paymentNote: $('#sPayNote').value.trim()
   };
 }
@@ -540,7 +542,7 @@ $('#closeEd').onclick = closeEditor;
 $('#addNew').onclick = () => openEditor(null);
 
 /* ---------- Вкладки ---------- */
-$('#backMain').onclick=()=>{location.href='index.html?v=20260918-1725';};
+$('#backMain').onclick=()=>{location.href='index.html?v=20260918-1815';};
 $$('.tab').forEach(t => t.onclick = () => {
   $$('.tab').forEach(x => x.setAttribute('aria-pressed', x === t));
   $$('#tab-goods,#tab-promo,#tab-settings,#tab-conn').forEach(s => s.classList.add('hidden'));

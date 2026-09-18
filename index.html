@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>RELIKT</title>
 <script src="https://telegram.org/js/telegram-web-app.js?63"></script>
-<meta name="relikt-build" content="20260918-1725">
+<meta name="relikt-build" content="20260918-1815">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Forum&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -306,7 +306,42 @@ a{color:inherit}
 .buybtn{width:100%;margin-top:10px;height:38px;background:var(--accent);color:#fff;font-size:11px;font-weight:600;letter-spacing:.08em;clip-path:polygon(8px 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%,0 8px)}
 .buybtn.ghost{background:var(--slab-2);color:var(--bone);border:1px solid var(--line)}
 .qtyrow{display:flex;align-items:center;gap:8px;margin-top:8px}.qtyctrl{display:flex;border:1px solid var(--line);height:36px}.qtyctrl button{width:34px}.qtyctrl span{width:36px;display:grid;place-items:center;border-left:1px solid var(--line);border-right:1px solid var(--line);font-size:12px}
-.mapmodal{position:fixed;inset:0;z-index:80;background:var(--void);display:none}.mapmodal.open{display:block}.maphead{height:58px;display:flex;align-items:center;gap:12px;padding:10px 14px;border-bottom:1px solid var(--line);position:relative;z-index:5;background:rgba(10,9,11,.94)}.maphead b{font-family:Forum,serif;font-weight:400;letter-spacing:.14em}.mapbody{height:calc(100vh - 58px);position:relative}.mapbox{position:absolute;inset:0}.mapbottom{position:absolute;left:12px;right:12px;bottom:12px;z-index:5;background:rgba(16,15,18,.96);border:1px solid var(--line);padding:12px}.mapselected{font-size:12px;color:var(--ash);margin-bottom:8px}.cdekroot{width:100%;height:100%}.receipt{border:1px dashed var(--line);padding:14px;text-align:center;color:var(--ash)}
+.mapmodal{position:fixed;inset:0;z-index:80;background:var(--void);display:none}.mapmodal.open{display:block}.maphead{height:58px;display:flex;align-items:center;gap:12px;padding:10px 14px;border-bottom:1px solid var(--line);position:relative;z-index:5;background:rgba(10,9,11,.94)}.maphead b{font-family:Forum,serif;font-weight:400;letter-spacing:.14em}.mapbody{height:calc(100vh - 106px);position:relative}.mapbox{position:absolute;inset:0}.mapbottom{position:absolute;left:12px;right:12px;bottom:12px;z-index:5;background:rgba(16,15,18,.96);border:1px solid var(--line);padding:12px}.mapselected{font-size:12px;color:var(--ash);margin-bottom:8px}.cdekroot{width:100%;height:100%}.receipt{border:1px dashed var(--line);padding:14px;text-align:center;color:var(--ash)}
+
+
+.pickup-tabs{display:flex;gap:7px;padding:8px 10px;background:var(--pitch);border-bottom:1px solid var(--line);overflow:auto;position:relative;z-index:6}
+.pickup-tabs button{flex:0 0 auto;padding:9px 12px;border:1px solid var(--line);color:var(--ash);font-size:10px;letter-spacing:.08em;background:var(--slab)}
+.pickup-tabs button.active{background:var(--bone);color:var(--void);border-color:var(--bone)}
+.pickupview{position:absolute;inset:0}
+.pickup-search{position:absolute;left:12px;right:12px;top:12px;z-index:8;display:flex;gap:7px}
+.pickup-search input,.pickup-filter input,.manual-card input{background:rgba(16,15,18,.97);border:1px solid var(--line);color:var(--bone);padding:12px;width:100%;outline:none}
+.smallpickbtn{padding:0 14px;background:var(--bone);color:var(--void);font-size:10px;letter-spacing:.08em}
+.quickcities{position:absolute;top:61px;left:12px;right:12px;z-index:8;display:flex;gap:6px;overflow:auto}
+.quickcities button{padding:7px 10px;background:rgba(16,15,18,.94);border:1px solid var(--line);color:var(--ash);font-size:10px;white-space:nowrap}
+.pickup-warning{position:absolute;left:12px;right:12px;bottom:104px;z-index:8;background:rgba(16,15,18,.96);border:1px solid var(--line);padding:11px 12px;display:flex;flex-direction:column;gap:3px;font-size:11px}
+.pickup-warning span{color:var(--dim)}
+.pickup-filter{position:absolute;left:12px;right:12px;bottom:59px;z-index:8}
+.pickup-filter input{padding:9px 11px;font-size:11px}
+.pickup-layout{position:absolute;inset:0}
+.pickup-list{position:absolute;left:12px;top:110px;bottom:108px;width:min(390px,calc(100% - 24px));z-index:7;overflow:auto;display:flex;flex-direction:column;gap:7px;pointer-events:auto}
+@media(min-width:900px){.pickup-list{width:380px}.pickup-layout .mapbox{left:400px}}
+.pickup-card{background:rgba(16,15,18,.96);border:1px solid var(--line);padding:11px;cursor:pointer}
+.pickup-card.selected{border-color:var(--accent)}
+.pickup-card .pc-top{display:flex;gap:7px;justify-content:space-between}
+.pickup-card .pc-name{font-size:11px;font-weight:600}
+.pickup-card .pc-code{font-size:9px;color:var(--dim)}
+.pickup-card .pc-addr{font-size:11px;color:var(--ash);margin:5px 0}
+.pickup-card .pc-hours{font-size:10px;color:var(--dim)}
+.pickup-card .pc-btn{margin-top:8px;width:100%;padding:9px;background:var(--bone);color:var(--void);font-size:10px;letter-spacing:.08em}
+.manual-card{max-width:620px;margin:26px auto;padding:18px}
+.manual-card .manual-title{font-family:Forum,serif;font-size:21px;letter-spacing:.08em;margin-bottom:5px}
+.manual-card .manual-sub{color:var(--dim);font-size:12px;margin-bottom:18px}
+.manual-card .field{margin-bottom:12px}
+.manual-card .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:560px){.manual-card .row{grid-template-columns:1fr}}
+.cdekroot{height:100%}
+#pickupCdekView{background:var(--void)}
+#pickupYandexView{background:var(--void)}
 </style>
 </head>
 <body>
@@ -454,8 +489,9 @@ a{color:inherit}
     </div>
     <div class="field">
       <label>ПУНКТ ВЫДАЧИ / АДРЕС <span class="req">*</span></label>
-      <button class="bigbtn ghost" id="choosePickup" type="button">ВЫБРАТЬ НА КАРТЕ</button>
-      <textarea id="fPickup" readonly placeholder="Нажмите «Выбрать на карте»"></textarea>
+      <button class="bigbtn ghost" id="choosePickup" type="button">ВЫБРАТЬ ПВЗ</button>
+      <textarea id="fPickup" readonly placeholder="Нажмите «Выбрать ПВЗ»"></textarea>
+      <div class="hint" id="pickupModeHint">СДЭК — официальный виджет · Яндекс — реальные ПВЗ · Ozon/WB — ручной ввод адреса ПВЗ</div>
     </div>
     <div class="field">
       <label for="fPhone">НОМЕР ТЕЛЕФОНА <span class="req">*</span></label>
@@ -479,7 +515,47 @@ a{color:inherit}
   <div class="dock"><button class="bigbtn" id="sendPaidOrder">ОТПРАВИТЬ ЗАКАЗ И ЧЕК</button></div>
 </section>
 
-<div class="mapmodal" id="pickupModal"><div class="maphead"><button class="iconbtn" id="closeMap">←</button><b id="mapTitle">ВЫБОР ПВЗ</b></div><div class="mapbody"><div class="mapbox" id="yandexMap"></div><div class="mapbottom"><div class="mapselected" id="mapSelected">Выберите пункт на карте или найдите адрес.</div><button class="bigbtn" id="confirmPickup" disabled>ВЫБРАТЬ ЭТОТ ПУНКТ</button></div><div class="cdekroot hidden" id="cdekMap"></div></div></div>
+<div class="mapmodal" id="pickupModal">
+  <div class="maphead">
+    <button class="iconbtn" id="closeMap">←</button>
+    <b id="mapTitle">ВЫБОР ПВЗ</b>
+  </div>
+  <div class="pickup-tabs">
+    <button data-picktab="cdek">СДЭК (ПВЗ)</button>
+    <button data-picktab="yandex">ЯНДЕКС (ПВЗ)</button>
+    <button data-picktab="ozon">OZON</button>
+    <button data-picktab="wb">WILDBERRIES</button>
+  </div>
+  <div class="mapbody">
+    <div id="pickupCdekView" class="pickupview hidden"><div class="cdekroot" id="cdekMap"></div></div>
+    <div id="pickupYandexView" class="pickupview hidden">
+      <div class="pickup-search">
+        <input id="pickupCity" placeholder="Город, например Краснодар">
+        <button id="pickupCitySearch" class="smallpickbtn">НАЙТИ</button>
+      </div>
+      <div class="quickcities" id="quickCities"></div>
+      <div class="pickup-warning"><b>Не нашли свой адрес или пункт выдачи?</b><span>Можно выбрать пункт на карте или использовать ручной ввод.</span></div>
+      <div class="pickup-filter"><input id="pickupFilter" placeholder="Фильтр по адресу или коду Яндекс Доставка…"></div>
+      <div class="pickup-layout">
+        <div class="pickup-list" id="yandexList"></div>
+        <div class="mapbox" id="yandexMap"></div>
+      </div>
+    </div>
+    <div id="pickupManualView" class="pickupview hidden">
+      <div class="manual-card">
+        <div class="manual-title">Не нашли свой адрес или пункт выдачи?</div>
+        <div class="manual-sub" id="manualSub">Введите данные ПВЗ вручную. Мы передадим их менеджеру вместе с заказом.</div>
+        <div class="field"><label for="manualCity">ГОРОД</label><input id="manualCity" placeholder="Краснодар"></div>
+        <div class="field"><label for="manualAddress">АДРЕС ПВЗ</label><input id="manualAddress" placeholder="ул. Красная, 1"></div>
+        <div class="row">
+          <div class="field"><label for="manualIndex">ПОЧТОВЫЙ ИНДЕКС</label><input id="manualIndex" inputmode="numeric" placeholder="350000"></div>
+          <div class="field"><label for="manualCode">КОД ПВЗ (если есть)</label><input id="manualCode" placeholder="123456"></div>
+        </div>
+        <button class="bigbtn" id="manualConfirm">ВЫБРАТЬ ЭТОТ ПУНКТ</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 <div class="toast" id="toast"></div>
 
@@ -489,7 +565,7 @@ a{color:inherit}
    ===================================================================== */
 
 const tg = window.Telegram?.WebApp;
-const RELIKT_BUILD = '20260918-1725';
+const RELIKT_BUILD = '20260918-1815';
 (function enforceAppVersion() {
   try {
     const u = new URL(location.href);
@@ -569,7 +645,7 @@ async function boot() {
     tg.onEvent?.('viewportChanged', syncTelegramViewport);
     tg.onEvent?.('safeAreaChanged', syncTelegramViewport);
     const uid = String(tg.initDataUnsafe?.user?.id || '');
-    if (uid === '315859108') { $('#adminBtn').classList.remove('hidden'); $('#adminBtn').onclick = () => { sessionStorage.setItem('relikt_admin_uid', uid); location.href='admin.html?v=20260918-1725'; }; }
+    if (uid === '315859108') { $('#adminBtn').classList.remove('hidden'); $('#adminBtn').onclick = () => { sessionStorage.setItem('relikt_admin_uid', uid); location.href='admin.html?v=20260918-1815'; }; }
     try { tg.setHeaderColor('#0A090B'); tg.setBackgroundColor('#0A090B'); } catch (e) {}
   }
   try {
@@ -903,7 +979,11 @@ function orderText() {
     'Город: ' + $('#fCity').value.trim(),
     'Доставка: ' + $('#fDeliv').value,
     'Пункт выдачи: ' + $('#fPickup').value.trim(),
+    PICKUP?.service ? 'Сервис ПВЗ: ' + PICKUP.service : '',
+    PICKUP?.provider ? 'Провайдер: ' + PICKUP.provider : '',
     PICKUP?.code ? 'Код ПВЗ: ' + PICKUP.code : '',
+    PICKUP?.id ? 'ID ПВЗ: ' + PICKUP.id : '',
+    PICKUP?.postalCode ? 'Индекс ПВЗ: ' + PICKUP.postalCode : '',
     PICKUP?.lat ? 'Координаты: ' + PICKUP.lat + ', ' + PICKUP.lng : '',
     '',
     'Товары:',
@@ -936,30 +1016,225 @@ async function sendPaidOrder(){
   if(!RECEIPT){toast('Прикрепите чек');return;}
   const text=orderText()+`\n\nБанк плательщика: ${bank}\nОплата: чек прикреплён`;
   const btn=$('#sendPaidOrder'); btn.disabled=true; btn.textContent='ОТПРАВЛЯЕМ…';
-  try { const res=await fetch(DATA.settings.orderWebhook||'', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({secret:DATA.settings.orderSecret||'',text,receipt:RECEIPT.data,name:RECEIPT.name,mime:RECEIPT.mime})}); const data=await res.json(); if(!res.ok||!data.ok) throw new Error(data.error||'Ошибка сервера');
+  try { const res=await fetch(DATA.settings.orderWebhook||'', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({secret:DATA.settings.orderSecret||'',initData:tg?.initData||'',text,receipt:RECEIPT.data,name:RECEIPT.name,mime:RECEIPT.mime,pickup:PICKUP,items:totals().items.map(x=>({id:x.p.id,qty:x.qty}))})}); const data=await res.json(); if(!res.ok||!data.ok) throw new Error(data.error||'Ошибка сервера');
     toast('Заказ отправлен менеджеру'); CART=[]; save(); updateCounters(); renderCart(); buzz('heavy');
     setTimeout(()=>{closeSheet('payment'); closeSheet('checkout');},700);
   } catch(e){toast('Не удалось отправить: '+e.message);}
   btn.disabled=false; btn.textContent='ОТПРАВИТЬ ЗАКАЗ И ЧЕК';
 }
 
-function loadYandexScript(){ return new Promise((resolve,reject)=>{ if(window.ymaps){resolve(window.ymaps);return;} const key=DATA.settings.yandexApiKey||''; if(!key){reject(new Error('Не указан API-ключ Яндекс Карт в админке'));return;} const s=document.createElement('script'); s.src='https://api-maps.yandex.ru/2.1/?apikey='+encodeURIComponent(key)+'&lang=ru_RU'; s.onload=()=>ymaps.ready(()=>resolve(ymaps)); s.onerror=()=>reject(new Error('Не загрузился API Яндекс Карт')); document.head.appendChild(s); }); }
-async function openPickup(){
-  const delivery=$('#fDeliv').value; $('#pickupModal').classList.add('open'); $('#mapTitle').textContent='ВЫБОР ПВЗ · '+delivery.toUpperCase(); $('#confirmPickup').disabled=true; $('#mapSelected').textContent='Загрузка…';
-  if(delivery==='СДЭК'){ $('#yandexMap').classList.add('hidden'); $('#cdekMap').classList.remove('hidden'); await initCdek(); return; }
-  $('#cdekMap').classList.add('hidden'); $('#yandexMap').classList.remove('hidden');
-  try{ const ym=await loadYandexScript(); const map=new ym.Map('yandexMap',{center:[55.75,37.62],zoom:10,controls:['zoomControl']}); const search=new ym.control.SearchControl({options:{provider:'yandex#search',size:'large',resultsPerPage:8}}); map.controls.add(search,{float:'left'}); search.events.add('resultselect',e=>{const r=search.getResultsArray()[e.get('index')]; const coords=r.geometry.getCoordinates(); PICKUP={service:delivery,address:r.properties.get('name')||r.properties.get('text')||$('#fCity').value,lat:coords[0],lng:coords[1],code:''}; $('#mapSelected').textContent=PICKUP.address; $('#confirmPickup').disabled=false; map.setCenter(coords,15);}); search.search(`${delivery} ПВЗ ${$('#fCity').value}`); }catch(e){$('#mapSelected').textContent=e.message;}
-}
-async function initCdek(){
-  if(!DATA.settings.cdekApiKey){$('#mapSelected').textContent='Укажите CDEK/Yandex API key в настройках магазина';return;}
-  if(!window.CDEKWidget){await new Promise((res,rej)=>{const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/@cdek-it/widget@3';s.onload=res;s.onerror=()=>rej(new Error('Не загрузился виджет СДЭК'));document.head.appendChild(s);});}
-  if(CDEK_WIDGET?.destroy) try{CDEK_WIDGET.destroy()}catch(e){}
-  CDEK_WIDGET=new window.CDEKWidget({from:DATA.settings.cdekFrom||$('#fCity').value||'Москва',root:'cdekMap',apiKey:DATA.settings.cdekApiKey,canChoose:true,servicePath:DATA.settings.cdekServicePath||'',defaultLocation:$('#fCity').value||'Москва',popup:false,hideDeliveryOptions:{door:true,office:false},goods:[{width:10,height:10,length:10,weight:500}],onReady(){},onChoose(type,tariff,target){ const code=target?.code||target?.PVZ||target?.uuid||''; const addr=target?.address||target?.name||target?.location?.address||JSON.stringify(target); PICKUP={service:'СДЭК',address:addr,code,lat:target?.location?.latitude||'',lng:target?.location?.longitude||''}; $('#fPickup').value=addr; $('#mapSelected').textContent=addr; $('#confirmPickup').disabled=false; }});
-}
-$('#choosePickup').onclick=openPickup; $('#closeMap').onclick=()=>$('#pickupModal').classList.remove('open'); $('#confirmPickup').onclick=()=>{ if(!PICKUP)return; $('#fPickup').value=PICKUP.address; $('#pickupModal').classList.remove('open'); };
-$('#fDeliv').onchange=()=>{PICKUP=null;$('#fPickup').value='';};
-$('#receiptFile').onchange=async e=>{const f=e.target.files[0]; if(!f)return; if(f.size>8*1024*1024){toast('Чек слишком большой (макс. 8 МБ)');return;} const reader=new FileReader(); reader.onload=()=>{RECEIPT={name:f.name,mime:f.type,data:reader.result};$('#receiptName').textContent=f.name;}; reader.readAsDataURL(f);};
 
+function loadYandexScript(){
+  return new Promise((resolve,reject)=>{
+    if(window.ymaps){resolve(window.ymaps);return;}
+    const key=DATA.settings.yandexApiKey||'';
+    if(!key){reject(new Error('Не указан API-ключ Яндекс Карт в админке'));return;}
+    const s=document.createElement('script');
+    s.src='https://api-maps.yandex.ru/2.1/?apikey='+encodeURIComponent(key)+'&lang=ru_RU';
+    s.onload=()=>ymaps.ready(()=>resolve(ymaps));
+    s.onerror=()=>reject(new Error('Не загрузился API Яндекс Карт'));
+    document.head.appendChild(s);
+  });
+}
+
+const QUICK_CITIES=['Москва','Санкт-Петербург','Краснодар','Екатеринбург','Казань','Новосибирск','Нижний Новгород','Ростов-на-Дону'];
+
+function pickupTab(tab){
+  $$('.pickup-tabs button').forEach(b=>b.classList.toggle('active',b.dataset.picktab===tab));
+  $('#pickupCdekView').classList.toggle('hidden',tab!=='cdek');
+  $('#pickupYandexView').classList.toggle('hidden',tab!=='yandex');
+  $('#pickupManualView').classList.toggle('hidden',tab!=='ozon'&&tab!=='wb');
+  if(tab==='cdek') initCdek();
+  if(tab==='yandex') initYandexPickup();
+  if(tab==='ozon'||tab==='wb') {
+    const name=tab==='ozon'?'Ozon':'Wildberries';
+    $('#mapTitle').textContent='ПВЗ · '+name.toUpperCase();
+    $('#manualSub').textContent=`Введите адрес ${name}-ПВЗ вручную. Код пункта и индекс необязательны, но помогут менеджеру найти пункт.`;
+    $('#manualCity').value=$('#fCity').value||'';
+    $('#manualAddress').focus();
+  }
+}
+
+function resetPickupModal(){
+  $('#pickupModal').classList.add('open');
+  $('#mapTitle').textContent='ВЫБОР ПВЗ';
+  PICKUP=null;
+  $$('.pickup-tabs button').forEach(b=>b.classList.remove('active'));
+  const d=$('#fDeliv').value;
+  pickupTab(d==='СДЭК'?'cdek':d==='Яндекс Доставка'?'yandex':d==='Wildberries'?'wb':'ozon');
+  renderQuickCities();
+}
+
+function renderQuickCities(){
+  const q=$('#quickCities');
+  q.innerHTML=QUICK_CITIES.map(c=>`<button type="button" data-city="${c}">${c}</button>`).join('');
+  $$('[data-city]',q).forEach(b=>b.onclick=()=>{ $('#pickupCity').value=b.dataset.city; loadYandexPoints(b.dataset.city); });
+}
+
+let YMAP=null, YPOINTS=[], YMARKERS=[];
+
+async function initYandexPickup(){
+  try{
+    const ym=await loadYandexScript();
+    if(!YMAP){
+      YMAP=new ym.Map('yandexMap',{center:[55.75,37.62],zoom:10,controls:['zoomControl']});
+    }
+    const city=$('#fCity').value.trim()||'Москва';
+    $('#pickupCity').value=city;
+    await loadYandexPoints(city);
+  }catch(e){ $('#yandexList').innerHTML=`<div class="pickup-card"><b>Яндекс ПВЗ недоступны</b><div class="pc-addr">${e.message}</div></div>`; }
+}
+
+async function yandexWorker(path,payload){
+  const base=(DATA.settings.yandexDeliveryWorker||'').replace(/\/$/,'');
+  if(!base) throw new Error('Не указан YANDEX DELIVERY WORKER URL в админке');
+  const r=await fetch(base+path,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+  const d=await r.json().catch(()=>({}));
+  if(!r.ok||!d.ok) throw new Error(d.error||d.message||('HTTP '+r.status));
+  return d;
+}
+
+async function loadYandexPoints(city){
+  const list=$('#yandexList');
+  list.innerHTML='<div class="pickup-card">Загружаем реальные ПВЗ Яндекс Доставки…</div>';
+  try{
+    const geo=await yandexWorker('/yandex/geo',{location:city});
+    const geoId=geo?.variants?.[0]?.geo_id;
+    if(!geoId) throw new Error('Яндекс не определил город. Уточните название.');
+    const d=await yandexWorker('/yandex/pickup-points',{
+      geo_id:geoId,
+      type:'pickup_point',
+      operator_ids:['market_l4g','5post'],
+      payment_methods:['already_paid']
+    });
+    YPOINTS=Array.isArray(d.points)?d.points:[];
+    renderYandexPoints();
+    if(YPOINTS[0]?.position){
+      YMAP.setCenter([YPOINTS[0].position.latitude,YPOINTS[0].position.longitude],12,{duration:250});
+    }
+  }catch(e){
+    list.innerHTML=`<div class="pickup-card"><b>Не удалось загрузить ПВЗ</b><div class="pc-addr">${e.message}</div><button class="pc-btn" id="retryYandex">ПОВТОРИТЬ</button></div>`;
+    $('#retryYandex')?.addEventListener('click',()=>loadYandexPoints(city));
+  }
+}
+
+function yandexHours(p){
+  const rs=p?.schedule?.restrictions||[];
+  if(!rs.length) return 'График уточняется';
+  const r=rs.find(x=>x?.time_from?.hours!=null);
+  if(!r) return 'График уточняется';
+  const f=`${String(r.time_from.hours).padStart(2,'0')}:${String(r.time_from.minutes||0).padStart(2,'0')}`;
+  const t=r.time_to?`${String(r.time_to.hours).padStart(2,'0')}:${String(r.time_to.minutes||0).padStart(2,'0')}`:'';
+  return t?`${f}–${t}`:`с ${f}`;
+}
+
+function renderYandexPoints(){
+  const q=($('#pickupFilter').value||'').trim().toLowerCase();
+  const pts=YPOINTS.filter(p=>{
+    const hay=[p.name,p.address?.full_address,p.operator_station_id,p.id].filter(Boolean).join(' ').toLowerCase();
+    return !q||hay.includes(q);
+  }).slice(0,120);
+  $('#yandexList').innerHTML=pts.length?pts.map((p,i)=>{
+    const code=p.operator_station_id||p.id;
+    const op=p.operator_id==='5post'?'5Post':'Яндекс';
+    return `<div class="pickup-card" data-ypick="${p.id}">
+      <div class="pc-top"><div class="pc-name">${escapeHtml(p.name||'Пункт выдачи')}</div><div class="pc-code">${escapeHtml(op)} · ${escapeHtml(code)}</div></div>
+      <div class="pc-addr">${escapeHtml(p.address?.full_address||'Адрес не указан')}</div>
+      <div class="pc-hours">${escapeHtml(yandexHours(p))}</div>
+      <button class="pc-btn" type="button">ВЫБРАТЬ</button>
+    </div>`;
+  }).join(''):`<div class="pickup-card"><b>Пунктов не найдено</b><div class="pc-addr">Измените город или фильтр.</div></div>`;
+  $$('[data-ypick]').forEach(card=>card.onclick=()=>{
+    const p=YPOINTS.find(x=>x.id===card.dataset.ypick);
+    if(p) selectYandexPoint(p);
+  });
+  drawYandexMarkers(pts);
+}
+
+function drawYandexMarkers(points){
+  if(!YMAP||!window.ymaps)return;
+  YMARKERS.forEach(m=>{try{YMAP.geoObjects.remove(m)}catch(e){}});
+  YMARKERS=[];
+  points.forEach(p=>{
+    if(!p.position)return;
+    const m=new ymaps.Placemark([p.position.latitude,p.position.longitude],{
+      balloonContentHeader:p.name||'ПВЗ',
+      balloonContentBody:(p.address?.full_address||'')+'<br>'+yandexHours(p)
+    },{preset:'islands#yellowIcon'});
+    m.events.add('click',()=>selectYandexPoint(p));
+    YMAP.geoObjects.add(m); YMARKERS.push(m);
+  });
+}
+
+function selectYandexPoint(p){
+  PICKUP={service:'Яндекс Доставка',provider:'yandex',address:p.address?.full_address||p.name||'',code:p.operator_station_id||p.id||'',id:p.id,operatorId:p.operator_id||'',lat:p.position?.latitude||'',lng:p.position?.longitude||'',postalCode:p.address?.postal_code||''};
+  $('#fPickup').value=PICKUP.address+(PICKUP.code?' · '+PICKUP.code:'');
+  toast('ПВЗ выбран');
+  $('#pickupModal').classList.remove('open');
+}
+
+function escapeHtml(v){
+  return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+async function openPickup(){
+  resetPickupModal();
+}
+
+async function initCdek(){
+  if(!DATA.settings.cdekApiKey){
+    $('#pickupCdekView').innerHTML='<div class="manual-card"><div class="manual-title">СДЭК</div><div class="manual-sub">Укажите CDEK / Yandex Maps API Key в настройках магазина.</div></div>';
+    return;
+  }
+  if(!window.CDEKWidget){
+    await new Promise((res,rej)=>{
+      const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/@cdek-it/widget@3';s.onload=res;s.onerror=()=>rej(new Error('Не загрузился виджет СДЭК'));document.head.appendChild(s);
+    });
+  }
+  if(CDEK_WIDGET?.destroy) try{CDEK_WIDGET.destroy()}catch(e){}
+  CDEK_WIDGET=new window.CDEKWidget({
+    from:DATA.settings.cdekFrom||$('#fCity').value||'Москва',
+    root:'cdekMap',
+    apiKey:DATA.settings.cdekApiKey,
+    canChoose:true,
+    servicePath:DATA.settings.cdekServicePath||'',
+    defaultLocation:$('#fCity').value||'Москва',
+    popup:false,
+    hideDeliveryOptions:{door:true,office:false},
+    goods:[{width:10,height:10,length:10,weight:500}],
+    onChoose(type,tariff,target){
+      const code=target?.code||target?.PVZ||target?.uuid||'';
+      const addr=target?.address||target?.name||target?.location?.address||'';
+      PICKUP={service:'СДЭК',provider:'cdek',address:addr,code,lat:target?.location?.latitude||'',lng:target?.location?.longitude||''};
+      $('#fPickup').value=addr+(code?' · '+code:'');
+      $('#pickupModal').classList.remove('open');
+    }
+  });
+}
+
+function confirmManualPickup(){
+  const service=$('.pickup-tabs button.active')?.dataset.picktab||'ozon';
+  const city=$('#manualCity').value.trim(), address=$('#manualAddress').value.trim(), postal=$('#manualIndex').value.trim(), code=$('#manualCode').value.trim();
+  if(!city||!address){toast('Укажите город и адрес ПВЗ');return;}
+  const name=service==='wb'?'Wildberries':'Ozon';
+  PICKUP={service:name,provider:service,address:address,city,postalCode:postal,code,lat:'',lng:'',manual:true};
+  $('#fPickup').value=`${city}, ${address}${postal?' · индекс '+postal:''}${code?' · код '+code:''}`;
+  $('#pickupModal').classList.remove('open');
+}
+
+$('#choosePickup').onclick=openPickup;
+$('#closeMap').onclick=()=>$('#pickupModal').classList.remove('open');
+$$('[data-picktab]').forEach(b=>b.onclick=()=>pickupTab(b.dataset.picktab));
+$('#manualConfirm').onclick=confirmManualPickup;
+$('#pickupCitySearch').onclick=()=>loadYandexPoints($('#pickupCity').value.trim()||$('#fCity').value.trim()||'Москва');
+$('#pickupCity').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();$('#pickupCitySearch').click();}};
+$('#pickupFilter').oninput=renderYandexPoints;
+$('#fDeliv').onchange=()=>{
+  PICKUP=null;$('#fPickup').value='';
+  const v=$('#fDeliv').value;
+  $('#pickupModeHint').textContent=v==='СДЭК'?'СДЭК — официальный виджет с выбором ПВЗ.':v==='Яндекс Доставка'?'Яндекс Доставка — реальные ПВЗ через API.':'Для '+v+' используйте ручной ввод адреса ПВЗ, индекса и кода.';
+};
+$('#receiptFile').onchange=async e=>{const f=e.target.files[0];if(!f)return;if(f.size>8*1024*1024){toast('Чек слишком большой (макс. 8 МБ)');return;}const reader=new FileReader();reader.onload=()=>{RECEIPT={name:f.name,mime:f.type,data:reader.result};$('#receiptName').textContent=f.name;};reader.readAsDataURL(f);};
 /* ---------- События ---------- */
 $('#q').oninput      = e => { state.q = e.target.value; render(); };
 $('#sort').onchange  = e => { state.sort = e.target.value; render(); };
