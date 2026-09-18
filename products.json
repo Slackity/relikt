@@ -30,12 +30,12 @@
         "active": true
       }
     ],
-    "orderWebhook": "https://relikt-orders.gleb-bugay.workers.dev/order",
-    "orderSecret": "reliktshop0726",
-    "paymentBank": "Т-БАНК",
-    "paymentDetails": "89883556446",
-    "paymentNote": "После перевода пожалуйста прикрепите чек!",
-    "paymentRecipient": "Иван Иванов"
+    "orderWebhook": "",
+    "orderSecret": "",
+    "paymentBank": "",
+    "paymentDetails": "",
+    "paymentNote": "После перевода прикрепите чек.",
+    "paymentRecipient": ""
   },
   "products": [
     {
@@ -56,7 +56,7 @@
       "status": "in",
       "featured": true,
       "createdAt": "2026-09-10",
-      "stock": 3
+      "stock": 1
     },
     {
       "id": "p2",
@@ -75,7 +75,7 @@
       "status": "in",
       "featured": false,
       "createdAt": "2026-09-09",
-      "stock": 2
+      "stock": 1
     },
     {
       "id": "p3",

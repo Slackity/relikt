@@ -972,8 +972,9 @@ async function sendPaidOrder(){
   const text=orderText()+`\n\nБанк плательщика: ${bank}\nОплата: чек прикреплён`;
   const btn=$('#sendPaidOrder'); btn.disabled=true; btn.textContent='ОТПРАВЛЯЕМ…';
   try {
-    const endpoint=String(DATA.settings.orderWebhook||'').trim();
+    let endpoint=String(DATA.settings.orderWebhook||'').trim();
     if(!endpoint) throw new Error('Не настроен URL Worker для приёма заказов. Откройте админку → Магазин → Приём заказов.');
+    if(!/^https?:\/\//i.test(endpoint)) endpoint='https://'+endpoint;
     let u; try{u=new URL(endpoint)}catch(e){throw new Error('Некорректный URL Worker в настройках.');}
     if(!/^https?:$/.test(u.protocol)) throw new Error('URL Worker должен начинаться с https://');
     if(u.pathname==='' || u.pathname==='/') u.pathname='/order';
@@ -985,7 +986,18 @@ async function sendPaidOrder(){
       res=await fetch(u.href,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({secret:DATA.settings.orderSecret||'',initData:tg?.initData||'',text,receipt:RECEIPT.data,name:RECEIPT.name,mime:RECEIPT.mime,pickup:PICKUP,items:totals().items.map(x=>({id:x.p.id,qty:x.qty}))}),signal:controller.signal});
     } catch(e) {
       if(e?.name==='AbortError') throw new Error('Worker не ответил за 30 секунд. Проверьте URL и публикацию Worker.');
-      throw new Error('Не удалось связаться с Worker. Проверьте URL Worker и CORS.');
+      // Уточняем диагноз: жив ли Worker вообще (по /health), прежде чем показывать общую ошибку
+      let healthMsg='';
+      try{
+        const hc=new AbortController(); const ht=setTimeout(()=>hc.abort(),6000);
+        const hres=await fetch(u.origin+'/health',{method:'GET',signal:hc.signal}).finally(()=>clearTimeout(ht));
+        healthMsg = hres.ok
+          ? 'Worker отвечает на /health, но не принимает /order. Проверьте, что Worker задеплоен последней версией кода (с маршрутом /order), и посмотрите Logs воркера в Cloudflare при повторной отправке.'
+          : 'Worker ответил с ошибкой HTTP '+hres.status+' на /health. Проверьте деплой и логи Worker в Cloudflare.';
+      }catch(e2){
+        healthMsg = 'Worker недоступен по адресу '+u.origin+'. Откройте эту ссылку + /health в браузере — если страница тоже не грузится, Worker не задеплоен или URL указан неверно. Также проверьте, что домен именно ...workers.dev и Worker опубликован (Deploy), а не только сохранён.';
+      }
+      throw new Error(healthMsg);
     } finally { clearTimeout(timer); }
     const raw=await res.text();
     let data={}; try{data=JSON.parse(raw)}catch(e){}

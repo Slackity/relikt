@@ -445,7 +445,7 @@ function collectSettings() {
     channel: $('#sChannel').value.trim().replace('@', ''),
     feedback: $('#sFeedback').value.trim().replace('@', ''),
     categories: $('#sCats').value.split('\n').map(x => x.trim()).filter(Boolean),
-    orderWebhook: $('#sWebhook').value.trim(),
+    orderWebhook: (()=>{let v=$('#sWebhook').value.trim(); if(v && !/^https?:\/\//i.test(v)) v='https://'+v; return v;})(),
     orderSecret: $('#sSecret').value.trim(),
     paymentBank: $('#sPayBank').value.trim(), paymentRecipient: $('#sPayRecipient').value.trim(), paymentDetails: $('#sPayDetails').value.trim(), paymentNote: $('#sPayNote').value.trim()
   };
