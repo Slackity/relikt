@@ -191,20 +191,18 @@ input,select,textarea{font:inherit;color:inherit}
       <div class="field"><textarea id="sCats"></textarea></div>
     </div>
     <div class="panel">
-      <h2>Карты и доставка</h2>
-      <p class="sub">Яндекс API Key используется только для карты/поиска в Mini App. Токен Яндекс Доставки хранится в Cloudflare Worker и в HTML не попадает.</p>
-      <div class="field"><label for="sYandex">ЯНДЕКС MAPS API KEY</label><input id="sYandex" placeholder="JavaScript API Яндекс Карт"></div>
-      <div class="field"><label for="sYandexWorker">YANDEX DELIVERY WORKER URL</label><input id="sYandexWorker" placeholder="https://ваш-worker.workers.dev"></div>
-      <div class="field"><label for="sCdekApi">CDEK / YANDEX MAPS API KEY</label><input id="sCdekApi" placeholder="Ключ Яндекс Карт для CDEK Widget"></div>
-      <div class="field"><label for="sCdekPath">CDEK SERVICE PATH</label><input id="sCdekPath" placeholder="https://ваш-worker.workers.dev/cdek"></div>
-      <div class="field"><label for="sCdekFrom">ГОРОД ОТПРАВИТЕЛЯ CDEK</label><input id="sCdekFrom" placeholder="Москва"></div>
-      <div class="hint">Ozon и Wildberries не требуют отдельного API для этого режима: покупатель может вручную указать город, адрес ПВЗ, индекс и код пункта. Яндекс Доставка получает реальные ПВЗ через API, а СДЭК — через официальный виджет.</div>
+      <h2>Доставка</h2>
+      <p class="sub">Без API-ключей. В оформлении покупатель вручную указывает адрес ПВЗ и выбранную службу доставки.</p>
+      <div class="hint">Поддерживаются СДЭК, Почта РФ, Яндекс Доставка, Ozon и Wildberries. Адрес передаётся менеджеру вместе с заказом.</div>
     </div>
     <div class="panel">
       <h2>Оплата</h2>
       <p class="sub">Эти данные увидит покупатель перед прикреплением чека.</p>
-      <div class="field"><label for="sPayBank">БАНК / ПОЛУЧАТЕЛЬ</label><input id="sPayBank" placeholder="Т-Банк · Иван Иванов"></div>
-      <div class="field"><label for="sPayDetails">РЕКВИЗИТЫ</label><textarea id="sPayDetails" placeholder="Номер карты / СБП / счёт"></textarea></div>
+      <div class="row">
+        <div class="field"><label for="sPayBank">БАНК</label><input id="sPayBank" placeholder="Т-Банк"></div>
+        <div class="field"><label for="sPayRecipient">ПОЛУЧАТЕЛЬ</label><input id="sPayRecipient" placeholder="Иван Иванов"></div>
+      </div>
+      <div class="field"><label for="sPayDetails">НОМЕР / РЕКВИЗИТЫ</label><textarea id="sPayDetails" placeholder="Номер карты / СБП / счёт"></textarea></div>
       <div class="field"><label for="sPayNote">ИНСТРУКЦИЯ</label><textarea id="sPayNote" placeholder="После перевода прикрепите чек"></textarea></div>
     </div>
     <div class="panel">
@@ -436,8 +434,7 @@ function renderSettings() {
   $('#sContact').value = s.contact || ''; $('#sChannel').value = s.channel || ''; $('#sFeedback').value = s.feedback || '';
   $('#sCats').value = (s.categories || []).join('\n');
   $('#sWebhook').value = s.orderWebhook || ''; $('#sSecret').value = s.orderSecret || '';
-  $('#sYandex').value=s.yandexApiKey||''; $('#sYandexWorker').value=s.yandexDeliveryWorker||''; $('#sCdekApi').value=s.cdekApiKey||''; $('#sCdekPath').value=s.cdekServicePath||''; $('#sCdekFrom').value=s.cdekFrom||'';
-  $('#sPayBank').value=s.paymentBank||''; $('#sPayDetails').value=s.paymentDetails||''; $('#sPayNote').value=s.paymentNote||'';
+  $('#sPayBank').value=s.paymentBank||''; $('#sPayRecipient').value=s.paymentRecipient||''; $('#sPayDetails').value=s.paymentDetails||''; $('#sPayNote').value=s.paymentNote||'';
 }
 function collectSettings() {
   DATA.settings = { ...DATA.settings,
@@ -450,8 +447,7 @@ function collectSettings() {
     categories: $('#sCats').value.split('\n').map(x => x.trim()).filter(Boolean),
     orderWebhook: $('#sWebhook').value.trim(),
     orderSecret: $('#sSecret').value.trim(),
-    yandexApiKey: $('#sYandex').value.trim(), yandexDeliveryWorker: $('#sYandexWorker').value.trim().replace(/\/$/, ''), cdekApiKey: $('#sCdekApi').value.trim(), cdekServicePath: $('#sCdekPath').value.trim(), cdekFrom: $('#sCdekFrom').value.trim(),
-    paymentBank: $('#sPayBank').value.trim(), paymentDetails: $('#sPayDetails').value.trim(), paymentNote: $('#sPayNote').value.trim()
+    paymentBank: $('#sPayBank').value.trim(), paymentRecipient: $('#sPayRecipient').value.trim(), paymentDetails: $('#sPayDetails').value.trim(), paymentNote: $('#sPayNote').value.trim()
   };
 }
 $$('#tab-settings input, #tab-settings textarea').forEach(el => el.oninput = () => { collectSettings(); markDirty(); });

@@ -255,20 +255,19 @@ a{color:inherit}
 .sumrow.total{border-top:1px solid var(--line);margin-top:10px;padding-top:13px;font-family:Forum,serif;font-size:20px;color:var(--bone)}
 .sumrow.total span{color:var(--bone)!important}
 
-/* промокод */
-.promo{display:flex;gap:8px;margin-bottom:14px}
-.promo input{
-  flex:1;background:var(--slab-2);border:1px solid var(--line);padding:11px 12px;
-  outline:0;font-size:14px;letter-spacing:.12em;text-transform:uppercase;color:var(--bone);
-}
-.promo input:focus{border-color:var(--accent)}
-.promo button{padding:0 16px;background:var(--slab-2);border:1px solid var(--line);font-size:12px;letter-spacing:.1em;color:var(--bone)}
-.promo button:hover{border-color:var(--accent)}
-.promostate{font-size:12px;margin:-8px 0 14px;display:flex;align-items:center;gap:8px}
-.promostate.ok{color:#79A86B}
-.promostate.bad{color:var(--accent)}
-.promostate button{font-size:11px;color:var(--dim);text-decoration:underline}
-
+/* ---------- ДОСТАВКА / ОПЛАТА ---------- */
+.delivery-summary{background:var(--pitch);border:1px solid var(--line);padding:14px 15px;margin:0 0 2px}
+.delivery-summary .ds-label{font-size:10px;color:var(--dim);letter-spacing:.16em;margin-bottom:7px}
+.delivery-summary .ds-value{font-size:14px;line-height:1.55;color:var(--bone);white-space:pre-wrap}
+.delivery-summary .ds-muted{color:var(--dim)}
+.payment-card{background:var(--pitch);border:1px solid var(--line);padding:18px 16px;margin-bottom:2px}
+.payment-card .pay-title{font-size:10px;color:var(--dim);letter-spacing:.18em;margin-bottom:13px}
+.payment-card .pay-row{padding:9px 0;border-top:1px solid var(--line)}
+.payment-card .pay-row:first-of-type{border-top:0;padding-top:0}
+.payment-card .pay-label{font-size:9px;color:var(--dim);letter-spacing:.14em;margin-bottom:4px}
+.payment-card .pay-value{font-size:18px;line-height:1.35;color:var(--bone);font-weight:600;word-break:break-word}
+.payment-card .pay-value.details{font-size:21px;letter-spacing:.03em}
+.payment-card .pay-note{margin-top:13px;padding-top:12px;border-top:1px solid var(--line);font-size:12px;line-height:1.55;color:var(--ash)}
 /* ---------- ФОРМА ---------- */
 .form{padding:18px var(--pad) 140px;display:flex;flex-direction:column;gap:15px}
 .field label{display:block;font-size:10px;color:var(--dim);letter-spacing:.18em;margin-bottom:7px}
@@ -306,7 +305,7 @@ a{color:inherit}
 .buybtn{width:100%;margin-top:10px;height:38px;background:var(--accent);color:#fff;font-size:11px;font-weight:600;letter-spacing:.08em;clip-path:polygon(8px 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%,0 8px)}
 .buybtn.ghost{background:var(--slab-2);color:var(--bone);border:1px solid var(--line)}
 .qtyrow{display:flex;align-items:center;gap:8px;margin-top:8px}.qtyctrl{display:flex;border:1px solid var(--line);height:36px}.qtyctrl button{width:34px}.qtyctrl span{width:36px;display:grid;place-items:center;border-left:1px solid var(--line);border-right:1px solid var(--line);font-size:12px}
-.mapmodal{position:fixed;inset:0;z-index:80;background:var(--void);display:none}.mapmodal.open{display:block}.maphead{height:58px;display:flex;align-items:center;gap:12px;padding:10px 14px;border-bottom:1px solid var(--line);position:relative;z-index:5;background:rgba(10,9,11,.94)}.maphead b{font-family:Forum,serif;font-weight:400;letter-spacing:.14em}.mapbody{height:calc(100vh - 106px);position:relative}.mapbox{position:absolute;inset:0}.mapbottom{position:absolute;left:12px;right:12px;bottom:12px;z-index:5;background:rgba(16,15,18,.96);border:1px solid var(--line);padding:12px}.mapselected{font-size:12px;color:var(--ash);margin-bottom:8px}.cdekroot{width:100%;height:100%}.receipt{border:1px dashed var(--line);padding:14px;text-align:center;color:var(--ash)}
+.receipt{border:1px dashed var(--line);padding:14px;text-align:center;color:var(--ash)}
 
 
 .pickup-tabs{display:flex;gap:7px;padding:8px 10px;background:var(--pitch);border-bottom:1px solid var(--line);overflow:auto;position:relative;z-index:6}
@@ -488,15 +487,16 @@ a{color:inherit}
       </select>
     </div>
     <div class="field">
-      <label>ПУНКТ ВЫДАЧИ / АДРЕС <span class="req">*</span></label>
-      <button class="bigbtn ghost" id="choosePickup" type="button">ВЫБРАТЬ ПВЗ</button>
-      <textarea id="fPickup" readonly placeholder="Нажмите «Выбрать ПВЗ»"></textarea>
-      <div class="hint" id="pickupModeHint">СДЭК — официальный виджет · Яндекс — реальные ПВЗ · Ozon/WB — ручной ввод адреса ПВЗ</div>
+      <label for="fPickup">АДРЕС ПВЗ <span class="req">*</span></label>
+      <textarea id="fPickup" placeholder="Например: Краснодар, ул. Красная, 25 — ПВЗ Ozon №123456"></textarea>
+      <div class="hint">Укажите адрес ПВЗ, где вы бы хотели забрать заказ</div>
+    </div>
     </div>
     <div class="field">
       <label for="fPhone">НОМЕР ТЕЛЕФОНА <span class="req">*</span></label>
       <input id="fPhone" type="tel" inputmode="tel" placeholder="+7 900 000-00-00">
     </div>
+    <div class="delivery-summary" id="deliverySummary"><div class="ds-label">АДРЕС ДОСТАВКИ</div><div class="ds-value ds-muted">Заполните адрес ПВЗ</div></div>
     <div class="sumbox" id="coSum" style="margin:6px 0 0"></div>
     <p class="hint">Кнопка откроет Telegram с готовым текстом заказа — выберите в списке менеджера и отправьте. Текст заодно скопируется в буфер.</p>
   </div>
@@ -507,55 +507,13 @@ a{color:inherit}
 <section class="sheet" id="payment">
   <div class="sheethead"><button class="iconbtn" data-close="payment" aria-label="Назад"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 5l-7 7 7 7"/></svg></button><h2>ОПЛАТА</h2></div>
   <div class="form">
-    <div class="sumbox" id="payInfo"></div>
+    <div id="payInfo"></div>
     <div class="field"><label for="fBank">БАНК, С КОТОРОГО СДЕЛАН ПЕРЕВОД <span class="req">*</span></label><input id="fBank" placeholder="Например, Т-Банк"></div>
     <div class="field"><label>ЧЕК ОБ ОПЛАТЕ <span class="req">*</span></label><label class="receipt" style="display:block;cursor:pointer"><span id="receiptName">Прикрепить фото или PDF</span><input id="receiptFile" type="file" accept="image/*,application/pdf" class="hidden"></label></div>
-    <p class="hint">После отправки данные заказа, выбранный ПВЗ, банк и чек будут переданы менеджеру в Telegram.</p>
+    <p class="hint">После отправки данные заказа, адрес ПВЗ, банк и чек будут переданы менеджеру в Telegram.</p>
   </div>
   <div class="dock"><button class="bigbtn" id="sendPaidOrder">ОТПРАВИТЬ ЗАКАЗ И ЧЕК</button></div>
 </section>
-
-<div class="mapmodal" id="pickupModal">
-  <div class="maphead">
-    <button class="iconbtn" id="closeMap">←</button>
-    <b id="mapTitle">ВЫБОР ПВЗ</b>
-  </div>
-  <div class="pickup-tabs">
-    <button data-picktab="cdek">СДЭК (ПВЗ)</button>
-    <button data-picktab="yandex">ЯНДЕКС (ПВЗ)</button>
-    <button data-picktab="ozon">OZON</button>
-    <button data-picktab="wb">WILDBERRIES</button>
-  </div>
-  <div class="mapbody">
-    <div id="pickupCdekView" class="pickupview hidden"><div class="cdekroot" id="cdekMap"></div></div>
-    <div id="pickupYandexView" class="pickupview hidden">
-      <div class="pickup-search">
-        <input id="pickupCity" placeholder="Город, например Краснодар">
-        <button id="pickupCitySearch" class="smallpickbtn">НАЙТИ</button>
-      </div>
-      <div class="quickcities" id="quickCities"></div>
-      <div class="pickup-warning"><b>Не нашли свой адрес или пункт выдачи?</b><span>Можно выбрать пункт на карте или использовать ручной ввод.</span></div>
-      <div class="pickup-filter"><input id="pickupFilter" placeholder="Фильтр по адресу или коду Яндекс Доставка…"></div>
-      <div class="pickup-layout">
-        <div class="pickup-list" id="yandexList"></div>
-        <div class="mapbox" id="yandexMap"></div>
-      </div>
-    </div>
-    <div id="pickupManualView" class="pickupview hidden">
-      <div class="manual-card">
-        <div class="manual-title">Не нашли свой адрес или пункт выдачи?</div>
-        <div class="manual-sub" id="manualSub">Введите данные ПВЗ вручную. Мы передадим их менеджеру вместе с заказом.</div>
-        <div class="field"><label for="manualCity">ГОРОД</label><input id="manualCity" placeholder="Краснодар"></div>
-        <div class="field"><label for="manualAddress">АДРЕС ПВЗ</label><input id="manualAddress" placeholder="ул. Красная, 1"></div>
-        <div class="row">
-          <div class="field"><label for="manualIndex">ПОЧТОВЫЙ ИНДЕКС</label><input id="manualIndex" inputmode="numeric" placeholder="350000"></div>
-          <div class="field"><label for="manualCode">КОД ПВЗ (если есть)</label><input id="manualCode" placeholder="123456"></div>
-        </div>
-        <button class="bigbtn" id="manualConfirm">ВЫБРАТЬ ЭТОТ ПУНКТ</button>
-      </div>
-    </div>
-  </div>
-</div>
 
 <div class="toast" id="toast"></div>
 
@@ -595,7 +553,6 @@ function safeStorageJSON(key, fallback) {
 }
 let CART  = (safeStorageJSON('relikt_cart', []) || []).map(x => typeof x === 'string' ? ({id:x,qty:1}) : x).filter(x=>x&&x.id);
 let FAVS  = safeStorageJSON('relikt_favs', []);
-let PROMO = null;                                  // применённый промокод
 let state = { cat: 'all', q: '', onlyIn: true, sort: 'new', current: null };
 let PICKUP = null; let RECEIPT = null; let CDEK_WIDGET = null;
 
@@ -867,51 +824,16 @@ function changeQty(id, delta) {
 }
 function cartItems() { return CART.map(line => ({p:(DATA.products||[]).find(p=>p.id===line.id), qty:line.qty})).filter(x=>x.p); }
 
-function findPromo(code) {
-  const c = (code || '').trim().toUpperCase();
-  if (!c) return null;
-  return (DATA.settings.promos || []).find(p => p.active !== false && (p.code || '').toUpperCase() === c) || null;
-}
-
 function totals() {
   const items = cartItems();
   const sub = items.reduce((s, x) => s + x.p.price*x.qty, 0);
-  let cut = 0;
-  if (PROMO) cut = PROMO.type === 'amount' ? Math.min(PROMO.value, sub) : Math.round(sub * PROMO.value / 100);
-  return { items, sub, cut, total: Math.max(0, sub - cut) };
-}
-
-function promoHTML() {
-  if (PROMO) {
-    const label = PROMO.type === 'amount' ? money(PROMO.value) : PROMO.value + '%';
-    return `<div class="promostate ok">Промокод ${PROMO.code} — минус ${label}
-      <button data-promo-off>убрать</button></div>`;
-  }
-  return `<div class="promo">
-      <input id="promoInput" placeholder="ПРОМОКОД" autocomplete="off" maxlength="24">
-      <button data-promo-apply>ПРИМЕНИТЬ</button>
-    </div>`;
+  return { items, sub, cut: 0, total: sub };
 }
 
 function sumBoxHTML() {
   const t = totals();
-  return `${promoHTML()}
-    <div class="sumrow"><span>Товары (${t.items.reduce((n,x)=>n+x.qty,0)})</span><span>${money(t.sub)}</span></div>
-    ${t.cut ? `<div class="sumrow cut"><span>Скидка по промокоду</span><span>−${money(t.cut)}</span></div>` : ''}
+  return `<div class="sumrow"><span>Товары (${t.items.reduce((n,x)=>n+x.qty,0)})</span><span>${money(t.sub)}</span></div>
     <div class="sumrow total"><span>Итого</span><span>${money(t.total)}</span></div>`;
-}
-
-function bindPromo() {
-  $$('[data-promo-apply]').forEach(b => b.onclick = () => {
-    const input = b.parentElement.querySelector('input');
-    const found = findPromo(input.value);
-    if (found) { PROMO = found; buzz('medium'); renderCart(); toast('Промокод применён'); }
-    else { buzz('heavy'); input.value = ''; toast('Такого промокода нет'); }
-  });
-  $$('[data-promo-off]').forEach(b => b.onclick = () => { PROMO = null; renderCart(); });
-  $$('.promo input').forEach(i => i.onkeydown = e => {
-    if (e.key === 'Enter') { e.preventDefault(); i.parentElement.querySelector('[data-promo-apply]').click(); }
-  });
 }
 
 function renderCart() {
@@ -934,7 +856,7 @@ function renderCart() {
 
   $('#cartSum').innerHTML = t.items.length ? sumBoxHTML() : '';
   $('#coSum').innerHTML   = sumBoxHTML();
-  bindPromo();
+  updateDeliverySummary();
   $('#cartTotal').textContent = money(t.total);
   $('#toCheckout').disabled = !t.items.length;
 }
@@ -991,7 +913,7 @@ function orderText() {
     '',
     'Сумма: ' + money(t.sub)
   ];
-  if (t.cut) L.push('Промокод ' + PROMO.code + ': −' + money(t.cut), 'К оплате: ' + money(t.total));
+  L.push('К оплате: ' + money(t.total));
   return L.join('\n');
 }
 
@@ -1004,10 +926,36 @@ async function copyText(text) {
   ta.remove();
 }
 
+function escapeHtml(v){ return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+function syncManualPickup(){
+  const address=$('#fPickup')?.value.trim()||'';
+  PICKUP={service:$('#fDeliv')?.value||'',provider:$('#fDeliv')?.value||'',address,city:$('#fCity')?.value.trim()||'',manual:true};
+  return PICKUP;
+}
+
+function updateDeliverySummary(){
+  const box=$('#deliverySummary');
+  if(!box)return;
+  const city=$('#fCity')?.value.trim()||'';
+  const delivery=$('#fDeliv')?.value.trim()||'';
+  const address=$('#fPickup')?.value.trim()||'';
+  if(!address){
+    box.innerHTML='<div class="ds-label">АДРЕС ДОСТАВКИ</div><div class="ds-value ds-muted">Заполните адрес ПВЗ</div>';
+    return;
+  }
+  const text=[delivery, city, address].filter(Boolean).join(' · ');
+  box.innerHTML='<div class="ds-label">АДРЕС ДОСТАВКИ</div><div class="ds-value">'+escapeHtml(text)+'</div>';
+}
+
 async function sendOrder() {
   const need=[['fName','имя'],['fTg','телеграм'],['fPhone','телефон'],['fCity','город'],['fPickup','пункт выдачи']];
   const miss=need.filter(([id])=>!$('#'+id).value.trim()); if(miss.length){buzz('heavy');toast('Заполните: '+miss.map(m=>m[1]).join(', '));return;}
-  const t=totals(); $('#payInfo').innerHTML=sumBoxHTML()+`<div class="hint" style="margin-top:12px">${(DATA.settings.paymentBank||'Банк не указан')}<br>${(DATA.settings.paymentDetails||'Реквизиты не указаны')}<br>${(DATA.settings.paymentNote||'')}</div>`;
+  const t=totals();
+  updateDeliverySummary();
+  const s=DATA.settings||{};
+  const deliveryText=[$('#fDeliv').value.trim(),$('#fCity').value.trim(),$('#fPickup').value.trim()].filter(Boolean).join(' · ');
+  $('#payInfo').innerHTML=`${sumBoxHTML()}<div class="delivery-summary" style="margin-top:12px"><div class="ds-label">АДРЕС ДОСТАВКИ</div><div class="ds-value">${escapeHtml(deliveryText)}</div></div><div class="payment-card" style="margin-top:12px"><div class="pay-title">РЕКВИЗИТЫ ДЛЯ ПЕРЕВОДА</div><div class="pay-row"><div class="pay-label">БАНК</div><div class="pay-value">${escapeHtml(s.paymentBank||'Не указан')}</div></div><div class="pay-row"><div class="pay-label">ПОЛУЧАТЕЛЬ</div><div class="pay-value">${escapeHtml(s.paymentRecipient||'Не указан')}</div></div><div class="pay-row"><div class="pay-label">РЕКВИЗИТЫ</div><div class="pay-value details">${escapeHtml(s.paymentDetails||'Не указаны')}</div></div>${s.paymentNote?`<div class="pay-note">${escapeHtml(s.paymentNote)}</div>`:''}</div>`;
   closeSheet('checkout'); openSheet('payment');
 }
 
@@ -1016,7 +964,24 @@ async function sendPaidOrder(){
   if(!RECEIPT){toast('Прикрепите чек');return;}
   const text=orderText()+`\n\nБанк плательщика: ${bank}\nОплата: чек прикреплён`;
   const btn=$('#sendPaidOrder'); btn.disabled=true; btn.textContent='ОТПРАВЛЯЕМ…';
-  try { const res=await fetch(DATA.settings.orderWebhook||'', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({secret:DATA.settings.orderSecret||'',initData:tg?.initData||'',text,receipt:RECEIPT.data,name:RECEIPT.name,mime:RECEIPT.mime,pickup:PICKUP,items:totals().items.map(x=>({id:x.p.id,qty:x.qty}))})}); const data=await res.json(); if(!res.ok||!data.ok) throw new Error(data.error||'Ошибка сервера');
+  try {
+    const endpoint=String(DATA.settings.orderWebhook||'').trim();
+    if(!endpoint) throw new Error('Не настроен URL Worker для приёма заказов. Откройте админку → Магазин → Приём заказов.');
+    let u; try{u=new URL(endpoint)}catch(e){throw new Error('Некорректный URL Worker в настройках.');}
+    if(!/^https?:$/.test(u.protocol)) throw new Error('URL Worker должен начинаться с https://');
+    syncManualPickup();
+    const controller=new AbortController();
+    const timer=setTimeout(()=>controller.abort(),30000);
+    let res;
+    try {
+      res=await fetch(u.href,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({secret:DATA.settings.orderSecret||'',initData:tg?.initData||'',text,receipt:RECEIPT.data,name:RECEIPT.name,mime:RECEIPT.mime,pickup:PICKUP,items:totals().items.map(x=>({id:x.p.id,qty:x.qty}))}),signal:controller.signal});
+    } catch(e) {
+      if(e?.name==='AbortError') throw new Error('Worker не ответил за 30 секунд. Проверьте URL и публикацию Worker.');
+      throw new Error('Не удалось связаться с Worker. Проверьте URL Worker и CORS.');
+    } finally { clearTimeout(timer); }
+    const raw=await res.text();
+    let data={}; try{data=JSON.parse(raw)}catch(e){}
+    if(!res.ok||!data.ok) throw new Error(data.error||data.message||('Worker вернул HTTP '+res.status));
     toast('Заказ отправлен менеджеру'); CART=[]; save(); updateCounters(); renderCart(); buzz('heavy');
     setTimeout(()=>{closeSheet('payment'); closeSheet('checkout');},700);
   } catch(e){toast('Не удалось отправить: '+e.message);}
@@ -1024,224 +989,18 @@ async function sendPaidOrder(){
 }
 
 
-function loadYandexScript(){
-  return new Promise((resolve,reject)=>{
-    if(window.ymaps){resolve(window.ymaps);return;}
-    const key=DATA.settings.yandexApiKey||'';
-    if(!key){reject(new Error('Не указан API-ключ Яндекс Карт в админке'));return;}
-    const s=document.createElement('script');
-    s.src='https://api-maps.yandex.ru/2.1/?apikey='+encodeURIComponent(key)+'&lang=ru_RU';
-    s.onload=()=>ymaps.ready(()=>resolve(ymaps));
-    s.onerror=()=>reject(new Error('Не загрузился API Яндекс Карт'));
-    document.head.appendChild(s);
-  });
-}
-
-const QUICK_CITIES=['Москва','Санкт-Петербург','Краснодар','Екатеринбург','Казань','Новосибирск','Нижний Новгород','Ростов-на-Дону'];
-
-function pickupTab(tab){
-  $$('.pickup-tabs button').forEach(b=>b.classList.toggle('active',b.dataset.picktab===tab));
-  $('#pickupCdekView').classList.toggle('hidden',tab!=='cdek');
-  $('#pickupYandexView').classList.toggle('hidden',tab!=='yandex');
-  $('#pickupManualView').classList.toggle('hidden',tab!=='ozon'&&tab!=='wb');
-  if(tab==='cdek') initCdek();
-  if(tab==='yandex') initYandexPickup();
-  if(tab==='ozon'||tab==='wb') {
-    const name=tab==='ozon'?'Ozon':'Wildberries';
-    $('#mapTitle').textContent='ПВЗ · '+name.toUpperCase();
-    $('#manualSub').textContent=`Введите адрес ${name}-ПВЗ вручную. Код пункта и индекс необязательны, но помогут менеджеру найти пункт.`;
-    $('#manualCity').value=$('#fCity').value||'';
-    $('#manualAddress').focus();
-  }
-}
-
-function resetPickupModal(){
-  $('#pickupModal').classList.add('open');
-  $('#mapTitle').textContent='ВЫБОР ПВЗ';
-  PICKUP=null;
-  $$('.pickup-tabs button').forEach(b=>b.classList.remove('active'));
-  const d=$('#fDeliv').value;
-  pickupTab(d==='СДЭК'?'cdek':d==='Яндекс Доставка'?'yandex':d==='Wildberries'?'wb':'ozon');
-  renderQuickCities();
-}
-
-function renderQuickCities(){
-  const q=$('#quickCities');
-  q.innerHTML=QUICK_CITIES.map(c=>`<button type="button" data-city="${c}">${c}</button>`).join('');
-  $$('[data-city]',q).forEach(b=>b.onclick=()=>{ $('#pickupCity').value=b.dataset.city; loadYandexPoints(b.dataset.city); });
-}
-
-let YMAP=null, YPOINTS=[], YMARKERS=[];
-
-async function initYandexPickup(){
-  try{
-    const ym=await loadYandexScript();
-    if(!YMAP){
-      YMAP=new ym.Map('yandexMap',{center:[55.75,37.62],zoom:10,controls:['zoomControl']});
-    }
-    const city=$('#fCity').value.trim()||'Москва';
-    $('#pickupCity').value=city;
-    await loadYandexPoints(city);
-  }catch(e){ $('#yandexList').innerHTML=`<div class="pickup-card"><b>Яндекс ПВЗ недоступны</b><div class="pc-addr">${e.message}</div></div>`; }
-}
-
-async function yandexWorker(path,payload){
-  const base=(DATA.settings.yandexDeliveryWorker||'').replace(/\/$/,'');
-  if(!base) throw new Error('Не указан YANDEX DELIVERY WORKER URL в админке');
-  const r=await fetch(base+path,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
-  const d=await r.json().catch(()=>({}));
-  if(!r.ok||!d.ok) throw new Error(d.error||d.message||('HTTP '+r.status));
-  return d;
-}
-
-async function loadYandexPoints(city){
-  const list=$('#yandexList');
-  list.innerHTML='<div class="pickup-card">Загружаем реальные ПВЗ Яндекс Доставки…</div>';
-  try{
-    const geo=await yandexWorker('/yandex/geo',{location:city});
-    const geoId=geo?.variants?.[0]?.geo_id;
-    if(!geoId) throw new Error('Яндекс не определил город. Уточните название.');
-    const d=await yandexWorker('/yandex/pickup-points',{
-      geo_id:geoId,
-      type:'pickup_point',
-      operator_ids:['market_l4g','5post'],
-      payment_methods:['already_paid']
-    });
-    YPOINTS=Array.isArray(d.points)?d.points:[];
-    renderYandexPoints();
-    if(YPOINTS[0]?.position){
-      YMAP.setCenter([YPOINTS[0].position.latitude,YPOINTS[0].position.longitude],12,{duration:250});
-    }
-  }catch(e){
-    list.innerHTML=`<div class="pickup-card"><b>Не удалось загрузить ПВЗ</b><div class="pc-addr">${e.message}</div><button class="pc-btn" id="retryYandex">ПОВТОРИТЬ</button></div>`;
-    $('#retryYandex')?.addEventListener('click',()=>loadYandexPoints(city));
-  }
-}
-
-function yandexHours(p){
-  const rs=p?.schedule?.restrictions||[];
-  if(!rs.length) return 'График уточняется';
-  const r=rs.find(x=>x?.time_from?.hours!=null);
-  if(!r) return 'График уточняется';
-  const f=`${String(r.time_from.hours).padStart(2,'0')}:${String(r.time_from.minutes||0).padStart(2,'0')}`;
-  const t=r.time_to?`${String(r.time_to.hours).padStart(2,'0')}:${String(r.time_to.minutes||0).padStart(2,'0')}`:'';
-  return t?`${f}–${t}`:`с ${f}`;
-}
-
-function renderYandexPoints(){
-  const q=($('#pickupFilter').value||'').trim().toLowerCase();
-  const pts=YPOINTS.filter(p=>{
-    const hay=[p.name,p.address?.full_address,p.operator_station_id,p.id].filter(Boolean).join(' ').toLowerCase();
-    return !q||hay.includes(q);
-  }).slice(0,120);
-  $('#yandexList').innerHTML=pts.length?pts.map((p,i)=>{
-    const code=p.operator_station_id||p.id;
-    const op=p.operator_id==='5post'?'5Post':'Яндекс';
-    return `<div class="pickup-card" data-ypick="${p.id}">
-      <div class="pc-top"><div class="pc-name">${escapeHtml(p.name||'Пункт выдачи')}</div><div class="pc-code">${escapeHtml(op)} · ${escapeHtml(code)}</div></div>
-      <div class="pc-addr">${escapeHtml(p.address?.full_address||'Адрес не указан')}</div>
-      <div class="pc-hours">${escapeHtml(yandexHours(p))}</div>
-      <button class="pc-btn" type="button">ВЫБРАТЬ</button>
-    </div>`;
-  }).join(''):`<div class="pickup-card"><b>Пунктов не найдено</b><div class="pc-addr">Измените город или фильтр.</div></div>`;
-  $$('[data-ypick]').forEach(card=>card.onclick=()=>{
-    const p=YPOINTS.find(x=>x.id===card.dataset.ypick);
-    if(p) selectYandexPoint(p);
-  });
-  drawYandexMarkers(pts);
-}
-
-function drawYandexMarkers(points){
-  if(!YMAP||!window.ymaps)return;
-  YMARKERS.forEach(m=>{try{YMAP.geoObjects.remove(m)}catch(e){}});
-  YMARKERS=[];
-  points.forEach(p=>{
-    if(!p.position)return;
-    const m=new ymaps.Placemark([p.position.latitude,p.position.longitude],{
-      balloonContentHeader:p.name||'ПВЗ',
-      balloonContentBody:(p.address?.full_address||'')+'<br>'+yandexHours(p)
-    },{preset:'islands#yellowIcon'});
-    m.events.add('click',()=>selectYandexPoint(p));
-    YMAP.geoObjects.add(m); YMARKERS.push(m);
-  });
-}
-
-function selectYandexPoint(p){
-  PICKUP={service:'Яндекс Доставка',provider:'yandex',address:p.address?.full_address||p.name||'',code:p.operator_station_id||p.id||'',id:p.id,operatorId:p.operator_id||'',lat:p.position?.latitude||'',lng:p.position?.longitude||'',postalCode:p.address?.postal_code||''};
-  $('#fPickup').value=PICKUP.address+(PICKUP.code?' · '+PICKUP.code:'');
-  toast('ПВЗ выбран');
-  $('#pickupModal').classList.remove('open');
-}
-
-function escapeHtml(v){
-  return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-}
-
-async function openPickup(){
-  resetPickupModal();
-}
-
-async function initCdek(){
-  if(!DATA.settings.cdekApiKey){
-    $('#pickupCdekView').innerHTML='<div class="manual-card"><div class="manual-title">СДЭК</div><div class="manual-sub">Укажите CDEK / Yandex Maps API Key в настройках магазина.</div></div>';
-    return;
-  }
-  if(!window.CDEKWidget){
-    await new Promise((res,rej)=>{
-      const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/@cdek-it/widget@3';s.onload=res;s.onerror=()=>rej(new Error('Не загрузился виджет СДЭК'));document.head.appendChild(s);
-    });
-  }
-  if(CDEK_WIDGET?.destroy) try{CDEK_WIDGET.destroy()}catch(e){}
-  CDEK_WIDGET=new window.CDEKWidget({
-    from:DATA.settings.cdekFrom||$('#fCity').value||'Москва',
-    root:'cdekMap',
-    apiKey:DATA.settings.cdekApiKey,
-    canChoose:true,
-    servicePath:DATA.settings.cdekServicePath||'',
-    defaultLocation:$('#fCity').value||'Москва',
-    popup:false,
-    hideDeliveryOptions:{door:true,office:false},
-    goods:[{width:10,height:10,length:10,weight:500}],
-    onChoose(type,tariff,target){
-      const code=target?.code||target?.PVZ||target?.uuid||'';
-      const addr=target?.address||target?.name||target?.location?.address||'';
-      PICKUP={service:'СДЭК',provider:'cdek',address:addr,code,lat:target?.location?.latitude||'',lng:target?.location?.longitude||''};
-      $('#fPickup').value=addr+(code?' · '+code:'');
-      $('#pickupModal').classList.remove('open');
-    }
-  });
-}
-
-function confirmManualPickup(){
-  const service=$('.pickup-tabs button.active')?.dataset.picktab||'ozon';
-  const city=$('#manualCity').value.trim(), address=$('#manualAddress').value.trim(), postal=$('#manualIndex').value.trim(), code=$('#manualCode').value.trim();
-  if(!city||!address){toast('Укажите город и адрес ПВЗ');return;}
-  const name=service==='wb'?'Wildberries':'Ozon';
-  PICKUP={service:name,provider:service,address:address,city,postalCode:postal,code,lat:'',lng:'',manual:true};
-  $('#fPickup').value=`${city}, ${address}${postal?' · индекс '+postal:''}${code?' · код '+code:''}`;
-  $('#pickupModal').classList.remove('open');
-}
-
-$('#choosePickup').onclick=openPickup;
-$('#closeMap').onclick=()=>$('#pickupModal').classList.remove('open');
-$$('[data-picktab]').forEach(b=>b.onclick=()=>pickupTab(b.dataset.picktab));
-$('#manualConfirm').onclick=confirmManualPickup;
-$('#pickupCitySearch').onclick=()=>loadYandexPoints($('#pickupCity').value.trim()||$('#fCity').value.trim()||'Москва');
-$('#pickupCity').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();$('#pickupCitySearch').click();}};
-$('#pickupFilter').oninput=renderYandexPoints;
-$('#fDeliv').onchange=()=>{
-  PICKUP=null;$('#fPickup').value='';
-  const v=$('#fDeliv').value;
-  $('#pickupModeHint').textContent=v==='СДЭК'?'СДЭК — официальный виджет с выбором ПВЗ.':v==='Яндекс Доставка'?'Яндекс Доставка — реальные ПВЗ через API.':'Для '+v+' используйте ручной ввод адреса ПВЗ, индекса и кода.';
-};
-$('#receiptFile').onchange=async e=>{const f=e.target.files[0];if(!f)return;if(f.size>8*1024*1024){toast('Чек слишком большой (макс. 8 МБ)');return;}const reader=new FileReader();reader.onload=()=>{RECEIPT={name:f.name,mime:f.type,data:reader.result};$('#receiptName').textContent=f.name;};reader.readAsDataURL(f);};
+$('#receiptFile').onchange=async e=>{const f=e.target.files[0];if(!f)return;if(f.size>6*1024*1024){toast('Чек слишком большой (макс. 6 МБ)');return;}const reader=new FileReader();reader.onload=()=>{RECEIPT={name:f.name,mime:f.type,data:reader.result};$('#receiptName').textContent=f.name;};reader.readAsDataURL(f);};
+/* ---------- События ---------- */
+$('#fDeliv').onchange=()=>{ syncManualPickup(); updateDeliverySummary(); };
+$('#fCity').oninput=()=>{ syncManualPickup(); updateDeliverySummary(); };
+$('#fPickup').oninput=()=>{ syncManualPickup(); updateDeliverySummary(); };
 /* ---------- События ---------- */
 $('#q').oninput      = e => { state.q = e.target.value; render(); };
 $('#sort').onchange  = e => { state.sort = e.target.value; render(); };
 $('#onlyIn').onclick = () => { state.onlyIn = !state.onlyIn; $('#onlyIn').setAttribute('aria-pressed', state.onlyIn); buzz(); render(); };
 $('#cartBtn').onclick    = () => { buzz(); renderCart(); openSheet('cart'); };
 $('#favBtn').onclick     = () => { buzz(); renderFavs(); openSheet('favs'); };
-$('#toCheckout').onclick = () => { buzz(); closeSheet('cart'); openSheet('checkout'); };
+$('#toCheckout').onclick = () => { buzz(); renderCart(); closeSheet('cart'); openSheet('checkout'); updateDeliverySummary(); };
 $('#sendOrder').onclick  = sendOrder;
 $('#sendPaidOrder').onclick = sendPaidOrder;
 

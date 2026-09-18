@@ -30,16 +30,12 @@
         "active": true
       }
     ],
-    "orderWebhook": "https://relikt-orders.gleb-bugay.workers.dev/",
-    "orderSecret": "reliktshop0726",
-    "yandexApiKey": "b2edf830-90de-413b-94f6-b91458200986",
-    "cdekApiKey": "b2edf830-90de-413b-94f6-b91458200986",
-    "cdekServicePath": "",
-    "cdekFrom": "Краснодар",
-    "paymentBank": "ТБАНК ИВАН ИВАНОВ",
-    "paymentDetails": "88005553535",
-    "paymentNote": "После перевода пожалуйста прикрепите чек!",
-    "yandexDeliveryWorker": ""
+    "orderWebhook": "",
+    "orderSecret": "",
+    "paymentBank": "",
+    "paymentDetails": "",
+    "paymentNote": "После перевода прикрепите чек.",
+    "paymentRecipient": ""
   },
   "products": [
     {
