@@ -63,7 +63,10 @@
       "size": "L",
       "condition": "Винтаж, отличное",
       "desc": "Редкая винтажная футболка. Оригинал нулевых, принт целый, без затяжек.",
-      "images": [],
+      "images": [
+        "images/p2-mu6zy1hm-0.jpg",
+        "images/p2-mu6zy2wh-1.jpg"
+      ],
       "status": "in",
       "featured": false,
       "createdAt": "2026-09-09"
@@ -78,7 +81,12 @@
       "size": "S",
       "condition": "Новое",
       "desc": "Новое платье Juicy Couture. Есть ещё в голубом цвете — спрашивайте наличие.",
-      "images": [],
+      "images": [
+        "images/p3-mu6zyd0m-0.jpg",
+        "images/p3-mu6zye48-1.jpg",
+        "images/p3-mu6zyfe8-2.jpg",
+        "images/p3-mu6zygnw-3.jpg"
+      ],
       "status": "in",
       "featured": true,
       "createdAt": "2026-09-08"
