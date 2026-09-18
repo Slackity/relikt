@@ -30,8 +30,8 @@
         "active": true
       }
     ],
-    "orderWebhook": "",
-    "orderSecret": ""
+    "orderWebhook": "relikt-orders.gleb-bugay.workers.dev",
+    "orderSecret": "reliktshop0726"
   },
   "products": [
     {
