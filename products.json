@@ -43,7 +43,7 @@
       "title": "Худи Ed Hardy",
       "brand": "Ed Hardy",
       "price": 8500,
-      "oldPrice": null,
+      "oldPrice": 9500,
       "category": "Худи и зипки",
       "size": "M",
       "condition": "Новое",
@@ -56,7 +56,7 @@
       "status": "in",
       "featured": true,
       "createdAt": "2026-09-10",
-      "stock": 1
+      "stock": 4
     },
     {
       "id": "p2",
