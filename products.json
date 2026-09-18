@@ -30,8 +30,8 @@
         "active": true
       }
     ],
-    "orderWebhook": "https://relikt-orders.gleb-bugay.workers.dev/",
-    "orderSecret": "reliktshop0726",
+    "orderWebhook": "",
+    "orderSecret": "",
     "paymentBank": "",
     "paymentDetails": "",
     "paymentNote": "После перевода прикрепите чек.",
@@ -43,7 +43,7 @@
       "title": "Худи Ed Hardy",
       "brand": "Ed Hardy",
       "price": 8500,
-      "oldPrice": 9500,
+      "oldPrice": null,
       "category": "Худи и зипки",
       "size": "M",
       "condition": "Новое",
@@ -56,7 +56,7 @@
       "status": "in",
       "featured": true,
       "createdAt": "2026-09-10",
-      "stock": 4
+      "stock": 1
     },
     {
       "id": "p2",
