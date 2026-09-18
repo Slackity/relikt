@@ -1,0 +1,98 @@
+{
+  "settings": {
+    "shopName": "RELIKT",
+    "tagline": "Твой личный импорт",
+    "contact": "bloodydisaster",
+    "channel": "relikt_store",
+    "feedback": "relikt_feedback",
+    "currency": "₽",
+    "accent": "#A3121F",
+    "notice": "Каждая вещь в одном экземпляре. Бронь держим 24 часа.",
+    "categories": [
+      "Футболки",
+      "Худи и зипки",
+      "Платья",
+      "Сумки",
+      "Низ",
+      "Аксессуары"
+    ],
+    "promos": [
+      {
+        "code": "RELIKT10",
+        "type": "percent",
+        "value": 10,
+        "active": true
+      },
+      {
+        "code": "BOOST5",
+        "type": "percent",
+        "value": 5,
+        "active": true
+      }
+    ],
+    "orderWebhook": "",
+    "orderSecret": ""
+  },
+  "products": [
+    {
+      "id": "p1",
+      "title": "Худи Ed Hardy",
+      "brand": "Ed Hardy",
+      "price": 8500,
+      "oldPrice": null,
+      "category": "Худи и зипки",
+      "size": "M",
+      "condition": "Новое",
+      "desc": "Новое худи Ed Hardy с фирменной принт-графикой. Плотный хлопок, ровные швы, бирки на месте.",
+      "images": [],
+      "status": "in",
+      "featured": true,
+      "createdAt": "2026-09-10"
+    },
+    {
+      "id": "p2",
+      "title": "Футболка Christian Audigier by Ed Hardy",
+      "brand": "Christian Audigier",
+      "price": 2900,
+      "oldPrice": 3500,
+      "category": "Футболки",
+      "size": "L",
+      "condition": "Винтаж, отличное",
+      "desc": "Редкая винтажная футболка. Оригинал нулевых, принт целый, без затяжек.",
+      "images": [],
+      "status": "in",
+      "featured": false,
+      "createdAt": "2026-09-09"
+    },
+    {
+      "id": "p3",
+      "title": "Платье Juicy Couture",
+      "brand": "Juicy Couture",
+      "price": 6500,
+      "oldPrice": null,
+      "category": "Платья",
+      "size": "S",
+      "condition": "Новое",
+      "desc": "Новое платье Juicy Couture. Есть ещё в голубом цвете — спрашивайте наличие.",
+      "images": [],
+      "status": "in",
+      "featured": true,
+      "createdAt": "2026-09-08"
+    },
+    {
+      "id": "p4",
+      "title": "Зипка TCH",
+      "brand": "TCH",
+      "price": 3800,
+      "oldPrice": null,
+      "category": "Худи и зипки",
+      "size": "M",
+      "condition": "Отличное",
+      "desc": "Зипка TCH. Молния работает идеально, манжеты держат форму.",
+      "images": [],
+      "status": "sold",
+      "featured": false,
+      "createdAt": "2026-09-07"
+    }
+  ]
+}

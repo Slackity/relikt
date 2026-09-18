@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>RELIKT — панель</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Forum&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --accent:#A3121F;--void:#0A090B;--pitch:#100F12;--slab:#17161A;--slab-2:#1D1B21;
+  --bone:#E7E1D5;--ash:#8B867E;--dim:#5E5A55;--line:rgba(231,225,213,.13);
+  --ok:#79A86B;--warn:#9A7526;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;font-family:Inter,system-ui,sans-serif;background:var(--void);color:var(--bone);font-size:15px;line-height:1.55}
+body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.5;
+  background:radial-gradient(90% 50% at 50% -10%, rgba(163,18,31,.18), transparent 60%)}
+button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
+input,select,textarea{font:inherit;color:inherit}
+.hidden{display:none!important}
+.wrap{max-width:840px;margin:0 auto;padding:0 16px 150px;position:relative;z-index:1}
+
+.head{position:sticky;top:0;z-index:10;background:rgba(10,9,11,.93);backdrop-filter:blur(12px);border-bottom:1px solid var(--line);padding:14px 16px}
+.head .in{max-width:840px;margin:0 auto;display:flex;align-items:center;gap:12px}
+.logo{font-family:Forum,serif;letter-spacing:.3em;font-size:19px}
+.logo small{display:block;font-family:Inter;letter-spacing:.2em;font-size:10px;color:var(--dim);margin-top:3px}
+.dot{width:8px;height:8px;background:var(--dim);margin-left:auto;flex:none;transform:rotate(45deg)}
+.dot.on{background:var(--ok)}
+
+.tabs{display:flex;gap:7px;padding:16px 0 18px;overflow-x:auto;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{padding:9px 15px;background:transparent;border:1px solid var(--line);font-size:12px;letter-spacing:.1em;color:var(--ash);white-space:nowrap;
+  clip-path:polygon(7px 0,100% 0,100% calc(100% - 7px),calc(100% - 7px) 100%,0 100%,0 7px)}
+.tab[aria-pressed="true"]{background:var(--bone);color:var(--void);border-color:var(--bone);font-weight:600}
+
+.panel{background:var(--slab);border:1px solid var(--line);padding:18px;margin-bottom:14px;position:relative;
+  clip-path:polygon(14px 0,100% 0,100% calc(100% - 14px),calc(100% - 14px) 100%,0 100%,0 14px)}
+.panel h2{font-family:Forum,serif;font-size:17px;font-weight:400;margin:0 0 4px;letter-spacing:.12em}
+.panel p.sub{margin:0 0 16px;font-size:13px;color:var(--dim)}
+.panel code{background:var(--pitch);padding:2px 6px;font-size:12px;color:var(--ash)}
+
+.field{margin-bottom:13px}
+.field label{display:block;font-size:10px;color:var(--dim);letter-spacing:.18em;margin-bottom:6px}
+.field input,.field select,.field textarea{
+  width:100%;background:var(--pitch);border:1px solid var(--line);padding:12px;outline:0;font-size:15px;color:var(--bone);border-radius:0}
+.field input::placeholder,.field textarea::placeholder{color:var(--dim)}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--accent)}
+.field textarea{min-height:88px;resize:vertical}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.row3{display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:12px}
+@media(max-width:560px){.row,.row3{grid-template-columns:1fr}}
+
+.btn{padding:12px 18px;background:var(--accent);color:#fff;font-weight:600;font-size:12px;letter-spacing:.12em;display:inline-flex;align-items:center;gap:8px;
+  clip-path:polygon(11px 0,100% 0,100% calc(100% - 11px),calc(100% - 11px) 100%,0 100%,0 11px)}
+.btn.ghost{background:var(--slab-2);color:var(--bone);border:1px solid var(--line)}
+.btn.small{padding:9px 14px;font-size:11px}
+.btn[disabled]{opacity:.45;pointer-events:none}
+.actions{display:flex;flex-wrap:wrap;gap:10px}
+
+.item{display:flex;gap:13px;align-items:center;padding:12px;border:1px solid var(--line);margin-bottom:9px;background:var(--slab);cursor:pointer;
+  clip-path:polygon(11px 0,100% 0,100% calc(100% - 11px),calc(100% - 11px) 100%,0 100%,0 11px)}
+.item:hover{border-color:rgba(231,225,213,.3)}
+.item .ph{width:50px;height:64px;background:var(--pitch);flex:none;overflow:hidden;display:grid;place-items:center;font-family:Forum;color:var(--dim)}
+.item .ph img{width:100%;height:100%;object-fit:cover}
+.item .t{flex:1;min-width:0}
+.item .t b{display:block;font-weight:400;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.item .t span{font-size:12px;color:var(--dim)}
+.pill{font-size:9px;padding:4px 8px;letter-spacing:.12em;font-weight:600;color:var(--void);background:var(--ok)}
+.pill.sold{background:var(--dim);color:var(--bone)}
+.pill.hold{background:var(--warn)}
+
+/* промокоды */
+.promoitem{display:flex;align-items:center;gap:12px;padding:12px 14px;border:1px solid var(--line);margin-bottom:8px;background:var(--pitch)}
+.promoitem .code{font-family:Forum,serif;font-size:18px;letter-spacing:.16em;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis}
+.promoitem .val{color:var(--accent);font-weight:600;font-size:14px}
+.promoitem .off{color:var(--dim);font-size:11px;letter-spacing:.1em}
+.promoitem button{color:var(--dim);font-size:11px;letter-spacing:.1em;text-decoration:underline}
+
+.photos{display:flex;gap:9px;flex-wrap:wrap;margin-top:10px}
+.photo{width:74px;height:92px;overflow:hidden;position:relative;border:1px solid var(--line)}
+.photo img{width:100%;height:100%;object-fit:cover}
+.photo button{position:absolute;top:3px;right:3px;width:20px;height:20px;background:rgba(10,9,11,.8);color:var(--bone);font-size:13px;line-height:1;display:grid;place-items:center}
+.addphoto{width:74px;height:92px;border:1px dashed var(--dim);display:grid;place-items:center;color:var(--dim);font-size:10px;text-align:center;padding:6px;letter-spacing:.08em}
+
+.log{font-size:12px;color:var(--dim);background:var(--pitch);border:1px solid var(--line);padding:11px;margin-top:14px;white-space:pre-wrap;max-height:180px;overflow:auto}
+.dock{position:fixed;left:0;right:0;bottom:0;z-index:20;background:linear-gradient(180deg,rgba(10,9,11,.6),var(--void) 45%);border-top:1px solid var(--line);padding:12px 16px calc(12px + env(safe-area-inset-bottom,0px))}
+.dock .in{max-width:840px;margin:0 auto;display:flex;gap:12px;align-items:center}
+.dock .status{font-size:11px;color:var(--dim);flex:1;letter-spacing:.06em}
+.modal{position:fixed;inset:0;background:var(--void);z-index:40;display:none;overflow-y:auto}
+.modal.open{display:block}
+.mhead{position:sticky;top:0;background:rgba(10,9,11,.93);backdrop-filter:blur(12px);border-bottom:1px solid var(--line);padding:14px 16px;display:flex;align-items:center;gap:13px;z-index:2}
+.mhead b{font-family:Forum,serif;font-size:15px;font-weight:400;letter-spacing:.16em}
+.hint{font-size:12px;color:var(--dim);margin-top:6px}
+:focus-visible{outline:1px solid var(--accent);outline-offset:3px}
+</style>
+</head>
+<body>
+
+<div class="head">
+  <div class="in">
+    <div class="logo">RELIKT<small>ПАНЕЛЬ УПРАВЛЕНИЯ</small></div>
+    <span class="dot" id="dot" title="Связь с GitHub"></span>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="tabs">
+    <button class="tab" data-tab="goods" aria-pressed="true">ТОВАРЫ</button>
+    <button class="tab" data-tab="promo" aria-pressed="false">ПРОМОКОДЫ</button>
+    <button class="tab" data-tab="settings" aria-pressed="false">МАГАЗИН</button>
+    <button class="tab" data-tab="conn" aria-pressed="false">ПОДКЛЮЧЕНИЕ</button>
+  </div>
+
+  <!-- ТОВАРЫ -->
+  <section id="tab-goods">
+    <div class="actions" style="margin-bottom:16px">
+      <button class="btn" id="addNew">ДОБАВИТЬ ТОВАР</button>
+      <button class="btn ghost small" id="reload">ЗАГРУЗИТЬ ЗАНОВО</button>
+    </div>
+    <div id="list"></div>
+  </section>
+
+  <!-- ПРОМОКОДЫ -->
+  <section id="tab-promo" class="hidden">
+    <div class="panel">
+      <h2>Новый промокод</h2>
+      <p class="sub">Покупатель вводит код в корзине, скидка считается от суммы заказа.</p>
+      <div class="row3">
+        <div class="field"><label for="pCode">КОД</label><input id="pCode" placeholder="RELIKT10" style="text-transform:uppercase;letter-spacing:.1em"></div>
+        <div class="field"><label for="pType">ТИП СКИДКИ</label>
+          <select id="pType"><option value="percent">Процент</option><option value="amount">Фиксированная сумма</option></select>
+        </div>
+        <div class="field"><label for="pVal">ЗНАЧЕНИЕ</label><input id="pVal" type="number" inputmode="numeric" placeholder="10"></div>
+      </div>
+      <div class="actions"><button class="btn" id="pAdd">СОЗДАТЬ КОД</button></div>
+    </div>
+    <div class="panel">
+      <h2>Действующие коды</h2>
+      <p class="sub">Выключенный код перестаёт работать, но остаётся в списке.</p>
+      <div id="promoList"></div>
+    </div>
+  </section>
+
+  <!-- МАГАЗИН -->
+  <section id="tab-settings" class="hidden">
+    <div class="panel">
+      <h2>Витрина</h2>
+      <p class="sub">Это видят покупатели на главном экране.</p>
+      <div class="row">
+        <div class="field"><label for="sName">НАЗВАНИЕ</label><input id="sName"></div>
+        <div class="field"><label for="sTag">ПОДПИСЬ</label><input id="sTag"></div>
+      </div>
+      <div class="field"><label for="sNotice">ПЛАШКА-ОБЪЯВЛЕНИЕ</label><input id="sNotice" placeholder="Пусто — не показывать"></div>
+      <div class="row">
+        <div class="field"><label for="sAccent">ФИРМЕННЫЙ ЦВЕТ</label><input id="sAccent" type="color" style="height:48px;padding:4px"></div>
+        <div class="field"><label for="sCur">ВАЛЮТА</label><input id="sCur"></div>
+      </div>
+    </div>
+    <div class="panel">
+      <h2>Контакты</h2>
+      <p class="sub">Без символа @ — только имя пользователя.</p>
+      <div class="row">
+        <div class="field"><label for="sContact">МЕНЕДЖЕР</label><input id="sContact"></div>
+        <div class="field"><label for="sChannel">КАНАЛ</label><input id="sChannel"></div>
+      </div>
+      <div class="field"><label for="sFeedback">ОТЗЫВЫ</label><input id="sFeedback"></div>
+    </div>
+    <div class="panel">
+      <h2>Категории</h2>
+      <p class="sub">По одной в строке, в том же порядке появятся в шапке каталога.</p>
+      <div class="field"><textarea id="sCats"></textarea></div>
+    </div>
+    <div class="panel">
+      <h2>Приём заказов</h2>
+      <p class="sub">Если заполнить оба поля — кнопка «Отправить заказ» будет присылать заказ вам в Telegram сама, без действий покупателя. Пусто — сработает запасной способ: покупателю откроется чат с менеджером с готовым текстом. Как получить эти значения — см. README, раздел «Автоматическая отправка заказов».</p>
+      <div class="field"><label for="sWebhook">АДРЕС ПРИЁМНИКА (URL WORKER'А)</label><input id="sWebhook" placeholder="https://relikt-orders.ваш-логин.workers.dev"></div>
+      <div class="field"><label for="sSecret">СЕКРЕТ</label><input id="sSecret" placeholder="та же строка, что в APP_SECRET у воркера"></div>
+    </div>
+  </section>
+
+  <!-- ПОДКЛЮЧЕНИЕ -->
+  <section id="tab-conn" class="hidden">
+    <div class="panel">
+      <h2>Связь с GitHub</h2>
+      <p class="sub">Нужна, чтобы кнопка «Опубликовать» обновляла сайт. Токен хранится только в этом браузере.</p>
+      <div class="row">
+        <div class="field"><label for="gOwner">ВЛАДЕЛЕЦ РЕПОЗИТОРИЯ</label><input id="gOwner" placeholder="relikt-store"></div>
+        <div class="field"><label for="gRepo">РЕПОЗИТОРИЙ</label><input id="gRepo" placeholder="shop"></div>
+      </div>
+      <div class="row">
+        <div class="field"><label for="gBranch">ВЕТКА</label><input id="gBranch" value="main"></div>
+        <div class="field"><label for="gToken">ТОКЕН ДОСТУПА</label><input id="gToken" type="password" placeholder="github_pat_..."></div>
+      </div>
+      <div class="actions">
+        <button class="btn" id="saveConn">СОХРАНИТЬ И ПРОВЕРИТЬ</button>
+        <button class="btn ghost small" id="forget">ЗАБЫТЬ ТОКЕН</button>
+      </div>
+      <div class="log" id="log">Подключение не настроено.</div>
+    </div>
+    <div class="panel">
+      <h2>Резервная копия</h2>
+      <p class="sub">Если не подключать GitHub — скачайте файл и залейте в репозиторий вручную.</p>
+      <div class="actions">
+        <button class="btn ghost" id="download">СКАЧАТЬ PRODUCTS.JSON</button>
+        <label class="btn ghost" style="cursor:pointer">ЗАГРУЗИТЬ ИЗ ФАЙЛА<input type="file" id="importFile" accept="application/json" class="hidden"></label>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- РЕДАКТОР ТОВАРА -->
+<div class="modal" id="editor">
+  <div class="mhead">
+    <button class="btn ghost small" id="closeEd">НАЗАД</button>
+    <b id="edTitle">ТОВАР</b>
+  </div>
+  <div class="wrap" style="padding-top:16px">
+    <div class="panel">
+      <h2>Фотографии</h2>
+      <p class="sub">Первая — обложка. Картинки сжимаются автоматически.</p>
+      <div class="photos" id="edPhotos"></div>
+      <label class="btn ghost small" style="margin-top:14px;cursor:pointer;display:inline-flex">ВЫБРАТЬ ФОТО<input type="file" id="edFile" accept="image/*" multiple class="hidden"></label>
+      <div class="hint" id="edUpStatus"></div>
+    </div>
+    <div class="panel">
+      <h2>Описание</h2>
+      <div class="field"><label for="edName">НАЗВАНИЕ *</label><input id="edName" placeholder="Худи Ed Hardy"></div>
+      <div class="row">
+        <div class="field"><label for="edBrand">БРЕНД</label><input id="edBrand" placeholder="Ed Hardy"></div>
+        <div class="field"><label for="edCat">КАТЕГОРИЯ</label><select id="edCat"></select></div>
+      </div>
+      <div class="row">
+        <div class="field"><label for="edPrice">ЦЕНА *</label><input id="edPrice" type="number" inputmode="numeric" placeholder="8500"></div>
+        <div class="field"><label for="edOld">СТАРАЯ ЦЕНА</label><input id="edOld" type="number" inputmode="numeric"></div>
+      </div>
+      <div class="row">
+        <div class="field"><label for="edSize">РАЗМЕР</label><input id="edSize" placeholder="M"></div>
+        <div class="field"><label for="edCond">СОСТОЯНИЕ</label><input id="edCond" placeholder="Новое / Винтаж"></div>
+      </div>
+      <div class="field"><label for="edDesc">ТЕКСТ ОПИСАНИЯ</label><textarea id="edDesc" placeholder="Замеры, состояние, детали"></textarea></div>
+      <div class="row">
+        <div class="field"><label for="edStatus">НАЛИЧИЕ</label>
+          <select id="edStatus"><option value="in">В наличии</option><option value="hold">Бронь</option><option value="sold">Продано</option></select>
+        </div>
+        <div class="field"><label for="edFeat">ПОКАЗЫВАТЬ ПЕРВЫМ</label>
+          <select id="edFeat"><option value="no">Нет</option><option value="yes">Да, отметить «Хит»</option></select>
+        </div>
+      </div>
+    </div>
+    <div class="actions">
+      <button class="btn" id="edSave">СОХРАНИТЬ ТОВАР</button>
+      <button class="btn ghost" id="edDelete">УДАЛИТЬ</button>
+    </div>
+  </div>
+</div>
+
+<div class="dock">
+  <div class="in">
+    <span class="status" id="status">ИЗМЕНЕНИЯ НЕ ОПУБЛИКОВАНЫ</span>
+    <button class="btn" id="publish">ОПУБЛИКОВАТЬ</button>
+  </div>
+</div>
+
+<script>
+/* ========================================================================
+   RELIKT — админ-панель. Пишет products.json прямо в репозиторий GitHub.
+   ===================================================================== */
+
+const $  = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+
+let DATA = { settings: {}, products: [] };
+let SHA = null, DIRTY = false, EDIT = null;
+const CONN = JSON.parse(localStorage.getItem('relikt_conn') || '{}');
+
+const log = m => { const el = $('#log'); el.textContent = new Date().toLocaleTimeString('ru-RU') + '  ' + m + '\n' + el.textContent; };
+const setStatus = t => $('#status').textContent = t;
+const markDirty = () => { DIRTY = true; setStatus('ЕСТЬ НЕОПУБЛИКОВАННЫЕ ИЗМЕНЕНИЯ'); };
+
+/* ---------- GitHub ---------- */
+const api = p => `https://api.github.com/repos/${CONN.owner}/${CONN.repo}/contents/${p}`;
+async function gh(url, opts = {}) {
+  const res = await fetch(url, { ...opts, headers: { Authorization: 'Bearer ' + CONN.token, Accept: 'application/vnd.github+json', ...(opts.headers || {}) } });
+  if (!res.ok) throw new Error(res.status + ' ' + (await res.text()).slice(0, 200));
+  return res.json();
+}
+const b64encode = s => btoa(unescape(encodeURIComponent(s)));
+const b64decode = s => decodeURIComponent(escape(atob(s.replace(/\n/g, ''))));
+
+async function pullFromGitHub() {
+  const r = await gh(api('products.json') + '?ref=' + (CONN.branch || 'main'));
+  SHA = r.sha; DATA = JSON.parse(b64decode(r.content)); DIRTY = false;
+  renderAll(); setStatus('ЗАГРУЖЕНО С GITHUB');
+  log('Каталог загружен: ' + (DATA.products || []).length + ' товаров.');
+}
+async function pushToGitHub() {
+  const body = { message: 'Обновление каталога ' + new Date().toLocaleString('ru-RU'), content: b64encode(JSON.stringify(DATA, null, 2)), branch: CONN.branch || 'main' };
+  if (SHA) body.sha = SHA;
+  const r = await gh(api('products.json'), { method: 'PUT', body: JSON.stringify(body) });
+  SHA = r.content.sha; DIRTY = false;
+}
+async function uploadImage(dataUrl, name) {
+  const path = 'images/' + name;
+  await gh(api(path), { method: 'PUT', body: JSON.stringify({ message: 'Фото ' + name, content: dataUrl.split(',')[1], branch: CONN.branch || 'main' }) });
+  return path;
+}
+async function pullLocal() {
+  DATA = await (await fetch('products.json?v=' + Date.now())).json();
+  renderAll(); log('Каталог прочитан прямо с сайта (только просмотр).');
+}
+
+/* ---------- Товары ---------- */
+function renderList() {
+  const list = DATA.products || [];
+  $('#list').innerHTML = list.length ? list.map(p => `
+    <div class="item" data-id="${p.id}">
+      <div class="ph">${p.images?.[0] ? `<img src="${p.images[0]}" alt="">` : (p.brand || 'R')[0]}</div>
+      <div class="t"><b>${p.title}</b>
+        <span>${[p.brand, p.size && 'р. ' + p.size, new Intl.NumberFormat('ru-RU').format(p.price) + ' ₽'].filter(Boolean).join(' · ')}</span>
+      </div>
+      <span class="pill ${p.status}">${p.status === 'in' ? 'В НАЛИЧИИ' : p.status === 'hold' ? 'БРОНЬ' : 'ПРОДАНО'}</span>
+    </div>`).join('')
+    : `<div class="panel" style="text-align:center;color:var(--dim)">Товаров пока нет. Нажмите «Добавить товар».</div>`;
+  $$('.item').forEach(el => el.onclick = () => openEditor(DATA.products.find(p => p.id === el.dataset.id)));
+}
+
+/* ---------- Промокоды ---------- */
+function renderPromos() {
+  const list = DATA.settings.promos || [];
+  $('#promoList').innerHTML = list.length ? list.map((p, i) => `
+    <div class="promoitem">
+      <span class="code">${p.code}</span>
+      <span class="val">${p.type === 'amount' ? new Intl.NumberFormat('ru-RU').format(p.value) + ' ₽' : p.value + '%'}</span>
+      ${p.active === false ? '<span class="off">ВЫКЛЮЧЕН</span>' : ''}
+      <button data-toggle="${i}">${p.active === false ? 'включить' : 'выключить'}</button>
+      <button data-rmpromo="${i}">удалить</button>
+    </div>`).join('')
+    : `<div style="color:var(--dim);font-size:13px">Кодов пока нет.</div>`;
+
+  $$('[data-rmpromo]').forEach(b => b.onclick = () => {
+    const i = +b.dataset.rmpromo;
+    if (!confirm('Удалить промокод ' + DATA.settings.promos[i].code + '?')) return;
+    DATA.settings.promos.splice(i, 1); renderPromos(); markDirty();
+  });
+  $$('[data-toggle]').forEach(b => b.onclick = () => {
+    const p = DATA.settings.promos[+b.dataset.toggle];
+    p.active = p.active === false; renderPromos(); markDirty();
+  });
+}
+
+$('#pAdd').onclick = () => {
+  const code = $('#pCode').value.trim().toUpperCase();
+  const value = parseInt($('#pVal').value, 10);
+  const type = $('#pType').value;
+  if (!code)  { alert('Впишите код'); return; }
+  if (!value) { alert('Впишите значение скидки'); return; }
+  if (type === 'percent' && value > 95) { alert('Процент слишком большой'); return; }
+  DATA.settings.promos = DATA.settings.promos || [];
+  if (DATA.settings.promos.some(p => p.code.toUpperCase() === code)) { alert('Такой код уже есть'); return; }
+  DATA.settings.promos.unshift({ code, type, value, active: true });
+  $('#pCode').value = ''; $('#pVal').value = '';
+  renderPromos(); markDirty();
+};
+
+/* ---------- Настройки ---------- */
+function renderSettings() {
+  const s = DATA.settings || {};
+  $('#sName').value = s.shopName || ''; $('#sTag').value = s.tagline || '';
+  $('#sNotice').value = s.notice || ''; $('#sAccent').value = s.accent || '#A3121F';
+  $('#sCur').value = s.currency || '₽';
+  $('#sContact').value = s.contact || ''; $('#sChannel').value = s.channel || ''; $('#sFeedback').value = s.feedback || '';
+  $('#sCats').value = (s.categories || []).join('\n');
+  $('#sWebhook').value = s.orderWebhook || ''; $('#sSecret').value = s.orderSecret || '';
+}
+function collectSettings() {
+  DATA.settings = { ...DATA.settings,
+    shopName: $('#sName').value.trim(), tagline: $('#sTag').value.trim(),
+    notice: $('#sNotice').value.trim(), accent: $('#sAccent').value,
+    currency: $('#sCur').value.trim() || '₽',
+    contact: $('#sContact').value.trim().replace('@', ''),
+    channel: $('#sChannel').value.trim().replace('@', ''),
+    feedback: $('#sFeedback').value.trim().replace('@', ''),
+    categories: $('#sCats').value.split('\n').map(x => x.trim()).filter(Boolean),
+    orderWebhook: $('#sWebhook').value.trim(),
+    orderSecret: $('#sSecret').value.trim()
+  };
+}
+$$('#tab-settings input, #tab-settings textarea').forEach(el => el.oninput = () => { collectSettings(); markDirty(); });
+
+function renderAll() { renderList(); renderPromos(); renderSettings(); }
+
+/* ---------- Редактор товара ---------- */
+function openEditor(p) {
+  EDIT = p ? JSON.parse(JSON.stringify(p)) : {
+    id: 'p' + Date.now().toString(36), title: '', brand: '', price: 0, oldPrice: null,
+    category: (DATA.settings.categories || [])[0] || '', size: '', condition: '', desc: '',
+    images: [], status: 'in', featured: false, createdAt: new Date().toISOString().slice(0, 10)
+  };
+  $('#edTitle').textContent = p ? 'РЕДАКТИРОВАНИЕ' : 'НОВЫЙ ТОВАР';
+  $('#edDelete').classList.toggle('hidden', !p);
+  $('#edCat').innerHTML = (DATA.settings.categories || []).map(c => `<option ${c === EDIT.category ? 'selected' : ''}>${c}</option>`).join('');
+  $('#edName').value = EDIT.title; $('#edBrand').value = EDIT.brand || '';
+  $('#edPrice').value = EDIT.price || ''; $('#edOld').value = EDIT.oldPrice || '';
+  $('#edSize').value = EDIT.size || ''; $('#edCond').value = EDIT.condition || '';
+  $('#edDesc').value = EDIT.desc || ''; $('#edStatus').value = EDIT.status || 'in';
+  $('#edFeat').value = EDIT.featured ? 'yes' : 'no'; $('#edUpStatus').textContent = '';
+  renderPhotos();
+  $('#editor').classList.add('open'); document.body.style.overflow = 'hidden';
+}
+function closeEditor() { $('#editor').classList.remove('open'); document.body.style.overflow = ''; EDIT = null; }
+
+function renderPhotos() {
+  $('#edPhotos').innerHTML = (EDIT.images || []).map((src, i) =>
+    `<div class="photo"><img src="${src}" alt=""><button data-rm="${i}" title="Убрать">×</button></div>`).join('')
+    || `<div class="addphoto">ПОКА НЕТ ФОТО</div>`;
+  $$('[data-rm]').forEach(b => b.onclick = () => { EDIT.images.splice(+b.dataset.rm, 1); renderPhotos(); });
+}
+
+function compress(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const img = new Image();
+      img.onload = () => {
+        const max = 1400; let { width: w, height: h } = img;
+        if (Math.max(w, h) > max) { const k = max / Math.max(w, h); w = Math.round(w * k); h = Math.round(h * k); }
+        const c = document.createElement('canvas'); c.width = w; c.height = h;
+        c.getContext('2d').drawImage(img, 0, 0, w, h);
+        resolve(c.toDataURL('image/jpeg', 0.82));
+      };
+      img.onerror = reject; img.src = reader.result;
+    };
+    reader.onerror = reject; reader.readAsDataURL(file);
+  });
+}
+
+$('#edFile').onchange = async e => {
+  const files = [...e.target.files]; e.target.value = '';
+  if (!files.length) return;
+  if (!CONN.token) { $('#edUpStatus').textContent = 'Сначала подключите GitHub на вкладке «Подключение» — фото некуда положить.'; return; }
+  for (const [i, f] of files.entries()) {
+    $('#edUpStatus').textContent = `Загружаем фото ${i + 1} из ${files.length}…`;
+    try {
+      const dataUrl = await compress(f);
+      const path = await uploadImage(dataUrl, EDIT.id + '-' + Date.now().toString(36) + '-' + i + '.jpg');
+      EDIT.images = EDIT.images || []; EDIT.images.push(path); renderPhotos();
+    } catch (err) {
+      $('#edUpStatus').textContent = 'Фото не загрузилось: ' + err.message;
+      log('Ошибка загрузки фото: ' + err.message); return;
+    }
+  }
+  $('#edUpStatus').textContent = 'Готово. На витрине появятся после публикации.';
+};
+
+$('#edSave').onclick = () => {
+  const title = $('#edName').value.trim(), price = parseInt($('#edPrice').value, 10);
+  if (!title) { alert('Впишите название товара'); return; }
+  if (!price) { alert('Впишите цену'); return; }
+  Object.assign(EDIT, { title, price,
+    brand: $('#edBrand').value.trim(), oldPrice: parseInt($('#edOld').value, 10) || null,
+    category: $('#edCat').value, size: $('#edSize').value.trim(), condition: $('#edCond').value.trim(),
+    desc: $('#edDesc').value.trim(), status: $('#edStatus').value, featured: $('#edFeat').value === 'yes' });
+  const i = DATA.products.findIndex(p => p.id === EDIT.id);
+  i > -1 ? DATA.products[i] = EDIT : DATA.products.unshift(EDIT);
+  closeEditor(); renderList(); markDirty();
+};
+$('#edDelete').onclick = () => {
+  if (!confirm('Удалить товар «' + EDIT.title + '»? Фотографии останутся в репозитории.')) return;
+  DATA.products = DATA.products.filter(p => p.id !== EDIT.id);
+  closeEditor(); renderList(); markDirty();
+};
+$('#closeEd').onclick = closeEditor;
+$('#addNew').onclick = () => openEditor(null);
+
+/* ---------- Вкладки ---------- */
+$$('.tab').forEach(t => t.onclick = () => {
+  $$('.tab').forEach(x => x.setAttribute('aria-pressed', x === t));
+  $$('#tab-goods,#tab-promo,#tab-settings,#tab-conn').forEach(s => s.classList.add('hidden'));
+  $('#tab-' + t.dataset.tab).classList.remove('hidden');
+});
+
+/* ---------- Подключение ---------- */
+$('#gOwner').value = CONN.owner || ''; $('#gRepo').value = CONN.repo || '';
+$('#gBranch').value = CONN.branch || 'main'; $('#gToken').value = CONN.token || '';
+
+$('#saveConn').onclick = async () => {
+  CONN.owner = $('#gOwner').value.trim(); CONN.repo = $('#gRepo').value.trim();
+  CONN.branch = $('#gBranch').value.trim() || 'main'; CONN.token = $('#gToken').value.trim();
+  localStorage.setItem('relikt_conn', JSON.stringify(CONN));
+  try { await pullFromGitHub(); $('#dot').classList.add('on'); log('Связь установлена. Можно публиковать.'); }
+  catch (e) { $('#dot').classList.remove('on'); log('Не получилось: ' + e.message); alert('Не удалось подключиться. Проверьте владельца, репозиторий и токен.'); }
+};
+$('#forget').onclick = () => { localStorage.removeItem('relikt_conn'); location.reload(); };
+$('#reload').onclick = async () => {
+  if (DIRTY && !confirm('Несохранённые изменения пропадут. Продолжить?')) return;
+  try { CONN.token ? await pullFromGitHub() : await pullLocal(); } catch (e) { log('Ошибка: ' + e.message); }
+};
+
+/* ---------- Публикация ---------- */
+$('#publish').onclick = async () => {
+  collectSettings();
+  if (!CONN.token) { alert('Подключите GitHub на вкладке «Подключение» либо скачайте products.json и залейте вручную.'); return; }
+  const btn = $('#publish'); btn.disabled = true; setStatus('ПУБЛИКУЕМ…');
+  try { await pushToGitHub(); setStatus('ОПУБЛИКОВАНО · ВИТРИНА ОБНОВИТСЯ ЗА 1–2 МИН'); log('Каталог опубликован.'); }
+  catch (e) { setStatus('НЕ ОПУБЛИКОВАЛОСЬ'); log('Ошибка публикации: ' + e.message); alert('Публикация не прошла: ' + e.message); }
+  btn.disabled = false;
+};
+
+/* ---------- Файлы ---------- */
+$('#download').onclick = () => {
+  collectSettings();
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([JSON.stringify(DATA, null, 2)], { type: 'application/json' }));
+  a.download = 'products.json'; a.click(); URL.revokeObjectURL(a.href);
+};
+$('#importFile').onchange = e => {
+  const f = e.target.files[0]; if (!f) return;
+  const r = new FileReader();
+  r.onload = () => { try { DATA = JSON.parse(r.result); renderAll(); markDirty(); log('Файл загружен.'); } catch (err) { alert('Это не похоже на products.json'); } };
+  r.readAsText(f);
+};
+window.onbeforeunload = e => { if (DIRTY) { e.preventDefault(); e.returnValue = ''; } };
+
+/* ---------- Старт ---------- */
+(async () => {
+  if (CONN.token && CONN.owner && CONN.repo) {
+    try { await pullFromGitHub(); $('#dot').classList.add('on'); }
+    catch (e) { log('Связь с GitHub не установлена: ' + e.message); await pullLocal(); }
+  } else { await pullLocal(); setStatus('GITHUB НЕ ПОДКЛЮЧЁН'); }
+})();
+</script>
+</body>
+</html>

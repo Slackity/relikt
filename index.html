@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>RELIKT</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Forum&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --accent:#A3121F;
+  --void:#0A090B;
+  --pitch:#100F12;
+  --slab:#17161A;
+  --slab-2:#1D1B21;
+  --bone:#E7E1D5;
+  --ash:#8B867E;
+  --dim:#5E5A55;
+  --line:rgba(231,225,213,.13);
+  --line-2:rgba(231,225,213,.06);
+  --safe-b:env(safe-area-inset-bottom,0px);
+  --pad:16px;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{
+  font-family:Inter,-apple-system,system-ui,sans-serif;
+  background:var(--void);color:var(--bone);
+  font-size:15px;line-height:1.55;overscroll-behavior-y:none;
+}
+/* фоновая неотрайбл-фактура */
+body::before{
+  content:"";position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.5;
+  background:
+    radial-gradient(90% 55% at 50% -12%, rgba(163,18,31,.22), transparent 62%),
+    radial-gradient(70% 45% at 50% 108%, rgba(231,225,213,.05), transparent 60%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'%3E%3Cg fill='none' stroke='%23E7E1D5' stroke-opacity='.05' stroke-width='1'%3E%3Cpath d='M60 0c0 22-14 32-14 46s14 20 14 34-14 20-14 40'/%3E%3Cpath d='M0 60c22 0 32-14 46-14s20 14 34 14 20-14 40-14'/%3E%3C/g%3E%3C/svg%3E");
+}
+#app{position:relative;z-index:1}
+button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
+input,select,textarea{font:inherit;color:inherit}
+a{color:inherit}
+.hidden{display:none!important}
+::selection{background:var(--accent);color:#fff}
+
+/* ---------- ШАПКА ---------- */
+.top{
+  padding:calc(16px + env(safe-area-inset-top,0px)) var(--pad) 0;
+  background:linear-gradient(180deg,rgba(163,18,31,.14),transparent 78%);
+}
+.brandrow{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.wordmark{
+  font-family:Forum,serif;font-weight:400;font-size:36px;letter-spacing:.3em;
+  line-height:1;margin:0 0 0 .3em;color:var(--bone);
+  text-shadow:0 0 26px rgba(163,18,31,.55);
+}
+.tagline{
+  font-size:11px;color:var(--ash);letter-spacing:.34em;margin-top:9px;
+  display:flex;align-items:center;gap:9px;
+}
+.tagline::before,.tagline::after{content:"";height:1px;flex:1;max-width:34px;background:linear-gradient(90deg,transparent,var(--line))}
+.tagline::after{background:linear-gradient(270deg,transparent,var(--line))}
+.iconbtn{
+  width:42px;height:42px;display:grid;place-items:center;position:relative;flex:none;
+  background:var(--slab);border:1px solid var(--line);
+  clip-path:polygon(9px 0,100% 0,100% calc(100% - 9px),calc(100% - 9px) 100%,0 100%,0 9px);
+}
+.iconbtn svg{width:19px;height:19px}
+.badge{
+  position:absolute;top:-4px;right:-4px;min-width:19px;height:19px;padding:0 5px;
+  background:var(--accent);color:#fff;font-size:11px;font-weight:600;
+  display:grid;place-items:center;
+  clip-path:polygon(4px 0,100% 0,100% calc(100% - 4px),calc(100% - 4px) 100%,0 100%,0 4px);
+}
+
+/* орнамент */
+.orn{display:block;width:100%;max-width:230px;margin:16px auto 0;color:var(--accent);opacity:.85}
+.orn.small{max-width:120px;margin:12px auto}
+
+.search{
+  display:flex;align-items:center;gap:10px;margin:16px 0 0;
+  background:var(--pitch);border:1px solid var(--line);height:46px;padding:0 14px;
+  clip-path:polygon(11px 0,100% 0,100% calc(100% - 11px),calc(100% - 11px) 100%,0 100%,0 11px);
+}
+.search input{border:0;outline:0;background:none;width:100%;font-size:15px;color:var(--bone)}
+.search input::placeholder{color:var(--dim)}
+.search svg{width:17px;height:17px;color:var(--dim);flex:none}
+
+/* ---------- ФИЛЬТРЫ ---------- */
+.chips{display:flex;gap:8px;overflow-x:auto;padding:16px var(--pad) 0;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{
+  flex:none;padding:9px 15px;background:transparent;border:1px solid var(--line);
+  font-size:12px;letter-spacing:.09em;white-space:nowrap;color:var(--ash);transition:.16s;
+  clip-path:polygon(7px 0,100% 0,100% calc(100% - 7px),calc(100% - 7px) 100%,0 100%,0 7px);
+}
+.chip[aria-pressed="true"]{background:var(--bone);color:var(--void);border-color:var(--bone);font-weight:600}
+.toolbar{display:flex;align-items:center;gap:12px;padding:14px var(--pad) 0;font-size:12px;color:var(--ash);letter-spacing:.05em}
+.toolbar select{
+  margin-left:auto;background:var(--pitch);border:1px solid var(--line);
+  padding:8px 11px;font-size:12px;outline:0;color:var(--bone);border-radius:0;
+}
+.switch{display:flex;align-items:center;gap:8px;cursor:pointer;user-select:none;color:var(--ash)}
+.switch i{width:32px;height:18px;background:var(--slab-2);border:1px solid var(--line);position:relative;transition:.18s;flex:none}
+.switch i::after{content:"";position:absolute;top:2px;left:2px;width:12px;height:12px;background:var(--dim);transition:.18s}
+.switch[aria-pressed="true"] i{border-color:var(--accent)}
+.switch[aria-pressed="true"] i::after{transform:translateX(14px);background:var(--accent)}
+
+.notice{
+  margin:16px var(--pad) 0;padding:13px 15px;font-size:13px;color:var(--ash);
+  background:linear-gradient(90deg,rgba(163,18,31,.12),transparent);
+  border-left:2px solid var(--accent);
+}
+.count{padding:18px var(--pad) 12px;font-size:11px;letter-spacing:.24em;color:var(--dim)}
+
+/* ---------- СЕТКА ---------- */
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:11px;padding:0 var(--pad) 130px}
+@media(min-width:620px){.grid{grid-template-columns:repeat(3,1fr);gap:14px}}
+@media(min-width:900px){.grid{grid-template-columns:repeat(4,1fr)}}
+.card{
+  background:var(--slab);border:1px solid var(--line);
+  display:flex;flex-direction:column;text-align:left;position:relative;overflow:hidden;
+  clip-path:polygon(14px 0,100% 0,100% calc(100% - 14px),calc(100% - 14px) 100%,0 100%,0 14px);
+  transition:border-color .18s;
+}
+.card:hover{border-color:rgba(231,225,213,.3)}
+.card:active{transform:scale(.99)}
+/* угловые засечки */
+.card::before,.card::after{
+  content:"";position:absolute;width:13px;height:13px;pointer-events:none;z-index:3;
+  border-color:var(--accent);opacity:.75;
+}
+.card::before{top:5px;right:5px;border-top:1px solid;border-right:1px solid}
+.card::after{bottom:5px;left:5px;border-bottom:1px solid;border-left:1px solid}
+.thumb{position:relative;aspect-ratio:3/4;background:linear-gradient(165deg,#1E1C21,#0D0C0F);overflow:hidden}
+.thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.thumb::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 55%,rgba(10,9,11,.82))}
+.mono{
+  position:absolute;inset:0;display:grid;place-items:center;
+  font-family:Forum,serif;font-size:46px;letter-spacing:.14em;color:rgba(231,225,213,.16);
+}
+.tag{
+  position:absolute;top:0;left:0;padding:5px 11px 5px 9px;z-index:2;
+  font-size:9px;font-weight:600;letter-spacing:.14em;background:var(--bone);color:var(--void);
+  clip-path:polygon(0 0,100% 0,calc(100% - 8px) 100%,0 100%);
+}
+.tag.hit{background:var(--accent);color:#fff}
+.tag.hold{background:#9A7526;color:#0A090B}
+.tag.sold{background:rgba(231,225,213,.35);color:var(--void)}
+.fav{position:absolute;top:6px;right:6px;width:32px;height:32px;display:grid;place-items:center;z-index:3;color:var(--bone)}
+.fav svg{width:17px;height:17px;filter:drop-shadow(0 1px 3px rgba(0,0,0,.8))}
+.fav[aria-pressed="true"] svg{fill:var(--accent);color:var(--accent)}
+.sizechip{
+  position:absolute;left:8px;bottom:8px;z-index:2;font-size:10px;letter-spacing:.1em;
+  padding:3px 8px;border:1px solid rgba(231,225,213,.3);color:var(--bone);backdrop-filter:blur(3px);
+}
+.cardbody{padding:11px 12px 13px;display:flex;flex-direction:column;gap:3px;flex:1}
+.brand{font-size:9px;letter-spacing:.2em;color:var(--accent);font-weight:600}
+.name{font-size:13px;line-height:1.35;color:var(--bone)}
+.meta{font-size:11px;color:var(--dim)}
+.pricerow{display:flex;align-items:baseline;gap:7px;margin-top:9px;padding-top:9px;border-top:1px solid var(--line-2)}
+.price{font-family:Forum,serif;font-size:19px;letter-spacing:.03em}
+.old{font-size:11px;color:var(--dim);text-decoration:line-through}
+.card.sold .thumb img,.card.sold .mono{filter:grayscale(1) brightness(.55)}
+.card.sold .price{color:var(--dim)}
+
+.empty{grid-column:1/-1;text-align:center;padding:64px 20px;color:var(--dim);font-size:13px}
+.empty b{display:block;font-family:Forum,serif;font-size:20px;color:var(--bone);margin-bottom:8px;letter-spacing:.08em}
+
+/* ---------- НИЖНЯЯ ПАНЕЛЬ ---------- */
+.dock{
+  position:fixed;left:0;right:0;bottom:0;z-index:20;
+  padding:12px var(--pad) calc(12px + var(--safe-b));
+  background:linear-gradient(180deg,rgba(10,9,11,.6),var(--void) 45%);
+  border-top:1px solid var(--line);
+}
+.bigbtn{
+  width:100%;height:52px;background:var(--accent);color:#fff;
+  font-weight:600;font-size:14px;letter-spacing:.12em;
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  clip-path:polygon(13px 0,100% 0,100% calc(100% - 13px),calc(100% - 13px) 100%,0 100%,0 13px);
+}
+.bigbtn.ghost{background:var(--slab-2);border:1px solid var(--line);color:var(--bone)}
+.bigbtn[disabled]{background:var(--slab-2);color:var(--dim);pointer-events:none}
+.bigbtn .sum{margin-left:auto;font-family:Forum,serif;font-size:18px;letter-spacing:.02em}
+.bigbtn .lbl{margin-right:auto}
+
+/* ---------- ЭКРАНЫ ---------- */
+.sheet{position:fixed;inset:0;z-index:30;background:var(--void);overflow-y:auto;display:none}
+.sheet.open{display:block}
+.sheet::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:radial-gradient(80% 40% at 50% 0%, rgba(163,18,31,.16), transparent 60%)}
+.sheet>*{position:relative;z-index:1}
+.sheethead{
+  position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:13px;
+  padding:calc(11px + env(safe-area-inset-top,0px)) var(--pad) 11px;
+  background:rgba(10,9,11,.92);backdrop-filter:blur(14px);border-bottom:1px solid var(--line);
+}
+.sheethead h2{font-family:Forum,serif;font-size:16px;font-weight:400;margin:0;letter-spacing:.2em}
+
+/* галерея */
+.galwrap{position:relative;background:#0D0C0F}
+.gallery{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;cursor:grab}
+.gallery.drag{cursor:grabbing;scroll-snap-type:none}
+.gallery::-webkit-scrollbar{display:none}
+.gallery>div{flex:none;width:100%;aspect-ratio:3/4;scroll-snap-align:center;position:relative;background:linear-gradient(165deg,#1E1C21,#0D0C0F)}
+.gallery img{width:100%;height:100%;object-fit:cover;display:block;user-select:none;-webkit-user-drag:none}
+.galnav{
+  position:absolute;top:50%;transform:translateY(-50%);width:44px;height:64px;z-index:4;
+  display:grid;place-items:center;background:rgba(10,9,11,.55);border:1px solid var(--line);
+  backdrop-filter:blur(4px);color:var(--bone);
+}
+.galnav svg{width:20px;height:20px}
+.galnav.prev{left:8px}
+.galnav.next{right:8px}
+.galnav[disabled]{opacity:.25;pointer-events:none}
+.thumbs{display:flex;gap:7px;padding:10px var(--pad) 0;overflow-x:auto;scrollbar-width:none}
+.thumbs::-webkit-scrollbar{display:none}
+.thumbs button{width:44px;height:56px;flex:none;border:1px solid var(--line);overflow:hidden;opacity:.5;transition:.15s}
+.thumbs button.on{opacity:1;border-color:var(--accent)}
+.thumbs img{width:100%;height:100%;object-fit:cover}
+
+.detail{padding:6px var(--pad) 140px}
+.detail h1{font-family:Forum,serif;font-size:25px;font-weight:400;line-height:1.25;margin:14px 0 6px;letter-spacing:.03em}
+.bigprice{font-family:Forum,serif;font-size:30px;letter-spacing:.02em}
+.specs{display:grid;grid-template-columns:1fr 1fr;gap:1px;margin:22px 0;background:var(--line);border:1px solid var(--line)}
+.spec{background:var(--pitch);padding:12px 13px}
+.spec small{display:block;font-size:10px;color:var(--dim);letter-spacing:.16em;margin-bottom:3px}
+.spec b{font-weight:400;font-size:14px;color:var(--bone)}
+.desc{white-space:pre-wrap;color:#B8B2A8;font-size:14px}
+
+/* ---------- КОРЗИНА ---------- */
+.lines{padding:16px var(--pad) 0;display:flex;flex-direction:column;gap:10px}
+.line{display:flex;gap:12px;background:var(--slab);border:1px solid var(--line);padding:11px;
+  clip-path:polygon(11px 0,100% 0,100% calc(100% - 11px),calc(100% - 11px) 100%,0 100%,0 11px)}
+.line .ph{width:60px;height:76px;overflow:hidden;background:#141317;flex:none}
+.line .ph img{width:100%;height:100%;object-fit:cover}
+.line .info{flex:1;min-width:0;display:flex;flex-direction:column}
+.del{align-self:flex-start;color:var(--dim);font-size:11px;letter-spacing:.1em;padding:4px}
+.sumbox{margin:20px var(--pad) 0;background:var(--pitch);border:1px solid var(--line);padding:16px}
+.sumrow{display:flex;justify-content:space-between;font-size:14px;padding:5px 0;color:var(--ash)}
+.sumrow span:last-child{color:var(--bone)}
+.sumrow.cut span:last-child{color:var(--accent)}
+.sumrow.total{border-top:1px solid var(--line);margin-top:10px;padding-top:13px;font-family:Forum,serif;font-size:20px;color:var(--bone)}
+.sumrow.total span{color:var(--bone)!important}
+
+/* промокод */
+.promo{display:flex;gap:8px;margin-bottom:14px}
+.promo input{
+  flex:1;background:var(--slab-2);border:1px solid var(--line);padding:11px 12px;
+  outline:0;font-size:14px;letter-spacing:.12em;text-transform:uppercase;color:var(--bone);
+}
+.promo input:focus{border-color:var(--accent)}
+.promo button{padding:0 16px;background:var(--slab-2);border:1px solid var(--line);font-size:12px;letter-spacing:.1em;color:var(--bone)}
+.promo button:hover{border-color:var(--accent)}
+.promostate{font-size:12px;margin:-8px 0 14px;display:flex;align-items:center;gap:8px}
+.promostate.ok{color:#79A86B}
+.promostate.bad{color:var(--accent)}
+.promostate button{font-size:11px;color:var(--dim);text-decoration:underline}
+
+/* ---------- ФОРМА ---------- */
+.form{padding:18px var(--pad) 140px;display:flex;flex-direction:column;gap:15px}
+.field label{display:block;font-size:10px;color:var(--dim);letter-spacing:.18em;margin-bottom:7px}
+.field input,.field textarea,.field select{
+  width:100%;background:var(--pitch);border:1px solid var(--line);
+  padding:13px;outline:0;font-size:15px;color:var(--bone);border-radius:0;
+}
+.field input::placeholder,.field textarea::placeholder{color:var(--dim)}
+.field input:focus,.field textarea:focus,.field select:focus{border-color:var(--accent)}
+.field textarea{min-height:72px;resize:vertical}
+.req{color:var(--accent)}
+.hint{font-size:12px;color:var(--dim);line-height:1.6}
+.foot{padding:34px var(--pad) 46px;text-align:center;font-size:11px;color:var(--dim);letter-spacing:.14em}
+.foot a{color:var(--ash);text-decoration:none;margin:0 7px}
+.toast{
+  position:fixed;left:50%;bottom:calc(88px + var(--safe-b));transform:translateX(-50%) translateY(14px);
+  background:var(--bone);color:var(--void);padding:12px 18px;font-size:13px;font-weight:500;
+  opacity:0;pointer-events:none;transition:.22s;z-index:60;max-width:88vw;text-align:center;
+  clip-path:polygon(10px 0,100% 0,100% calc(100% - 10px),calc(100% - 10px) 100%,0 100%,0 10px);
+}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+:focus-visible{outline:1px solid var(--accent);outline-offset:3px}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<div id="app">
+  <header class="top">
+    <div class="brandrow">
+      <div style="min-width:0">
+        <h1 class="wordmark" id="wordmark">RELIKT</h1>
+        <div class="tagline" id="tagline">Твой личный импорт</div>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button class="iconbtn" id="favBtn" aria-label="Избранное">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 20s-7-4.4-7-9.2A4 4 0 0 1 12 8a4 4 0 0 1 7 2.8C19 15.6 12 20 12 20z"/></svg>
+          <span class="badge hidden" id="favCount">0</span>
+        </button>
+        <button class="iconbtn" id="cartBtn" aria-label="Корзина">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 7h12l-1 12H7L6 7z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg>
+          <span class="badge hidden" id="cartCount">0</span>
+        </button>
+      </div>
+    </div>
+
+    <svg class="orn" viewBox="0 0 240 18" fill="currentColor" aria-hidden="true">
+      <path d="M120 2l7 7-7 7-7-7z"/>
+      <path d="M111 9c-16 0-24-5-42-5-14 0-24 3-34 5 10 2 20 5 34 5 18 0 26-5 42-5z" opacity=".7"/>
+      <path d="M129 9c16 0 24-5 42-5 14 0 24 3 34 5-10 2-20 5-34 5-18 0-26-5-42-5z" opacity=".7"/>
+      <path d="M96 9c-10-3-18-6-30-6 8 3 12 4 16 6-4 2-8 3-16 6 12 0 20-3 30-6z" opacity=".35"/>
+      <path d="M144 9c10-3 18-6 30-6-8 3-12 4-16 6 4 2 8 3 16 6-12 0-20-3-30-6z" opacity=".35"/>
+    </svg>
+
+    <div class="search">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+      <input id="q" type="search" placeholder="ed hardy, сумка, платье" autocomplete="off">
+    </div>
+  </header>
+
+  <nav class="chips" id="chips"></nav>
+
+  <div class="toolbar">
+    <button class="switch" id="onlyIn" aria-pressed="true"><i></i>В наличии</button>
+    <select id="sort" aria-label="Сортировка">
+      <option value="new">Новые</option>
+      <option value="cheap">Дешевле</option>
+      <option value="exp">Дороже</option>
+    </select>
+  </div>
+
+  <div class="notice hidden" id="notice"></div>
+  <div class="count" id="count"></div>
+  <main class="grid" id="grid"></main>
+
+  <footer class="foot">
+    <svg class="orn small" viewBox="0 0 240 18" fill="currentColor" aria-hidden="true">
+      <path d="M120 2l7 7-7 7-7-7z"/>
+      <path d="M111 9c-16 0-24-5-42-5-14 0-24 3-34 5 10 2 20 5 34 5 18 0 26-5 42-5z" opacity=".7"/>
+      <path d="M129 9c16 0 24-5 42-5 14 0 24 3 34 5-10 2-20 5-34 5-18 0-26-5-42-5z" opacity=".7"/>
+    </svg>
+    <div id="footLinks"></div>
+    <div style="margin-top:12px">ОДНА ВЕЩЬ — ОДИН ЭКЗЕМПЛЯР</div>
+  </footer>
+</div>
+
+<!-- Товар -->
+<section class="sheet" id="pdp">
+  <div class="sheethead">
+    <button class="iconbtn" data-close="pdp" aria-label="Назад">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 5l-7 7 7 7"/></svg>
+    </button>
+    <h2 id="pdpBrand"></h2>
+  </div>
+  <div class="galwrap">
+    <div class="gallery" id="pdpGallery"></div>
+    <button class="galnav prev" id="galPrev" aria-label="Предыдущее фото">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M15 5l-7 7 7 7"/></svg>
+    </button>
+    <button class="galnav next" id="galNext" aria-label="Следующее фото">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 5l7 7-7 7"/></svg>
+    </button>
+  </div>
+  <div class="thumbs" id="pdpThumbs"></div>
+  <div class="detail">
+    <h1 id="pdpTitle"></h1>
+    <div class="pricerow" style="border:0;padding:0">
+      <span class="bigprice" id="pdpPrice"></span><span class="old" id="pdpOld"></span>
+    </div>
+    <div class="specs" id="pdpSpecs"></div>
+    <p class="desc" id="pdpDesc"></p>
+    <svg class="orn small" viewBox="0 0 240 18" fill="currentColor" aria-hidden="true">
+      <path d="M120 2l7 7-7 7-7-7z"/>
+      <path d="M111 9c-16 0-24-5-42-5-14 0-24 3-34 5 10 2 20 5 34 5 18 0 26-5 42-5z" opacity=".7"/>
+      <path d="M129 9c16 0 24-5 42-5 14 0 24 3 34 5-10 2-20 5-34 5-18 0-26-5-42-5z" opacity=".7"/>
+    </svg>
+  </div>
+  <div class="dock"><button class="bigbtn" id="pdpAdd"></button></div>
+</section>
+
+<!-- Корзина -->
+<section class="sheet" id="cart">
+  <div class="sheethead">
+    <button class="iconbtn" data-close="cart" aria-label="Назад">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 5l-7 7 7 7"/></svg>
+    </button>
+    <h2>КОРЗИНА</h2>
+  </div>
+  <div class="lines" id="cartLines"></div>
+  <div class="sumbox" id="cartSum"></div>
+  <div style="height:140px"></div>
+  <div class="dock">
+    <button class="bigbtn" id="toCheckout"><span class="lbl">ОФОРМИТЬ</span><span class="sum" id="cartTotal"></span></button>
+  </div>
+</section>
+
+<!-- Избранное -->
+<section class="sheet" id="favs">
+  <div class="sheethead">
+    <button class="iconbtn" data-close="favs" aria-label="Назад">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 5l-7 7 7 7"/></svg>
+    </button>
+    <h2>ИЗБРАННОЕ</h2>
+  </div>
+  <main class="grid" id="favGrid" style="padding-top:16px"></main>
+</section>
+
+<!-- Оформление -->
+<section class="sheet" id="checkout">
+  <div class="sheethead">
+    <button class="iconbtn" data-close="checkout" aria-label="Назад">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 5l-7 7 7 7"/></svg>
+    </button>
+    <h2>ОФОРМЛЕНИЕ</h2>
+  </div>
+  <div class="form">
+    <div class="field"><label for="fName">ИМЯ <span class="req">*</span></label><input id="fName" placeholder="Как к вам обращаться"></div>
+    <div class="field"><label for="fTg">ТЕЛЕГРАМ <span class="req">*</span></label><input id="fTg" placeholder="@username"></div>
+    <div class="field"><label for="fCity">ГОРОД <span class="req">*</span></label><input id="fCity" placeholder="Москва"></div>
+    <div class="field">
+      <label for="fDeliv">ДОСТАВКА</label>
+      <select id="fDeliv">
+        <option>Ozon</option>
+        <option>Wildberries</option>
+        <option>Яндекс Доставка</option>
+        <option>СДЭК</option>
+      </select>
+    </div>
+    <div class="field">
+      <label for="fPickup">АДРЕС ПУНКТА ВЫДАЧИ ЗАКАЗОВ <span class="req">*</span></label>
+      <textarea id="fPickup" placeholder="Город, улица, дом — как указано в приложении службы доставки"></textarea>
+    </div>
+    <div class="field">
+      <label for="fPhone">НОМЕР ТЕЛЕФОНА <span class="req">*</span></label>
+      <input id="fPhone" type="tel" inputmode="tel" placeholder="+7 900 000-00-00">
+    </div>
+    <div class="sumbox" id="coSum" style="margin:6px 0 0"></div>
+    <p class="hint">Кнопка откроет Telegram с готовым текстом заказа — выберите в списке менеджера и отправьте. Текст заодно скопируется в буфер.</p>
+  </div>
+  <div class="dock"><button class="bigbtn" id="sendOrder">ОТПРАВИТЬ ЗАКАЗ</button></div>
+</section>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ========================================================================
+   RELIKT — витрина. Данные берутся из products.json рядом с этим файлом.
+   ===================================================================== */
+
+const tg = window.Telegram?.WebApp;
+const $  = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+
+let DATA  = { settings: {}, products: [] };
+let CART  = JSON.parse(localStorage.getItem('relikt_cart') || '[]');
+let FAVS  = JSON.parse(localStorage.getItem('relikt_favs') || '[]');
+let PROMO = null;                                  // применённый промокод
+let state = { cat: 'all', q: '', onlyIn: true, sort: 'new', current: null };
+
+const money = n => new Intl.NumberFormat('ru-RU').format(Math.round(n)) + ' ' + (DATA.settings.currency || '₽');
+const save  = () => {
+  localStorage.setItem('relikt_cart', JSON.stringify(CART));
+  localStorage.setItem('relikt_favs', JSON.stringify(FAVS));
+};
+const buzz = (t = 'light') => { try { tg?.HapticFeedback?.impactOccurred(t); } catch (e) {} };
+
+function toast(msg) {
+  const el = $('#toast');
+  el.textContent = msg; el.classList.add('on');
+  clearTimeout(el._t); el._t = setTimeout(() => el.classList.remove('on'), 2400);
+}
+
+/* ---------- Старт ---------- */
+async function boot() {
+  if (tg) {
+    tg.ready(); tg.expand();
+    try { tg.setHeaderColor('#0A090B'); tg.setBackgroundColor('#0A090B'); } catch (e) {}
+  }
+  try {
+    DATA = await (await fetch('products.json?v=' + Date.now())).json();
+  } catch (e) { toast('Каталог не загрузился. Обновите страницу.'); return; }
+
+  const s = DATA.settings || {};
+  if (s.accent) document.documentElement.style.setProperty('--accent', s.accent);
+  $('#wordmark').textContent = s.shopName || 'RELIKT';
+  $('#tagline').textContent  = s.tagline || '';
+  document.title = s.shopName || 'RELIKT';
+  if (s.notice) { $('#notice').textContent = s.notice; $('#notice').classList.remove('hidden'); }
+
+  $('#footLinks').innerHTML = [
+    s.channel  ? `<a href="https://t.me/${s.channel}">КАНАЛ</a>`   : '',
+    s.contact  ? `<a href="https://t.me/${s.contact}">МЕНЕДЖЕР</a>` : '',
+    s.feedback ? `<a href="https://t.me/${s.feedback}">ОТЗЫВЫ</a>`  : ''
+  ].filter(Boolean).join('·');
+
+  buildChips(); render(); renderCart(); updateCounters();
+}
+
+function buildChips() {
+  const cats = ['all', ...(DATA.settings.categories || [])];
+  $('#chips').innerHTML = cats.map(c =>
+    `<button class="chip" data-cat="${c}" aria-pressed="${c === state.cat}">${c === 'all' ? 'ВСЁ' : c}</button>`).join('');
+  $$('#chips .chip').forEach(b => b.onclick = () => { state.cat = b.dataset.cat; buzz(); buildChips(); render(); });
+}
+
+/* ---------- Каталог ---------- */
+function visible() {
+  let list = (DATA.products || []).slice();
+  if (state.cat !== 'all') list = list.filter(p => p.category === state.cat);
+  if (state.onlyIn)        list = list.filter(p => p.status !== 'sold');
+  if (state.q) {
+    const q = state.q.toLowerCase();
+    list = list.filter(p => (p.title + ' ' + p.brand + ' ' + p.category + ' ' + (p.desc || '')).toLowerCase().includes(q));
+  }
+  if (state.sort === 'cheap')    list.sort((a, b) => a.price - b.price);
+  else if (state.sort === 'exp') list.sort((a, b) => b.price - a.price);
+  else list.sort((a, b) => (b.featured - a.featured) || String(b.createdAt || '').localeCompare(String(a.createdAt || '')));
+  return list;
+}
+
+function cardHTML(p) {
+  const img = p.images?.[0]
+    ? `<img src="${p.images[0]}" alt="${p.title}" loading="lazy">`
+    : `<div class="mono">${(p.brand || p.title || 'R')[0].toUpperCase()}</div>`;
+  const tag = p.status === 'sold' ? '<span class="tag sold">ПРОДАНО</span>'
+            : p.status === 'hold' ? '<span class="tag hold">БРОНЬ</span>'
+            : p.featured          ? '<span class="tag hit">ХИТ</span>' : '';
+  const isF = FAVS.includes(p.id);
+  return `<article class="card ${p.status === 'sold' ? 'sold' : ''}" data-id="${p.id}">
+    <div class="thumb">${img}${tag}
+      ${p.size ? `<span class="sizechip">${p.size}</span>` : ''}
+      <button class="fav" data-fav="${p.id}" aria-pressed="${isF}" aria-label="В избранное">
+        <svg viewBox="0 0 24 24" fill="${isF ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="1.6"><path d="M12 20s-7-4.4-7-9.2A4 4 0 0 1 12 8a4 4 0 0 1 7 2.8C19 15.6 12 20 12 20z"/></svg>
+      </button>
+    </div>
+    <div class="cardbody">
+      <div class="brand">${(p.brand || '').toUpperCase()}</div>
+      <div class="name">${p.title}</div>
+      <div class="meta">${p.condition || p.category || ''}</div>
+      <div class="pricerow">
+        <span class="price">${money(p.price)}</span>
+        ${p.oldPrice ? `<span class="old">${money(p.oldPrice)}</span>` : ''}
+      </div>
+    </div>
+  </article>`;
+}
+
+function bindCards(root) {
+  $$('.card', root).forEach(c => c.onclick = e => {
+    if (e.target.closest('[data-fav]')) return;
+    openPDP(c.dataset.id);
+  });
+  $$('[data-fav]', root).forEach(b => b.onclick = e => {
+    e.stopPropagation();
+    const id = b.dataset.fav;
+    FAVS.includes(id) ? FAVS.splice(FAVS.indexOf(id), 1) : FAVS.push(id);
+    save(); buzz(); render(); renderFavs(); updateCounters();
+  });
+}
+
+function render() {
+  const list = visible();
+  $('#count').textContent = list.length ? list.length + ' ПОЗИЦИЙ В ПОДБОРКЕ' : '';
+  const g = $('#grid');
+  g.innerHTML = list.length ? list.map(cardHTML).join('')
+    : `<div class="empty"><b>ПУСТО</b>Смените категорию или выключите фильтр «В наличии».</div>`;
+  bindCards(g);
+}
+
+function renderFavs() {
+  const list = (DATA.products || []).filter(p => FAVS.includes(p.id));
+  const g = $('#favGrid');
+  g.innerHTML = list.length ? list.map(cardHTML).join('')
+    : `<div class="empty"><b>НИЧЕГО НЕ ОТМЕЧЕНО</b>Жмите на сердце в карточке, чтобы не потерять вещь.</div>`;
+  bindCards(g);
+}
+
+/* ---------- Товар и галерея ---------- */
+let GAL = { imgs: [], i: 0 };
+
+function goSlide(i) {
+  const gal = $('#pdpGallery');
+  GAL.i = Math.max(0, Math.min(i, GAL.imgs.length - 1));
+  gal.scrollTo({ left: GAL.i * gal.clientWidth, behavior: 'smooth' });
+  syncGal();
+}
+function syncGal() {
+  $$('#pdpThumbs button').forEach((b, j) => b.classList.toggle('on', j === GAL.i));
+  $('#galPrev').disabled = GAL.i === 0;
+  $('#galNext').disabled = GAL.i >= GAL.imgs.length - 1;
+}
+
+function setupGallery(p) {
+  const imgs = p.images?.length ? p.images : [null];
+  GAL = { imgs, i: 0 };
+  const gal = $('#pdpGallery');
+
+  gal.innerHTML = imgs.map(src => `<div>${
+    src ? `<img src="${src}" alt="${p.title}" draggable="false">`
+        : `<div class="mono">${(p.brand || 'R')[0].toUpperCase()}</div>`}</div>`).join('');
+  gal.scrollLeft = 0;
+
+  const multi = imgs.length > 1;
+  $('#galPrev').classList.toggle('hidden', !multi);
+  $('#galNext').classList.toggle('hidden', !multi);
+  $('#pdpThumbs').innerHTML = multi ? imgs.map((src, i) =>
+    `<button data-i="${i}" class="${i ? '' : 'on'}" aria-label="Фото ${i + 1}">${src ? `<img src="${src}" alt="">` : ''}</button>`).join('') : '';
+  $$('#pdpThumbs button').forEach(b => b.onclick = () => goSlide(+b.dataset.i));
+
+  gal.onscroll = () => {
+    if (!gal.clientWidth) return;
+    GAL.i = Math.round(gal.scrollLeft / gal.clientWidth);
+    syncGal();
+  };
+
+  // колесо мыши и трекпад: вертикальная прокрутка листает фото
+  gal.onwheel = e => {
+    if (!multi) return;
+    if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
+      e.preventDefault();
+      gal.scrollLeft += e.deltaY;
+    }
+  };
+
+  // перетаскивание мышью (десктоп Telegram)
+  let down = false, startX = 0, startL = 0;
+  gal.onpointerdown = e => {
+    if (e.pointerType === 'touch' || !multi) return;
+    down = true; startX = e.clientX; startL = gal.scrollLeft;
+    gal.classList.add('drag'); gal.setPointerCapture(e.pointerId);
+  };
+  gal.onpointermove = e => { if (down) gal.scrollLeft = startL - (e.clientX - startX); };
+  const endDrag = () => {
+    if (!down) return;
+    down = false; gal.classList.remove('drag');
+    goSlide(Math.round(gal.scrollLeft / gal.clientWidth));
+  };
+  gal.onpointerup = endDrag;
+  gal.onpointercancel = endDrag;
+  gal.onpointerleave = endDrag;
+
+  syncGal();
+}
+
+$('#galPrev').onclick = () => { buzz(); goSlide(GAL.i - 1); };
+$('#galNext').onclick = () => { buzz(); goSlide(GAL.i + 1); };
+document.addEventListener('keydown', e => {
+  if (!$('#pdp').classList.contains('open')) return;
+  if (e.key === 'ArrowLeft')  goSlide(GAL.i - 1);
+  if (e.key === 'ArrowRight') goSlide(GAL.i + 1);
+  if (e.key === 'Escape')     closeSheet('pdp');
+});
+
+function openPDP(id) {
+  const p = (DATA.products || []).find(x => x.id === id);
+  if (!p) return;
+  state.current = p;
+
+  $('#pdpBrand').textContent = (p.brand || 'ТОВАР').toUpperCase();
+  $('#pdpTitle').textContent = p.title;
+  $('#pdpPrice').textContent = money(p.price);
+  $('#pdpOld').textContent   = p.oldPrice ? money(p.oldPrice) : '';
+  $('#pdpDesc').textContent  = p.desc || '';
+  $('#pdpSpecs').innerHTML   = [['БРЕНД', p.brand], ['РАЗМЕР', p.size], ['СОСТОЯНИЕ', p.condition], ['КАТЕГОРИЯ', p.category]]
+    .filter(x => x[1]).map(x => `<div class="spec"><small>${x[0]}</small><b>${x[1]}</b></div>`).join('');
+
+  setupGallery(p);
+
+  const btn = $('#pdpAdd');
+  if (p.status === 'sold') { btn.className = 'bigbtn ghost'; btn.textContent = 'ПРОДАНО — ОТКРЫТЬ КАНАЛ'; btn.onclick = () => openLink('https://t.me/' + DATA.settings.channel); }
+  else if (CART.includes(p.id)) { btn.className = 'bigbtn ghost'; btn.textContent = 'УЖЕ В КОРЗИНЕ — ПЕРЕЙТИ'; btn.onclick = () => { closeSheet('pdp'); openSheet('cart'); }; }
+  else { btn.className = 'bigbtn'; btn.textContent = 'В КОРЗИНУ'; btn.onclick = () => { addToCart(p.id); openPDP(p.id); }; }
+
+  openSheet('pdp');
+}
+
+/* ---------- Корзина и промокод ---------- */
+function addToCart(id) { if (!CART.includes(id)) CART.push(id); save(); buzz('medium'); updateCounters(); renderCart(); toast('Добавлено в корзину'); }
+function removeFromCart(id) { CART = CART.filter(x => x !== id); save(); updateCounters(); renderCart(); }
+function cartItems() { return CART.map(id => (DATA.products || []).find(p => p.id === id)).filter(Boolean); }
+
+function findPromo(code) {
+  const c = (code || '').trim().toUpperCase();
+  if (!c) return null;
+  return (DATA.settings.promos || []).find(p => p.active !== false && (p.code || '').toUpperCase() === c) || null;
+}
+
+function totals() {
+  const items = cartItems();
+  const sub = items.reduce((s, p) => s + p.price, 0);
+  let cut = 0;
+  if (PROMO) cut = PROMO.type === 'amount' ? Math.min(PROMO.value, sub) : Math.round(sub * PROMO.value / 100);
+  return { items, sub, cut, total: Math.max(0, sub - cut) };
+}
+
+function promoHTML() {
+  if (PROMO) {
+    const label = PROMO.type === 'amount' ? money(PROMO.value) : PROMO.value + '%';
+    return `<div class="promostate ok">Промокод ${PROMO.code} — минус ${label}
+      <button data-promo-off>убрать</button></div>`;
+  }
+  return `<div class="promo">
+      <input id="promoInput" placeholder="ПРОМОКОД" autocomplete="off" maxlength="24">
+      <button data-promo-apply>ПРИМЕНИТЬ</button>
+    </div>`;
+}
+
+function sumBoxHTML() {
+  const t = totals();
+  return `${promoHTML()}
+    <div class="sumrow"><span>Товары (${t.items.length})</span><span>${money(t.sub)}</span></div>
+    ${t.cut ? `<div class="sumrow cut"><span>Скидка по промокоду</span><span>−${money(t.cut)}</span></div>` : ''}
+    <div class="sumrow total"><span>Итого</span><span>${money(t.total)}</span></div>`;
+}
+
+function bindPromo() {
+  $$('[data-promo-apply]').forEach(b => b.onclick = () => {
+    const input = b.parentElement.querySelector('input');
+    const found = findPromo(input.value);
+    if (found) { PROMO = found; buzz('medium'); renderCart(); toast('Промокод применён'); }
+    else { buzz('heavy'); input.value = ''; toast('Такого промокода нет'); }
+  });
+  $$('[data-promo-off]').forEach(b => b.onclick = () => { PROMO = null; renderCart(); });
+  $$('.promo input').forEach(i => i.onkeydown = e => {
+    if (e.key === 'Enter') { e.preventDefault(); i.parentElement.querySelector('[data-promo-apply]').click(); }
+  });
+}
+
+function renderCart() {
+  const t = totals();
+  $('#cartLines').innerHTML = t.items.length ? t.items.map(p => `
+    <div class="line">
+      <div class="ph">${p.images?.[0] ? `<img src="${p.images[0]}" alt="">` : ''}</div>
+      <div class="info">
+        <div class="brand">${(p.brand || '').toUpperCase()}</div>
+        <div class="name">${p.title}</div>
+        <div class="meta">${p.size ? 'Размер ' + p.size : ''}</div>
+        <div class="price" style="margin-top:auto;font-size:16px">${money(p.price)}</div>
+      </div>
+      <button class="del" data-del="${p.id}">УБРАТЬ</button>
+    </div>`).join('')
+    : `<div class="empty"><b>КОРЗИНА ПУСТА</b>Выберите вещь в каталоге — бронь держим 24 часа.</div>`;
+  $$('[data-del]').forEach(b => b.onclick = () => { removeFromCart(b.dataset.del); buzz(); });
+
+  $('#cartSum').innerHTML = t.items.length ? sumBoxHTML() : '';
+  $('#coSum').innerHTML   = sumBoxHTML();
+  bindPromo();
+  $('#cartTotal').textContent = money(t.total);
+  $('#toCheckout').disabled = !t.items.length;
+}
+
+function updateCounters() {
+  const c = $('#cartCount'), f = $('#favCount');
+  c.textContent = CART.length; c.classList.toggle('hidden', !CART.length);
+  f.textContent = FAVS.length; f.classList.toggle('hidden', !FAVS.length);
+}
+
+/* ---------- Экраны ---------- */
+const stack = [];
+function openSheet(id) {
+  $('#' + id).classList.add('open'); stack.push(id); window.scrollTo(0, 0);
+  if (tg?.BackButton) { tg.BackButton.show(); tg.BackButton.onClick(backHandler); }
+}
+function closeSheet(id) {
+  $('#' + id).classList.remove('open');
+  const i = stack.lastIndexOf(id); if (i > -1) stack.splice(i, 1);
+  if (!stack.length && tg?.BackButton) tg.BackButton.hide();
+}
+function backHandler() { if (stack.length) closeSheet(stack[stack.length - 1]); }
+$$('[data-close]').forEach(b => b.onclick = () => { buzz(); closeSheet(b.dataset.close); });
+function openLink(url) { tg?.openTelegramLink ? tg.openTelegramLink(url) : window.open(url, '_blank'); }
+
+/* ---------- Заказ ---------- */
+function orderText() {
+  const t = totals();
+  const u = tg?.initDataUnsafe?.user;
+  const L = [
+    'ЗАКАЗ · ' + (DATA.settings.shopName || 'RELIKT'),
+    '',
+    'Имя: ' + $('#fName').value.trim(),
+    'Телеграм: ' + $('#fTg').value.trim() + (u?.username ? ' (вход как @' + u.username + ')' : ''),
+    'Телефон: ' + $('#fPhone').value.trim(),
+    'Город: ' + $('#fCity').value.trim(),
+    'Доставка: ' + $('#fDeliv').value,
+    'Пункт выдачи: ' + $('#fPickup').value.trim(),
+    '',
+    'Товары:',
+    ...t.items.map((p, i) => `${i + 1}. ${p.brand ? p.brand + ' — ' : ''}${p.title}${p.size ? ' (' + p.size + ')' : ''} — ${money(p.price)}`),
+    '',
+    'Сумма: ' + money(t.sub)
+  ];
+  if (t.cut) L.push('Промокод ' + PROMO.code + ': −' + money(t.cut), 'К оплате: ' + money(t.total));
+  return L.join('\n');
+}
+
+async function copyText(text) {
+  try { await navigator.clipboard.writeText(text); return; } catch (e) {}
+  const ta = document.createElement('textarea');
+  ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+  document.body.appendChild(ta); ta.select();
+  try { document.execCommand('copy'); } catch (e) {}
+  ta.remove();
+}
+
+async function sendOrder() {
+  const need = [['fName', 'имя'], ['fTg', 'телеграм'], ['fPhone', 'телефон'], ['fCity', 'город'], ['fPickup', 'пункт выдачи']];
+  const miss = need.filter(([id]) => !$('#' + id).value.trim());
+  if (miss.length) { buzz('heavy'); toast('Заполните: ' + miss.map(m => m[1]).join(', ')); return; }
+
+  const text = orderText();
+  const manager = DATA.settings.contact || 'bloodydisaster';
+  const btn = $('#sendOrder');
+  btn.disabled = true; btn.textContent = 'ОТПРАВЛЯЕМ…';
+
+  // Если в настройках указан приёмник заказов — заказ уходит менеджеру
+  // автоматически, без действий покупателя.
+  let delivered = false;
+  if (DATA.settings.orderWebhook) {
+    try {
+      const res = await fetch(DATA.settings.orderWebhook, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ secret: DATA.settings.orderSecret || '', text })
+      });
+      const data = await res.json().catch(() => null);
+      delivered = res.ok && data && data.ok;
+    } catch (e) { delivered = false; }
+  }
+
+  try { tg?.sendData?.(JSON.stringify({ type: 'order', text })); } catch (e) {}
+  await copyText(text);
+  buzz('heavy');
+  btn.disabled = false; btn.textContent = 'ОТПРАВИТЬ ЗАКАЗ';
+
+  if (delivered) {
+    toast('Заказ отправлен продавцу — он свяжется с вами в Telegram');
+  } else {
+    // Запасной вариант: открываем окно выбора чата с готовым текстом заказа
+    const share = 'https://t.me/share/url?url=' + encodeURIComponent(text) + '&text=';
+    toast('Выберите @' + manager + ' и отправьте');
+    setTimeout(() => openLink(share), 500);
+  }
+}
+
+/* ---------- События ---------- */
+$('#q').oninput      = e => { state.q = e.target.value; render(); };
+$('#sort').onchange  = e => { state.sort = e.target.value; render(); };
+$('#onlyIn').onclick = () => { state.onlyIn = !state.onlyIn; $('#onlyIn').setAttribute('aria-pressed', state.onlyIn); buzz(); render(); };
+$('#cartBtn').onclick    = () => { buzz(); renderCart(); openSheet('cart'); };
+$('#favBtn').onclick     = () => { buzz(); renderFavs(); openSheet('favs'); };
+$('#toCheckout').onclick = () => { buzz(); closeSheet('cart'); openSheet('checkout'); };
+$('#sendOrder').onclick  = sendOrder;
+
+const u = tg?.initDataUnsafe?.user;
+if (u?.username)   $('#fTg').value = '@' + u.username;
+if (u?.first_name) $('#fName').value = u.first_name;
+
+boot();
+</script>
+</body>
+</html>
