@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>RELIKT — панель</title>
 <script src="https://telegram.org/js/telegram-web-app.js?63"></script>
-<meta name="relikt-build" content="20260918-1815">
+<meta name="relikt-build" content="20260919-0311">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Forum&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -314,7 +314,7 @@ const CONN = JSON.parse(localStorage.getItem('relikt_conn') || '{}');
 const ADMIN_ID='315859108';
 
 const tg = window.Telegram?.WebApp;
-const RELIKT_BUILD = '20260918-1815';
+const RELIKT_BUILD = '20260919-0311';
 (function enforceAppVersion() {
   try {
     const u = new URL(location.href);
@@ -564,7 +564,7 @@ $('#closeEd').onclick = closeEditor;
 $('#addNew').onclick = () => openEditor(null);
 
 /* ---------- Вкладки ---------- */
-$('#backMain').onclick=()=>{location.href='index.html?v=20260918-1815';};
+$('#backMain').onclick=()=>{location.href='index.html?v=' + RELIKT_BUILD;};
 $$('.tab').forEach(t => t.onclick = () => {
   $$('.tab').forEach(x => x.setAttribute('aria-pressed', x === t));
   $$('#tab-goods,#tab-promo,#tab-settings,#tab-conn').forEach(s => s.classList.add('hidden'));

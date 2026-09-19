@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>RELIKT</title>
 <script src="https://telegram.org/js/telegram-web-app.js?63"></script>
-<meta name="relikt-build" content="20260918-premium-ui">
+<meta name="relikt-build" content="20260919-0311">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Forum&family=Cinzel:wght@400;600;700&family=UnifrakturCook:wght@700&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
@@ -699,7 +699,7 @@ body{
 
 const tg = window.Telegram?.WebApp;
 let PROMO = null;   // применённый промокод {code,type,value}
-const RELIKT_BUILD = '20260918-1815';
+const RELIKT_BUILD = '20260919-0311';
 (function enforceAppVersion() {
   try {
     const u = new URL(location.href);
@@ -781,7 +781,7 @@ async function boot() {
     tg.onEvent?.('viewportChanged', syncTelegramViewport);
     tg.onEvent?.('safeAreaChanged', syncTelegramViewport);
     const uid = String(tg.initDataUnsafe?.user?.id || '');
-    if (uid === '315859108') { $('#adminBtn').classList.remove('hidden'); $('#adminBtn').onclick = () => { sessionStorage.setItem('relikt_admin_uid', uid); location.href='admin.html?v=20260918-1815'; }; }
+    if (uid === '315859108') { $('#adminBtn').classList.remove('hidden'); $('#adminBtn').onclick = () => { sessionStorage.setItem('relikt_admin_uid', uid); location.href='admin.html?v=' + RELIKT_BUILD; }; }
     try { tg.setHeaderColor('#0A090B'); tg.setBackgroundColor('#0A090B'); } catch (e) {}
   }
   try {
