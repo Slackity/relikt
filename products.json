@@ -110,10 +110,10 @@
       "condition": "Отличное",
       "desc": "Зипка TCH. Молния работает идеально, манжеты держат форму.",
       "images": [],
-      "status": "sold",
+      "status": "in",
       "featured": false,
       "createdAt": "2026-09-07",
-      "stock": 0
+      "stock": 1
     }
   ]
 }
