@@ -699,7 +699,7 @@ body{
 
 const tg = window.Telegram?.WebApp;
 let PROMO = null;   // применённый промокод {code,type,value}
-const RELIKT_BUILD = '20260919-0311';
+const RELIKT_BUILD = (document.querySelector('meta[name="relikt-build"]')?.content || '').trim() || '0';
 (function enforceAppVersion() {
   try {
     const u = new URL(location.href);
@@ -710,6 +710,38 @@ const RELIKT_BUILD = '20260919-0311';
   } catch (e) {}
 })();
 
+
+/* ---------- Самообновление ----------
+   Telegram всегда открывает один и тот же адрес из BotFather, поэтому свежий
+   index.html может не доехать из-за кеша. Спрашиваем номер актуальной сборки
+   отдельным маленьким файлом (его ответ не кешируется) и, если он новее
+   загруженного, перезагружаемся по адресу с этим номером — такой URL кешем
+   не покрыт. Корзину и избранное это не затрагивает: они лежат в
+   localStorage домена, а он от адреса страницы не зависит. */
+async function checkForUpdate() {
+  try {
+    const u = new URL('version.json', document.baseURI);
+    u.searchParams.set('t', Date.now());
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 8000);
+    const res = await fetch(u.href, { cache: 'no-store', signal: ctrl.signal }).finally(() => clearTimeout(timer));
+    if (!res.ok) return;
+    const fresh = String((await res.json())?.build || '').trim();
+    if (!fresh || fresh === RELIKT_BUILD) return;      // уже последняя версия
+
+    // Одна попытка на сессию: если CDN пока отдаёт старый HTML, работаем на
+    // том, что загрузилось, вместо бесконечной череды перезагрузок.
+    const mark = 'relikt_reload_' + fresh;
+    if (sessionStorage.getItem(mark)) return;
+    // Человек уже что-то открыл или заполняет — не выдёргиваем страницу из-под него.
+    if (stack.length) return;
+    sessionStorage.setItem(mark, '1');
+
+    const next = new URL(location.href);
+    next.searchParams.set('v', fresh);
+    location.replace(next.href);
+  } catch (e) { /* нет сети или файла — просто продолжаем работать */ }
+}
 
 const $  = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
@@ -1286,6 +1318,7 @@ if (u?.username)   $('#fTg').value = '@' + u.username;
 if (u?.first_name) $('#fName').value = u.first_name;
 
 boot();
+checkForUpdate();
 </script>
 </body>
 </html>
