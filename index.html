@@ -811,6 +811,10 @@ async function boot() {
     s.feedback ? `<a href="https://t.me/${s.feedback}">ОТЗЫВЫ</a>`  : ''
   ].filter(Boolean).join('·');
 
+  // Каталог мог обновиться, пока корзина лежала в localStorage: убираем разобранное.
+  const kept = CART.filter(l => canBuy((DATA.products || []).find(x => x.id === l.id)));
+  if (kept.length !== CART.length) { CART = kept; save(); toast('Часть вещей уже разобрали — корзина обновлена'); }
+
   buildChips(); render(); renderCart(); updateCounters();
 }
 
@@ -825,7 +829,7 @@ function buildChips() {
 function visible() {
   let list = (DATA.products || []).slice();
   if (state.cat !== 'all') list = list.filter(p => p.category === state.cat);
-  if (state.onlyIn)        list = list.filter(p => p.status !== 'sold');
+  if (state.onlyIn)        list = list.filter(canBuy);
   if (state.q) {
     const q = state.q.toLowerCase();
     list = list.filter(p => (p.title + ' ' + p.brand + ' ' + p.category + ' ' + (p.desc || '')).toLowerCase().includes(q));
@@ -836,8 +840,14 @@ function visible() {
   return list;
 }
 
+// Остаток: число, если поле заполнено, иначе null — тогда считаем, что вещь одна.
+function stockOf(p) { const n = Number(p?.stock); return Number.isFinite(n) ? Math.max(0, Math.trunc(n)) : null; }
+// Явный ноль означает, что вещи физически нет, даже если статус остался «в наличии».
+function outOfStock(p) { return stockOf(p) === 0; }
+// Можно ли вообще положить вещь в корзину.
+function canBuy(p) { return !!p && p.status !== 'sold' && !outOfStock(p); }
 // Сколько штук можно заказать: ориентируемся на stock, но не меньше 1.
-function maxQty(p) { const n = Number(p?.stock); return Number.isFinite(n) && n > 0 ? n : 1; }
+function maxQty(p) { const n = stockOf(p); return n === null ? 1 : Math.max(1, n); }
 // Выбранное в карточке количество, с поправкой на текущий остаток.
 function cardQty(p) { return Math.min(maxQty(p), Math.max(1, Number(CARD_QTY[p.id]) || 1)); }
 // Карточка товара может быть сразу в каталоге и в избранном — обновляем обе сетки.
@@ -849,9 +859,10 @@ function cardHTML(p) {
     : `<div class="mono">${escapeHtml((p.brand || p.title || 'R')[0].toUpperCase())}</div>`;
   const tag = p.status === 'sold' ? '<span class="tag sold">ПРОДАНО</span>'
             : p.status === 'hold' ? '<span class="tag hold">БРОНЬ</span>'
+            : outOfStock(p)       ? '<span class="tag sold">НЕТ В НАЛИЧИИ</span>'
             : p.featured          ? '<span class="tag hit">ХИТ</span>' : '';
   const isF = FAVS.includes(p.id);
-  return `<article class="card ${p.status === 'sold' ? 'sold' : ''}" data-id="${p.id}">
+  return `<article class="card ${canBuy(p) ? '' : 'sold'}" data-id="${p.id}">
     <div class="thumb">${img}${tag}
       ${p.size ? `<span class="sizechip">${escapeHtml(p.size)}</span>` : ''}
       <button class="fav" data-fav="${p.id}" aria-pressed="${isF}" aria-label="В избранное">
@@ -866,7 +877,7 @@ function cardHTML(p) {
         <span class="price">${money(p.price)}</span>
         ${p.oldPrice ? `<span class="old">${money(p.oldPrice)}</span>` : ''}
       </div>
-      ${p.status !== 'sold' ? `${maxQty(p)>1 ? `<div class="qtypick"><button data-qcard-minus="${p.id}">−</button><span class="qtyval" data-qty-for="${p.id}">${cardQty(p)}</span><button data-qcard-plus="${p.id}">+</button></div>` : ''}<button class="buybtn" data-buy="${p.id}">КУПИТЬ</button>` : ''}
+      ${canBuy(p) ? `${maxQty(p)>1 ? `<div class="qtypick"><button data-qcard-minus="${p.id}">−</button><span class="qtyval" data-qty-for="${p.id}">${cardQty(p)}</span><button data-qcard-plus="${p.id}">+</button></div>` : ''}<button class="buybtn" data-buy="${p.id}">КУПИТЬ</button>` : ''}
     </div>
   </article>`;
 }
@@ -1008,7 +1019,7 @@ function openPDP(id) {
   setupGallery(p);
 
   const btn = $('#pdpAdd');
-  if (p.status === 'sold') { btn.className = 'bigbtn ghost'; btn.textContent = 'ПРОДАНО — ОТКРЫТЬ КАНАЛ'; btn.onclick = () => openLink('https://t.me/' + DATA.settings.channel); }
+  if (!canBuy(p)) { btn.className = 'bigbtn ghost'; btn.textContent = (p.status === 'sold' ? 'ПРОДАНО' : 'НЕТ В НАЛИЧИИ') + ' — ОТКРЫТЬ КАНАЛ'; btn.onclick = () => openLink('https://t.me/' + DATA.settings.channel); }
   else if (CART.some(x => x.id === p.id)) { btn.className = 'bigbtn ghost'; btn.textContent = 'УЖЕ В КОРЗИНЕ — ПЕРЕЙТИ'; btn.onclick = () => { closeSheet('pdp'); openSheet('cart'); }; }
   else { btn.className = 'bigbtn'; btn.textContent = 'В КОРЗИНУ'; btn.onclick = () => { addToCart(p.id); renderGrids(); openPDP(p.id); }; }
 
@@ -1018,7 +1029,7 @@ function openPDP(id) {
 /* ---------- Корзина и промокод ---------- */
 function getCartLine(id){ return CART.find(x=>x.id===id); }
 function addToCart(id, qty=1) {
-  const p=(DATA.products||[]).find(x=>x.id===id); if(!p || p.status==='sold') return;
+  const p=(DATA.products||[]).find(x=>x.id===id); if(!canBuy(p)) return;
   const max=maxQty(p); const line=getCartLine(id);
   if(line) line.qty=Math.min(max, line.qty+qty); else CART.push({id,qty:Math.min(max,qty)});
   save(); buzz('medium'); updateCounters(); renderCart();
@@ -1030,7 +1041,7 @@ function changeQty(id, delta) {
 }
 function cartItems() {
   return CART
-    .map(line => { const p = (DATA.products || []).find(x => x.id === line.id); return p ? { p, qty: Math.max(1, Math.min(maxQty(p), Number(line.qty) || 1)) } : null; })
+    .map(line => { const p = (DATA.products || []).find(x => x.id === line.id); return canBuy(p) ? { p, qty: Math.max(1, Math.min(maxQty(p), Number(line.qty) || 1)) } : null; })
     .filter(Boolean);
 }
 
