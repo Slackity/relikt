@@ -8,7 +8,7 @@
 <meta name="relikt-build" content="20260918-premium-ui">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Forum&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Forum&family=Cinzel:wght@400;600;700&family=UnifrakturCook:wght@700&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
 <style>
 :root{
   --accent:#A3121F;
@@ -32,7 +32,7 @@ body{min-height:var(--app-h);overflow-x:hidden}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;padding:0}
 body{
-  font-family:Inter,-apple-system,system-ui,sans-serif;
+  font-family:'EB Garamond',Georgia,serif;
   background:var(--void);color:var(--bone);
   font-size:15px;line-height:1.55;overscroll-behavior-y:none;
 }
@@ -167,7 +167,7 @@ a{color:inherit}
 .fav[aria-pressed="true"] svg{fill:var(--accent);color:var(--accent)}
 .sizechip{
   position:absolute;left:8px;bottom:8px;z-index:2;font-size:10px;letter-spacing:.1em;
-  padding:3px 8px;border:1px solid rgba(231,225,213,.3);color:var(--bone);backdrop-filter:blur(3px);
+  padding:3px 8px;border:1px solid rgba(231,225,213,.3);color:var(--bone);background:rgba(10,9,11,.6);
 }
 .cardbody{padding:11px 12px 13px;display:flex;flex-direction:column;gap:3px;flex:1}
 .brand{font-size:9px;letter-spacing:.2em;color:var(--accent);font-weight:600}
@@ -209,7 +209,7 @@ a{color:inherit}
 .sheethead{
   position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:13px;
   padding:calc(11px + env(safe-area-inset-top,0px)) var(--pad) 11px;
-  background:rgba(10,9,11,.92);backdrop-filter:blur(14px);border-bottom:1px solid var(--line);
+  background:rgba(9,8,10,.97);border-bottom:1px solid var(--line);
 }
 .sheethead h2{font-family:Forum,serif;font-size:16px;font-weight:400;margin:0;letter-spacing:.2em}
 
@@ -222,8 +222,8 @@ a{color:inherit}
 .gallery img{width:100%;height:100%;object-fit:cover;display:block;user-select:none;-webkit-user-drag:none}
 .galnav{
   position:absolute;top:50%;transform:translateY(-50%);width:44px;height:64px;z-index:4;
-  display:grid;place-items:center;background:rgba(10,9,11,.55);border:1px solid var(--line);
-  backdrop-filter:blur(4px);color:var(--bone);
+  display:grid;place-items:center;background:rgba(10,9,11,.72);border:1px solid var(--line);
+  color:var(--bone);
 }
 .galnav svg{width:20px;height:20px}
 .galnav.prev{left:8px}
@@ -347,22 +347,14 @@ a{color:inherit}
 #pickupCdekView{background:var(--void)}
 #pickupYandexView{background:var(--void)}
 
-/* === GOTHIC RELIKT ART DIRECTION OVERRIDE === */
-@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;800&family=UnifrakturCook:wght@700&display=swap');
+/* === GOTHIC RELIKT ART DIRECTION OVERRIDE (оптимизировано под мобильные: без background-attachment:fixed,
+   без бесконечных CSS-анимаций и backdrop-filter — это была основная причина подлагивания на телефоне) === */
 body{
   background:
     radial-gradient(circle at 50% 0%, rgba(130,0,20,.3), transparent 38%),
     linear-gradient(180deg, rgba(7,7,8,.55) 0%, rgba(7,7,8,.85) 42%, #070708 68%),
-    url("images/scene.jpg") center 15%/cover no-repeat fixed;
+    url("images/scene.jpg") center 15%/cover no-repeat;
   background-color:#070708;
-  font-family:Inter, sans-serif;
-}
-body::after{
- content:"";position:fixed;inset:0;pointer-events:none;opacity:.4;z-index:0;mix-blend-mode:overlay;
- background-image:
- linear-gradient(90deg,transparent 49%,rgba(255,255,255,.04) 50%,transparent 51%),
- url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch' result='t'/%3E%3CfeColorMatrix in='t' type='matrix' values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.6 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
- background-size:auto,140px 140px;
 }
 .wordmark{
  font-family:'UnifrakturCook',Forum,serif!important;
@@ -381,94 +373,34 @@ body::after{
 .search{
  border:1px solid rgba(231,225,213,.25)!important;
  background:#0d0c0e!important;
- border-radius:0!important;
-}
-.cat,.filter,.sort{
- border:1px solid rgba(231,225,213,.18)!important;
- background:#0e0d10!important;
- clip-path:polygon(4% 0,96% 0,100% 18%,100% 82%,96% 100%,4% 100%,0 82%,0 18%);
- font-family:Cinzel,serif;
-}
-.product-card{
- background:
- linear-gradient(180deg,rgba(255,255,255,.03),transparent 25%),
- #111013!important;
- border:1px solid rgba(231,225,213,.2)!important;
- border-radius:0!important;
- box-shadow:0 0 0 1px rgba(163,18,31,.15),0 15px 35px #000;
- position:relative;
- overflow:hidden;
-}
-.product-card::before{
- content:"";position:absolute;inset:0;pointer-events:none;
- background-image:radial-gradient(circle,rgba(231,225,213,.12) 1px,transparent 1px);
- background-size:18px 18px;opacity:.08;
-}
-.product-card img{
- filter:contrast(1.05) saturate(.85);
-}
-.price,.product-title{
- font-family:Cinzel,serif!important;
-}
-.buy,.button,.qty button{
- background:#8f0713!important;
- border-radius:0!important;
- text-transform:uppercase;
- letter-spacing:.12em;
- font-family:Cinzel,serif;
- border:1px solid #b52a33!important;
-}
-.buy:before{
- content:"⚔ ";
 }
 
-/* PREMIUM UX LAYER */
-@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
-@keyframes glowPulse{0%,100%{box-shadow:0 0 0 rgba(163,18,31,0)}50%{box-shadow:0 0 28px rgba(163,18,31,.28)}}
-@keyframes shimmer{from{background-position:-200% 0}to{background-position:200% 0}}
-.product-card{animation:fadeUp .45s ease both;transition:transform .25s ease,filter .25s ease,border-color .25s ease}
-.product-card:hover{transform:translateY(-5px);filter:brightness(1.08);border-color:rgba(163,18,31,.7)!important}
-.product-card:nth-child(2){animation-delay:.08s}.product-card:nth-child(3){animation-delay:.16s}
-.buybtn,.bigbtn{position:relative;overflow:hidden;animation:glowPulse 3s infinite}
-.buybtn::after,.bigbtn::after{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 30%,rgba(255,255,255,.22),transparent 70%);background-size:200% 100%;animation:shimmer 4s infinite;pointer-events:none}
+/* готические шрифты: UnifrakturCook — крупные заголовки/лого, Cinzel — лейблы/кнопки/навигация,
+   Forum — цены, EB Garamond — основной текст (замена нейтрального Inter) */
+.name,.desc,.hint,.empty,.manual-card .manual-sub,.pay-note{font-family:'EB Garamond',Georgia,serif}
+.brand,.tag,.chip,.switch,.toolbar,.field label,.spec small,.spec b,.pickup-card .pc-name,
+.delivery-summary .ds-label,.payment-card .pay-title,.payment-card .pay-label,.count,
+.quicklinks,.tagline,.foot{font-family:Cinzel,serif;letter-spacing:.09em}
+.buybtn,.bigbtn{font-family:Cinzel,serif}
+
+/* лёгкие интеракции — только по действию пользователя, без бесконечных анимаций */
 .iconbtn{transition:transform .2s ease,background .2s ease}
 .iconbtn:active,.buybtn:active,.bigbtn:active{transform:scale(.94)}
-.sheet{backdrop-filter:blur(14px);transition:transform .35s cubic-bezier(.2,.8,.2,1)}
-.chip,.switch,.sort{transition:all .2s ease}
-.chip:hover,.switch:hover{border-color:var(--accent);color:var(--bone)}
+.sheet{transition:transform .35s cubic-bezier(.2,.8,.2,1)}
+.chip,.switch{transition:background .2s ease,color .2s ease,border-color .2s ease}
 .search{position:relative}
 .search input{transition:border-color .25s,box-shadow .25s}
 .search input:focus{border-color:var(--accent)!important;box-shadow:0 0 18px rgba(163,18,31,.25)}
 
-/* === РЕАЛЬНЫЕ ТЕКСТУРЫ (присланные ассеты) === */
-/* форма карточки — рваный пергамент: подложка-«обрывок бумаги» лежит ПОД фото/кнопкой отдельным слоем
-   (не режем маской сам .card, иначе вместе с углами обрезает и кнопку «Купить», и бейдж «ХИТ» —
-   так и был косяк с серыми проплешинами на скрине). Контент сверху остаётся целым и кликабельным,
-   а рваный край пергамента чуть выглядывает по периметру. */
+/* === карточка товара: чистая скруглённая форма (без текстуры пергамента — не сработала и грузила телефон) === */
 .card{
   clip-path:none!important;
-  background:transparent!important;border-color:transparent!important;
-  overflow:visible!important;
+  background:var(--slab)!important;border:1px solid var(--line)!important;
+  border-radius:16px;overflow:hidden!important;
 }
 .card::before,.card::after{display:none!important}
-.card::before{
-  content:"";position:absolute;inset:-11px;z-index:-1;pointer-events:none;
-  background:url("images/parchment.jpg") center/cover;
-  filter:brightness(.8) saturate(1.05) drop-shadow(0 10px 18px rgba(0,0,0,.6));
-  transform:rotate(-.6deg);
-  display:block!important;
-  /* процедурный рваный край (без картинки) — self-contained SVG data-URI, feTurbulence деформирует прямоугольник-маску */
-  -webkit-mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 190 430'%3E%3Cfilter id='t' x='-20%25' y='-20%25' width='140%25' height='140%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.013 0.009' numOctaves='4' seed='13' result='n'/%3E%3CfeDisplacementMap in='SourceGraphic' in2='n' scale='15' xChannelSelector='R' yChannelSelector='G'/%3E%3C/filter%3E%3Crect x='0' y='0' width='190' height='430' fill='%23fff' filter='url(%23t)'/%3E%3C/svg%3E");
-  mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 190 430'%3E%3Cfilter id='t' x='-20%25' y='-20%25' width='140%25' height='140%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.013 0.009' numOctaves='4' seed='13' result='n'/%3E%3CfeDisplacementMap in='SourceGraphic' in2='n' scale='15' xChannelSelector='R' yChannelSelector='G'/%3E%3C/filter%3E%3Crect x='0' y='0' width='190' height='430' fill='%23fff' filter='url(%23t)'/%3E%3C/svg%3E");
-  -webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;
-  -webkit-mask-size:100% 100%;mask-size:100% 100%;
-}
-.thumb,.cardbody{position:relative;z-index:1}
-.thumb{background:linear-gradient(165deg,#1E1C21,#0D0C0F)}
-.cardbody{background:var(--slab)}
-/* бейдж «ХИТ»/сердечко и раньше сидели впритык к краю — оставляем небольшой отступ для аккуратности */
-.tag{top:5px!important;left:5px!important}
-.fav{top:9px!important;right:9px!important}
+.tag{top:0!important;left:0!important}
+.fav{top:8px!important;right:8px!important}
 .buybtn,.bigbtn{
   background:
     linear-gradient(rgba(163,18,31,.82),rgba(120,8,18,.88)),
@@ -485,7 +417,7 @@ body::after{
 .badge{border-radius:999px}
 .chip{border-radius:999px}
 .search{border-radius:16px}
-.tag{border-radius:0 0 10px 0}
+.tag{border-radius:10px 0 0 0}
 .line{border-radius:12px}
 .toast{border-radius:999px}
 .thumb{border-radius:16px 16px 0 0}
@@ -865,7 +797,7 @@ async function boot() {
   $('#wordmark').textContent = s.shopName || 'RELIKT';
   $('#tagline').textContent  = s.tagline || '';
   document.title = s.shopName || 'RELIKT';
-  if (s.notice) { $('#notice').textContent = s.notice; $('#notice').classList.remove('hidden'); }
+  if (s.notice) { $('#notice').textContent = s.notice; $('#notice').style.textAlign = s.noticeAlign || 'left'; $('#notice').classList.remove('hidden'); }
 
   $('#topLinks').innerHTML = [
     s.channel ? `<a href="https://t.me/${s.channel}">КАНАЛ</a>` : '',

@@ -170,7 +170,10 @@ input,select,textarea{font:inherit;color:inherit}
         <div class="field"><label for="sName">НАЗВАНИЕ</label><input id="sName"></div>
         <div class="field"><label for="sTag">ПОДПИСЬ</label><input id="sTag"></div>
       </div>
-      <div class="field"><label for="sNotice">ПЛАШКА-ОБЪЯВЛЕНИЕ</label><input id="sNotice" placeholder="Пусто — не показывать"></div>
+      <div class="row">
+        <div class="field"><label for="sNotice">ПЛАШКА-ОБЪЯВЛЕНИЕ</label><input id="sNotice" placeholder="Пусто — не показывать"></div>
+        <div class="field"><label for="sNoticeAlign">ВЫРАВНИВАНИЕ ТЕКСТА</label><select id="sNoticeAlign"><option value="left">По левому краю</option><option value="center">По центру</option><option value="right">По правому краю</option></select></div>
+      </div>
       <div class="row">
         <div class="field"><label for="sAccent">ФИРМЕННЫЙ ЦВЕТ</label><input id="sAccent" type="color" style="height:48px;padding:4px"></div>
         <div class="field"><label for="sCur">ВАЛЮТА</label><input id="sCur"></div>
@@ -429,7 +432,7 @@ $('#pAdd').onclick = () => {
 function renderSettings() {
   const s = DATA.settings || {};
   $('#sName').value = s.shopName || ''; $('#sTag').value = s.tagline || '';
-  $('#sNotice').value = s.notice || ''; $('#sAccent').value = s.accent || '#A3121F';
+  $('#sNotice').value = s.notice || ''; $('#sNoticeAlign').value = s.noticeAlign || 'left'; $('#sAccent').value = s.accent || '#A3121F';
   $('#sCur').value = s.currency || '₽';
   $('#sContact').value = s.contact || ''; $('#sChannel').value = s.channel || ''; $('#sFeedback').value = s.feedback || '';
   $('#sCats').value = (s.categories || []).join('\n');
@@ -439,7 +442,7 @@ function renderSettings() {
 function collectSettings() {
   DATA.settings = { ...DATA.settings,
     shopName: $('#sName').value.trim(), tagline: $('#sTag').value.trim(),
-    notice: $('#sNotice').value.trim(), accent: $('#sAccent').value,
+    notice: $('#sNotice').value.trim(), noticeAlign: $('#sNoticeAlign').value, accent: $('#sAccent').value,
     currency: $('#sCur').value.trim() || '₽',
     contact: $('#sContact').value.trim().replace('@', ''),
     channel: $('#sChannel').value.trim().replace('@', ''),

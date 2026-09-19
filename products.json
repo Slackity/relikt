@@ -8,6 +8,7 @@
     "currency": "₽",
     "accent": "#720808",
     "notice": "Они тебя ждут",
+    "noticeAlign": "center",
     "categories": [
       "Футболки",
       "Худи и зипки",
