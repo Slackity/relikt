@@ -36,14 +36,12 @@ body{
   background:var(--void);color:var(--bone);
   font-size:15px;line-height:1.55;overscroll-behavior-y:none;
 }
-/* фоновая готическая фактура: католические кресты, мечи, рыцарские шлемы и черепа */
+/* фоновая готическая фактура: мягкая тонировка поверх реальной иллюстрации собора (задаётся ниже, в body) */
 body::before{
   content:"";position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.9;
   background:
     radial-gradient(90% 55% at 50% -12%, rgba(163,18,31,.22), transparent 62%),
-    radial-gradient(70% 45% at 50% 108%, rgba(231,225,213,.05), transparent 60%),
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260' viewBox='0 0 260 260'%3E %3Cg fill='none' stroke='%23E7E1D5' stroke-width='1.3'%3E %3Cg stroke-opacity='.10' transform='translate(58,62)'%3E %3Cpolygon points='0,-56 8,-44 8,-16 32,-16 32,0 8,0 8,48 -8,48 -8,0 -32,0 -32,-16 -8,-16 -8,-44'/%3E %3C/g%3E %3Cg stroke-opacity='.08' transform='translate(205,148) rotate(12) scale(.55)'%3E %3Ccircle cx='0' cy='-8' r='15'/%3E %3Cpath d='M -10,4 L -8,15 L -3,20 L 0,22 L 3,20 L 8,15 L 10,4'/%3E %3Ccircle cx='-6' cy='-9' r='3.5'/%3E %3Ccircle cx='6' cy='-9' r='3.5'/%3E %3Cpath d='M 0,-3 L -3,3 L 3,3 Z'/%3E %3Cline x1='-3' y1='18' x2='-3' y2='21'/%3E %3Cline x1='3' y1='18' x2='3' y2='21'/%3E %3C/g%3E %3Cg stroke-opacity='.075' transform='translate(35,208) rotate(-18) scale(.6)'%3E %3Cpolygon points='0,-52 5,-38 5,10 -5,10 -5,-38'/%3E %3Crect x='-15' y='8' width='30' height='5'/%3E %3Crect x='-3' y='13' width='6' height='16'/%3E %3Ccircle cx='0' cy='33' r='5'/%3E %3C/g%3E %3Cg stroke-opacity='.07' transform='translate(200,235) rotate(8) scale(.55)'%3E %3Cpath d='M -16,-30 Q -16,-42 0,-42 Q 16,-42 16,-30 L 16,8 Q 16,17 7,17 L -7,17 Q -16,17 -16,8 Z'/%3E %3Crect x='-13' y='-8' width='26' height='4'/%3E %3Crect x='-1.5' y='0' width='3' height='12'/%3E %3Cline x1='0' y1='-42' x2='0' y2='-50'/%3E %3C/g%3E %3C/g%3E %3C/svg%3E");
-  background-size:auto,auto,260px 260px;
+    radial-gradient(70% 45% at 50% 108%, rgba(231,225,213,.05), transparent 60%);
 }
 #app{position:relative;z-index:1}
 button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
@@ -353,8 +351,10 @@ a{color:inherit}
 @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;800&family=UnifrakturCook:wght@700&display=swap');
 body{
   background:
-    radial-gradient(circle at 50% 0%, rgba(130,0,20,.25), transparent 35%),
-    #070708;
+    radial-gradient(circle at 50% 0%, rgba(130,0,20,.3), transparent 38%),
+    linear-gradient(180deg, rgba(7,7,8,.55) 0%, rgba(7,7,8,.85) 42%, #070708 68%),
+    url("images/scene.jpg") center 15%/cover no-repeat fixed;
+  background-color:#070708;
   font-family:Inter, sans-serif;
 }
 body::after{
@@ -435,6 +435,34 @@ body::after{
 .search input{transition:border-color .25s,box-shadow .25s}
 .search input:focus{border-color:var(--accent)!important;box-shadow:0 0 18px rgba(163,18,31,.25)}
 
+/* === РЕАЛЬНЫЕ ТЕКСТУРЫ (присланные ассеты) === */
+.card{
+  background:
+    linear-gradient(180deg,rgba(0,0,0,.35),rgba(0,0,0,.55)),
+    url("images/parchment.jpg") center/cover;
+  background-blend-mode:multiply;
+}
+.buybtn,.bigbtn{
+  background:
+    linear-gradient(rgba(163,18,31,.82),rgba(120,8,18,.88)),
+    url("images/leather.jpg") center/cover;
+  background-blend-mode:multiply;
+}
+.buybtn.ghost,.bigbtn.ghost,.bigbtn[disabled]{background:var(--slab-2)!important}
+/* готические разделители — заменяем нарисованный SVG на кованую иллюстрацию */
+.orn{
+  width:100%;max-width:260px;height:26px;margin:16px auto 0;
+  background:url("images/divider.png") no-repeat center/contain;
+  opacity:.85;filter:drop-shadow(0 2px 5px rgba(0,0,0,.55));
+}
+.orn path{display:none!important}
+.orn.small{max-width:190px;height:20px}
+/* кованые уголки на иллюстрации персонажа */
+.heroart-corner{width:34px;height:34px;color:transparent}
+.heroart-corner.tl{background:url("images/corner.png") no-repeat left top/contain}
+.heroart-corner.br{background:url("images/corner.png") no-repeat left top/contain;transform:rotate(180deg)}
+.heroart-corner path{display:none}
+
 /* === ИЛЛЮСТРАЦИЯ ПЕРСОНАЖА === */
 .heroart{
   position:relative;max-width:1320px;margin:0 auto;padding:6px var(--pad) 4px;
@@ -464,6 +492,21 @@ body::after{
 }
 .heroart-caption p{font-size:12.5px;color:var(--ash);margin:0;line-height:1.55;max-width:38ch}
 @media (max-width:380px){.heroart-caption p{display:none}}
+
+.promoart{
+  position:relative;max-width:1320px;margin:28px auto 0;padding:18px var(--pad) 4px;
+  display:flex;align-items:flex-end;gap:18px;justify-content:center;
+  border-top:1px solid var(--line);
+}
+.promoart-frame{position:relative;flex:0 0 auto;width:40%;max-width:220px;min-width:130px;filter:drop-shadow(0 18px 26px rgba(0,0,0,.65))}
+.promoart-frame picture,.promoart-frame .heroart-img{display:block;width:100%}
+.promoart-caption{flex:1;min-width:0;padding-bottom:10px;text-align:right}
+.promoart-caption h2{
+  font-family:'UnifrakturCook',Forum,serif;font-size:clamp(22px,5.5vw,28px);
+  margin:0 0 8px;color:var(--bone);text-shadow:0 0 20px rgba(163,18,31,.45);line-height:1.05;
+}
+.promoart-caption p{font-size:12.5px;color:var(--ash);margin:0 0 0 auto;line-height:1.55;max-width:32ch}
+@media (max-width:380px){.promoart-caption p{display:none}}
 </style>
 </head>
 <body>
@@ -534,6 +577,21 @@ body::after{
   <div class="notice hidden" id="notice"></div>
   <div class="count" id="count"></div>
   <main class="grid" id="grid"></main>
+
+  <section class="promoart">
+    <div class="promoart-caption">
+      <span class="heroart-eyebrow">Limited drop</span>
+      <h2>Тьма идёт вам к лицу</h2>
+      <p>Готовим новую линию — следите за каналом, чтобы не пропустить старт продаж.</p>
+    </div>
+    <div class="promoart-frame">
+      <div class="heroart-glow"></div>
+      <picture>
+        <source srcset="images/demon.webp" type="image/webp">
+        <img class="heroart-img" src="images/demon.png" alt="RELIKT — иллюстрация персонажа" loading="lazy">
+      </picture>
+    </div>
+  </section>
 
   <footer class="foot">
     <svg class="orn small" viewBox="0 0 240 18" fill="currentColor" aria-hidden="true">
