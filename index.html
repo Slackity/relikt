@@ -366,11 +366,16 @@ body::after{
 }
 .wordmark{
  font-family:'UnifrakturCook',Forum,serif!important;
- font-size:42px!important;
- letter-spacing:.08em!important;
- text-shadow:0 0 20px rgba(163,18,31,.5);
+ font-size:64px!important;
+ line-height:.95!important;
+ letter-spacing:.05em!important;
+ text-shadow:0 0 26px rgba(163,18,31,.55);
 }
 .brandrow{align-items:center}
+@media(max-width:380px){.wordmark{font-size:52px!important}}
+/* видимый логотип — это картинка .brandlogo (не текстовый .wordmark), увеличиваем именно её */
+.brandlogo{height:62px!important;filter:drop-shadow(0 0 26px rgba(163,18,31,.6))!important}
+@media(max-width:380px){.brandlogo{height:52px!important}}
 .top{border-bottom:1px solid rgba(231,225,213,.12)}
 .quicklinks{font-family:Cinzel,serif!important}
 .search{
@@ -448,11 +453,8 @@ body::after{
 .card::before,.card::after{display:none!important}
 .card::before{
   content:"";position:absolute;inset:-11px;z-index:-1;pointer-events:none;
-  background:
-    linear-gradient(178deg,rgba(20,16,14,.08),rgba(0,0,0,.4)),
-    url("images/parchment.jpg") center/cover;
-  background-blend-mode:multiply;
-  filter:brightness(1.35) drop-shadow(0 10px 18px rgba(0,0,0,.6));
+  background:url("images/parchment.jpg") center/cover;
+  filter:brightness(.8) saturate(1.05) drop-shadow(0 10px 18px rgba(0,0,0,.6));
   transform:rotate(-.6deg);
   display:block!important;
   /* процедурный рваный край (без картинки) — self-contained SVG data-URI, feTurbulence деформирует прямоугольник-маску */
@@ -474,6 +476,22 @@ body::after{
   background-blend-mode:multiply;
 }
 .buybtn.ghost,.bigbtn.ghost,.bigbtn[disabled]{background:var(--slab-2)!important}
+/* мягкая форма — вместо острых срезанных углов везде скруглённые формы */
+.buybtn,.bigbtn,.qtypick button,.iconbtn,.badge,.chip,.search,.tag,.line,.toast{clip-path:none!important}
+.buybtn{border-radius:10px}
+.bigbtn{border-radius:14px}
+.qtypick,.qtypick button{border-radius:8px}
+.iconbtn{border-radius:12px}
+.badge{border-radius:999px}
+.chip{border-radius:999px}
+.search{border-radius:16px}
+.tag{border-radius:0 0 10px 0}
+.line{border-radius:12px}
+.toast{border-radius:999px}
+.thumb{border-radius:16px 16px 0 0}
+.cardbody{border-radius:0 0 16px 16px}
+.sumbox,.payment-card,.delivery-summary{border-radius:12px}
+.field input,.field textarea,.field select,.toolbar select{border-radius:10px!important}
 /* готические разделители — заменяем нарисованный SVG на кованую иллюстрацию */
 .orn{
   width:100%;max-width:260px;height:26px;margin:16px auto 0;
@@ -567,7 +585,7 @@ body::after{
 
     <div class="search">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
-      <input id="q" type="search" placeholder=""Ибо всякий просящий получает, и ищущий находит"" autocomplete="off">
+      <input id="q" type="search" placeholder="ed hardy, сумка, платье" autocomplete="off">
     </div>
   </header>
 
