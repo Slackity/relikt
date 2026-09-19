@@ -436,12 +436,37 @@ body::after{
 .search input:focus{border-color:var(--accent)!important;box-shadow:0 0 18px rgba(163,18,31,.25)}
 
 /* === РЕАЛЬНЫЕ ТЕКСТУРЫ (присланные ассеты) === */
+/* форма карточки — рваный пергамент: подложка-«обрывок бумаги» лежит ПОД фото/кнопкой отдельным слоем
+   (не режем маской сам .card, иначе вместе с углами обрезает и кнопку «Купить», и бейдж «ХИТ» —
+   так и был косяк с серыми проплешинами на скрине). Контент сверху остаётся целым и кликабельным,
+   а рваный край пергамента чуть выглядывает по периметру. */
 .card{
+  clip-path:none!important;
+  background:transparent!important;border-color:transparent!important;
+  overflow:visible!important;
+}
+.card::before,.card::after{display:none!important}
+.card::before{
+  content:"";position:absolute;inset:-11px;z-index:-1;pointer-events:none;
   background:
-    linear-gradient(180deg,rgba(0,0,0,.35),rgba(0,0,0,.55)),
+    linear-gradient(178deg,rgba(20,16,14,.08),rgba(0,0,0,.4)),
     url("images/parchment.jpg") center/cover;
   background-blend-mode:multiply;
+  filter:brightness(1.35) drop-shadow(0 10px 18px rgba(0,0,0,.6));
+  transform:rotate(-.6deg);
+  display:block!important;
+  /* процедурный рваный край (без картинки) — self-contained SVG data-URI, feTurbulence деформирует прямоугольник-маску */
+  -webkit-mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 190 430'%3E%3Cfilter id='t' x='-20%25' y='-20%25' width='140%25' height='140%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.013 0.009' numOctaves='4' seed='13' result='n'/%3E%3CfeDisplacementMap in='SourceGraphic' in2='n' scale='15' xChannelSelector='R' yChannelSelector='G'/%3E%3C/filter%3E%3Crect x='0' y='0' width='190' height='430' fill='%23fff' filter='url(%23t)'/%3E%3C/svg%3E");
+  mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 190 430'%3E%3Cfilter id='t' x='-20%25' y='-20%25' width='140%25' height='140%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.013 0.009' numOctaves='4' seed='13' result='n'/%3E%3CfeDisplacementMap in='SourceGraphic' in2='n' scale='15' xChannelSelector='R' yChannelSelector='G'/%3E%3C/filter%3E%3Crect x='0' y='0' width='190' height='430' fill='%23fff' filter='url(%23t)'/%3E%3C/svg%3E");
+  -webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;
+  -webkit-mask-size:100% 100%;mask-size:100% 100%;
 }
+.thumb,.cardbody{position:relative;z-index:1}
+.thumb{background:linear-gradient(165deg,#1E1C21,#0D0C0F)}
+.cardbody{background:var(--slab)}
+/* бейдж «ХИТ»/сердечко и раньше сидели впритык к краю — оставляем небольшой отступ для аккуратности */
+.tag{top:5px!important;left:5px!important}
+.fav{top:9px!important;right:9px!important}
 .buybtn,.bigbtn{
   background:
     linear-gradient(rgba(163,18,31,.82),rgba(120,8,18,.88)),
