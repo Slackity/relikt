@@ -339,6 +339,18 @@ if(tg){tg.ready();tg.expand();}
 const uid=String(tg?.initDataUnsafe?.user?.id || sessionStorage.getItem('relikt_admin_uid') || '');
 if(uid!==ADMIN_ID){document.body.innerHTML='<div style="padding:40px;font-family:Inter,sans-serif;background:#0A090B;color:#E7E1D5;min-height:100vh"><h1>Доступ закрыт</h1><p>Панель доступна только владельцу магазина в Telegram.</p><button onclick="history.back()" style="padding:12px 18px">← НАЗАД</button></div>'; throw new Error('admin_access_denied');}
 
+// Любой каталог (с GitHub, с сайта, из файла) приводим к рабочему виду,
+// иначе renderPromos/openEditor падают на отсутствующих settings и products.
+function normalizeData(raw) {
+  const d = (raw && typeof raw === 'object') ? raw : {};
+  d.settings = (d.settings && typeof d.settings === 'object') ? d.settings : {};
+  d.settings.categories = Array.isArray(d.settings.categories) ? d.settings.categories : [];
+  d.settings.promos = Array.isArray(d.settings.promos) ? d.settings.promos : [];
+  d.products = Array.isArray(d.products) ? d.products : [];
+  return d;
+}
+const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
 const log = m => { const el = $('#log'); el.textContent = new Date().toLocaleTimeString('ru-RU') + '  ' + m + '\n' + el.textContent; };
 const setStatus = t => $('#status').textContent = t;
 const markDirty = () => { DIRTY = true; setStatus('ЕСТЬ НЕОПУБЛИКОВАННЫЕ ИЗМЕНЕНИЯ'); };
@@ -355,11 +367,16 @@ const b64decode = s => decodeURIComponent(escape(atob(s.replace(/\n/g, ''))));
 
 async function pullFromGitHub() {
   const r = await gh(api('products.json') + '?ref=' + (CONN.branch || 'main'));
-  SHA = r.sha; DATA = JSON.parse(b64decode(r.content)); DIRTY = false;
+  SHA = r.sha; DATA = normalizeData(JSON.parse(b64decode(r.content))); DIRTY = false;
   renderAll(); setStatus('ЗАГРУЖЕНО С GITHUB');
   log('Каталог загружен: ' + (DATA.products || []).length + ' товаров.');
 }
 async function pushToGitHub() {
+  // GitHub отклоняет перезапись существующего файла без sha — добираем его.
+  if (!SHA) {
+    try { SHA = (await gh(api('products.json') + '?ref=' + (CONN.branch || 'main'))).sha; }
+    catch (e) { if (!/^404/.test(e.message)) throw e; }   // 404 = файла ещё нет, создаём
+  }
   const body = { message: 'Обновление каталога ' + new Date().toLocaleString('ru-RU'), content: b64encode(JSON.stringify(DATA, null, 2)), branch: CONN.branch || 'main' };
   if (SHA) body.sha = SHA;
   const r = await gh(api('products.json'), { method: 'PUT', body: JSON.stringify(body) });
@@ -371,7 +388,10 @@ async function uploadImage(dataUrl, name) {
   return path;
 }
 async function pullLocal() {
-  DATA = await (await fetch('products.json?v=' + Date.now())).json();
+  const res = await fetch('products.json?v=' + Date.now(), { cache: 'no-store' });
+  if (!res.ok) throw new Error('HTTP ' + res.status);
+  DATA = normalizeData(await res.json());
+  SHA = null;   // версия не с GitHub — старый sha больше не описывает файл
   renderAll(); log('Каталог прочитан прямо с сайта (только просмотр).');
 }
 
@@ -380,9 +400,9 @@ function renderList() {
   const list = DATA.products || [];
   $('#list').innerHTML = list.length ? list.map(p => `
     <div class="item" data-id="${p.id}">
-      <div class="ph">${p.images?.[0] ? `<img src="${p.images[0]}" alt="">` : (p.brand || 'R')[0]}</div>
-      <div class="t"><b>${p.title}</b>
-        <span>${[p.brand, p.size && 'р. ' + p.size, new Intl.NumberFormat('ru-RU').format(p.price) + ' ₽'].filter(Boolean).join(' · ')}</span>
+      <div class="ph">${p.images?.[0] ? `<img src="${esc(p.images[0])}" alt="">` : esc((p.brand || 'R')[0])}</div>
+      <div class="t"><b>${esc(p.title)}</b>
+        <span>${esc([p.brand, p.size && 'р. ' + p.size, new Intl.NumberFormat('ru-RU').format(p.price) + ' ₽'].filter(Boolean).join(' · '))}</span>
       </div>
       <span class="pill ${p.status}">${p.status === 'in' ? 'В НАЛИЧИИ' : p.status === 'hold' ? 'БРОНЬ' : 'ПРОДАНО'}</span>
     </div>`).join('')
@@ -395,8 +415,8 @@ function renderPromos() {
   const list = DATA.settings.promos || [];
   $('#promoList').innerHTML = list.length ? list.map((p, i) => `
     <div class="promoitem">
-      <span class="code">${p.code}</span>
-      <span class="val">${p.type === 'amount' ? new Intl.NumberFormat('ru-RU').format(p.value) + ' ₽' : p.value + '%'}</span>
+      <span class="code">${esc(p.code)}</span>
+      <span class="val">${p.type === 'amount' ? new Intl.NumberFormat('ru-RU').format(Number(p.value) || 0) + ' ₽' : (Number(p.value) || 0) + '%'}</span>
       ${p.active === false ? '<span class="off">ВЫКЛЮЧЕН</span>' : ''}
       <button data-toggle="${i}">${p.active === false ? 'включить' : 'выключить'}</button>
       <button data-rmpromo="${i}">удалить</button>
@@ -453,7 +473,10 @@ function collectSettings() {
     paymentBank: $('#sPayBank').value.trim(), paymentRecipient: $('#sPayRecipient').value.trim(), paymentDetails: $('#sPayDetails').value.trim(), paymentNote: $('#sPayNote').value.trim()
   };
 }
-$$('#tab-settings input, #tab-settings textarea').forEach(el => el.oninput = () => { collectSettings(); markDirty(); });
+$$('#tab-settings input, #tab-settings textarea, #tab-settings select').forEach(el => {
+  const handler = () => { collectSettings(); markDirty(); };
+  el.oninput = handler; el.onchange = handler;   // у <select> надёжнее change
+});
 
 function renderAll() { renderList(); renderPromos(); renderSettings(); }
 
@@ -466,7 +489,7 @@ function openEditor(p) {
   };
   $('#edTitle').textContent = p ? 'РЕДАКТИРОВАНИЕ' : 'НОВЫЙ ТОВАР';
   $('#edDelete').classList.toggle('hidden', !p);
-  $('#edCat').innerHTML = (DATA.settings.categories || []).map(c => `<option ${c === EDIT.category ? 'selected' : ''}>${c}</option>`).join('');
+  $('#edCat').innerHTML = (DATA.settings.categories || []).map(c => `<option ${c === EDIT.category ? 'selected' : ''}>${esc(c)}</option>`).join('');
   $('#edName').value = EDIT.title; $('#edBrand').value = EDIT.brand || '';
   $('#edPrice').value = EDIT.price || ''; $('#edOld').value = EDIT.oldPrice || '';
   $('#edSize').value = EDIT.size || ''; $('#edCond').value = EDIT.condition || '';
@@ -479,7 +502,7 @@ function closeEditor() { $('#editor').classList.remove('open'); document.body.st
 
 function renderPhotos() {
   $('#edPhotos').innerHTML = (EDIT.images || []).map((src, i) =>
-    `<div class="photo"><img src="${src}" alt=""><button data-rm="${i}" title="Убрать">×</button></div>`).join('')
+    `<div class="photo"><img src="${esc(src)}" alt=""><button data-rm="${i}" title="Убрать">×</button></div>`).join('')
     || `<div class="addphoto">ПОКА НЕТ ФОТО</div>`;
   $$('[data-rm]').forEach(b => b.onclick = () => { EDIT.images.splice(+b.dataset.rm, 1); renderPhotos(); });
 }
@@ -585,7 +608,7 @@ $('#download').onclick = () => {
 $('#importFile').onchange = e => {
   const f = e.target.files[0]; if (!f) return;
   const r = new FileReader();
-  r.onload = () => { try { DATA = JSON.parse(r.result); renderAll(); markDirty(); log('Файл загружен.'); } catch (err) { alert('Это не похоже на products.json'); } };
+  r.onload = () => { try { DATA = normalizeData(JSON.parse(r.result)); renderAll(); markDirty(); log('Файл загружен.'); } catch (err) { alert('Это не похоже на products.json'); } };
   r.readAsText(f);
 };
 window.onbeforeunload = e => { if (DIRTY) { e.preventDefault(); e.returnValue = ''; } };
