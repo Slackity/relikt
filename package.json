@@ -1,0 +1,12 @@
+{
+  "name": "relikt",
+  "version": "2.0.0",
+  "description": "RELIKT shop: Telegram Mini App and website on GitHub Pages, admin panel, channel import",
+  "private": true,
+  "engines": { "node": ">=18" },
+  "scripts": {
+    "serve": "node tools/serve.js",
+    "import": "node tools/import-channel.js",
+    "bump": "node tools/bump-version.js"
+  }
+}

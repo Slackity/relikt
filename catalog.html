@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://telegram.org; style-src 'self' https://fonts.googleapis.com; style-src-attr 'unsafe-inline'; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https:; base-uri 'none'; object-src 'none'; form-action 'self'">
+<meta name="relikt-build" content="20261011-1850">
+<title>Каталог — RELIKT</title>
+<meta name="description" content="Каталог RELIKT: винтаж и стритвир из-за рубежа. Сток в наличии и выкуп под заказ.">
+<meta name="theme-color" content="#080707">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=IBM+Plex+Mono:wght@400;500&family=Onest:wght@300;400;500&display=swap">
+<link rel="stylesheet" href="css/style.css?v=20261011-1850">
+<link rel="stylesheet" href="css/shop.css?v=20261011-1850">
+<script src="js/boot.js?v=20261011-1850"></script>
+</head>
+<body class="page-shop">
+<script src="js/sprite.js?v=20261011-1850"></script>
+
+<main class="shop">
+  <div class="wrap">
+    <header class="shop__head">
+      <p class="eyebrow reveal" id="crumb">RELIKT</p>
+      <h1 class="h2 shop__title reveal" id="shopTitle" data-i18n="catalog.title">Каталог</h1>
+      <p class="sec-head__lead reveal" id="shopLead" data-i18n="catalog.lead">Сток в наличии и вещи под заказ. Нужной нет? Напиши, привезём.</p>
+    </header>
+
+    <div class="filters reveal" id="filters">
+      <div class="chips" id="catChips" role="group" aria-label="Categories"></div>
+      <div class="filters__row">
+        <div class="chips chips--sm" id="avChips" role="group" aria-label="Availability"></div>
+        <label class="search">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5" fill="none" stroke="currentColor" stroke-width="1.2"/><path d="M16 16l4.5 4.5" stroke="currentColor" stroke-width="1.2"/></svg>
+          <input type="search" id="q" autocomplete="off" data-i18n-attr="placeholder:catalog.search;aria-label:catalog.search">
+        </label>
+        <label class="select">
+          <select id="sort" aria-label="Sort">
+            <option value="new" data-i18n="sort.new">Сначала новые</option>
+            <option value="asc" data-i18n="sort.asc">Цена: по возрастанию</option>
+            <option value="desc" data-i18n="sort.desc">Цена: по убыванию</option>
+          </select>
+        </label>
+      </div>
+    </div>
+
+    <p class="shop__count eyebrow" id="count" aria-live="polite"></p>
+    <p class="page-message" id="pageMessage"></p>
+    <div class="grid" id="grid"></div>
+
+    <div class="empty" id="empty" hidden>
+      <div class="empty__sigil" data-orn="sigil" data-n="8" data-curl="1" aria-hidden="true"></div>
+      <p id="emptyText"></p>
+      <button class="btn btn--ghost" id="resetBtn" type="button"><span data-i18n="catalog.reset">Сбросить фильтры</span></button>
+    </div>
+
+    <div class="section-cta"><button class="btn btn--ghost" id="more" type="button" hidden><span data-i18n="catalog.more">Показать ещё</span></button></div>
+  </div>
+</main>
+
+<div id="footerMount"></div>
+
+<script src="js/ornaments.js?v=20261011-1850"></script>
+<script src="js/i18n-defaults.js?v=20261011-1850"></script>
+<script src="js/app.js?v=20261011-1850"></script>
+<script src="js/tg.js?v=20261011-1850"></script>
+<script src="js/chrome.js?v=20261011-1850"></script>
+<script src="js/shop.js?v=20261011-1850"></script>
+<script src="js/catalog.js?v=20261011-1850"></script>
+</body>
+</html>

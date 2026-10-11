@@ -1,0 +1,55 @@
+# Imports new products from the public Telegram channel.
+# Started by the "Import from Telegram" button in the admin panel (or by hand: Actions → Import from Telegram → Run workflow).
+name: Import from Telegram
+
+on:
+  workflow_dispatch:
+    inputs:
+      publish:
+        description: Publish new products right away (otherwise they are drafts)
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+  pages: write
+
+concurrency:
+  group: catalog-import
+  cancel-in-progress: false
+
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+
+      # optional: makes the photos small WebP files; without it the original JPEGs are kept
+      - name: Install image optimiser
+        run: npm install --no-save --no-package-lock --no-audit --no-fund sharp@^0.34.0
+        continue-on-error: true
+
+      - name: Read the channel
+        run: node tools/import-channel.js ${{ inputs.publish && '--publish' || '' }}
+
+      - name: Save to the repository
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data uploads
+          if git diff --cached --quiet; then echo "Nothing new"; exit 0; fi
+          git commit -m "Импорт из Telegram"
+          git pull --rebase
+          git push
+
+      # pushes made by a workflow do not always trigger a Pages rebuild, so ask for one
+      - name: Rebuild the site
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh api --method POST "repos/${{ github.repository }}/pages/builds" > /dev/null
