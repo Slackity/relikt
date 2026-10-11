@@ -140,7 +140,8 @@ html.has-banner { --banner-h: 34px; }
 .search input::-webkit-search-cancel-button { filter: invert(1); opacity: .5; }
 .select select { appearance: none; -webkit-appearance: none; padding-right: 34px; cursor: pointer; font-family: var(--f-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase;
   background: var(--void) url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6'><path d='M1 1l4 4 4-4' fill='none' stroke='%23948c80'/></svg>") no-repeat right 12px center; }
-.select select option { background: var(--ash); color: var(--bone); }
+/* native dropdown lists (Android ignores a dark option background): dark text on bone everywhere */
+.select select option, .field select option { background: var(--bone); color: var(--void); }
 .search input:focus, .select select:focus, .opt__input:focus, .field input:focus, .field select:focus, .field textarea:focus { border-color: var(--bone-40); background: var(--bone-08); }
 ::placeholder { color: var(--fog); opacity: 1; }
 .shop__count { margin: 22px 0 28px; }

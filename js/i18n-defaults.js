@@ -173,6 +173,7 @@
   add('checkout.contact', 'cart', 'Поле: контакт', 'Telegram', 'Telegram');
   add('checkout.contactHint', 'cart', 'Контакт: подсказка', '@username: сюда напишет менеджер.', '@username: the manager will message you here.');
   add('checkout.phone', 'cart', 'Поле: телефон', 'Телефон', 'Phone');
+  add('checkout.phoneBad', 'cart', 'Телефон: неполный номер', 'Нужен номер целиком: +7 и 10 цифр', 'Enter the full number: +7 and 10 digits');
   add('checkout.city', 'cart', 'Поле: город', 'Город', 'City');
   add('checkout.delivery', 'cart', 'Поле: доставка', 'Служба доставки', 'Delivery service');
   add('checkout.deliveryAny', 'cart', 'Доставка: выберу с менеджером', 'Выберу вместе с менеджером', 'Decide with the manager');

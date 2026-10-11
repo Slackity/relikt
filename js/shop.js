@@ -298,7 +298,7 @@
     var form = h('form', { class: 'form', id: 'checkoutForm', novalidate: true, autocomplete: 'on' },
       field('f_name', RK.t('checkout.name') + ' *', { attrs: { type: 'text', autocomplete: 'name', maxlength: '80', value: val('name'), required: true } }),
       field('f_contact', RK.t('checkout.contact') + ' *', { attrs: { type: 'text', autocomplete: 'off', maxlength: '80', value: val('contact'), placeholder: '@username', required: true, 'aria-describedby': 'f_contactHint' } }, RK.t('checkout.contactHint')),
-      field('f_phone', RK.t('checkout.phone') + ' *', { attrs: { type: 'tel', inputmode: 'tel', autocomplete: 'tel', maxlength: '32', value: val('phone'), placeholder: '+7 900 000-00-00', required: true } }),
+      field('f_phone', RK.t('checkout.phone') + ' *', { attrs: { type: 'tel', inputmode: 'tel', autocomplete: 'tel', value: val('phone') ? formatPhone(val('phone')) : '', placeholder: '+7 900 000-00-00', required: true } }),
       field('f_city', RK.t('checkout.city') + ' *', { attrs: { type: 'text', autocomplete: 'address-level2', maxlength: '80', value: val('city'), required: true } }),
       h('div', { class: 'field' }, h('label', { for: 'f_delivery', text: RK.t('checkout.delivery') }), delivery),
       field('f_address', RK.t('checkout.address') + ' *', { tag: 'textarea', attrs: { rows: '2', autocomplete: 'street-address', maxlength: '300', text: val('address'), placeholder: RK.t('checkout.addressPh'), required: true } }),
@@ -309,6 +309,7 @@
         s.reservePercent > 0 ? radio('reserve', RK.t('checkout.payReserve', { amount: RK.money(t.deposit) }), pay === 'reserve') : null),
       h('p', { class: 'form__error', id: 'formError', role: 'alert' }));
     form.addEventListener('submit', next);
+    phoneMask(RK.$('#f_phone', form));
     form.addEventListener('input', function () { formState = collect(); });
     bodyEl.appendChild(h('button', { class: 'back', type: 'button', onclick: stepBack }, '← ' + RK.t('checkout.back')));
     bodyEl.appendChild(form);
@@ -316,6 +317,50 @@
     footEl.appendChild(sumList(t));
     footEl.appendChild(h('button', { class: 'btn btn--solid btn--block', type: 'submit', form: 'checkoutForm', id: 'submitBtn' },
       h('span', { text: RK.t(payDetails() ? 'checkout.toPay' : 'checkout.submit') + ' →' })));
+  }
+
+  /* phone: always +7 and ten digits, shown as +7 900 000-00-00; letters and symbols never get in */
+  function formatPhone(v) {
+    var d = String(v || '').replace(/\D/g, '');
+    if (d.charAt(0) === '8') d = '7' + d.slice(1);       // 8 900… is the same number as +7 900…
+    else if (d.charAt(0) !== '7') d = '7' + d;
+    var r = d.slice(1, 11);
+    return '+7' + (r ? ' ' + r.slice(0, 3) : '') + (r.length > 3 ? ' ' + r.slice(3, 6) : '') + (r.length > 6 ? '-' + r.slice(6, 8) : '') + (r.length > 8 ? '-' + r.slice(8, 10) : '');
+  }
+  function phoneMask(el) {
+    if (!el) return;
+    var caretAfterDigits = function (n) {
+      var i = 0, seen = 0;
+      while (i < el.value.length && seen < n) { if (/\d/.test(el.value.charAt(i))) seen++; i++; }
+      try { el.setSelectionRange(i, i); } catch (e) { /* not focused */ }
+    };
+    var fix = function () {
+      var pos = el.selectionStart == null ? el.value.length : el.selectionStart;
+      var atEnd = pos >= el.value.length;
+      var digitsBefore = el.value.slice(0, pos).replace(/\D/g, '').length;
+      var out = formatPhone(el.value);
+      if (out.length <= 2) out = '+7 ';
+      if (out !== el.value) el.value = out;
+      if (atEnd) { try { el.setSelectionRange(out.length, out.length); } catch (e) { /* not focused */ } }
+      else caretAfterDigits(Math.max(1, digitsBefore));
+    };
+    el.addEventListener('focus', function () { if (!el.value) { el.value = '+7 '; setTimeout(function () { try { el.setSelectionRange(3, 3); } catch (e) { /* gone */ } }, 0); } });
+    el.addEventListener('input', fix);
+    el.addEventListener('keydown', function (e) {
+      if (e.key !== 'Backspace' || el.selectionStart !== el.selectionEnd) return;
+      var p = el.selectionStart, v = el.value;
+      // the +7 stays; a space or dash left of the caret takes the digit before it with it
+      if (p <= 3) { e.preventDefault(); return; }
+      if (/\d/.test(v.charAt(p - 1))) return;
+      e.preventDefault();
+      var q = p - 1;
+      while (q > 3 && !/\d/.test(v.charAt(q - 1))) q--;
+      if (q <= 3) return;
+      var digitsBefore = v.slice(0, q - 1).replace(/\D/g, '').length;
+      el.value = formatPhone(v.slice(0, q - 1) + v.slice(q));
+      caretAfterDigits(digitsBefore);
+      el.dispatchEvent(new Event('input', { bubbles: true }));
+    });
   }
 
   function radio(value, label, checked) {
@@ -346,8 +391,8 @@
     var c = formState = collect();
     var bad = false;
     REQUIRED.forEach(function (k) {
-      var short = k === 'phone' ? c.phone.replace(/\D/g, '').length < 6 : c[k].length < 2;
-      setErr('f_' + k, short ? RK.t('checkout.required') : '');
+      var short = k === 'phone' ? c.phone.replace(/\D/g, '').length !== 11 : c[k].length < 2;
+      setErr('f_' + k, short ? RK.t(k === 'phone' && c.phone.replace(/\D/g, '').length > 1 ? 'checkout.phoneBad' : 'checkout.required') : '');
       if (short) bad = true;
     });
     if (bad) { RK.haptic('error'); var first = RK.$('[aria-invalid="true"]', drawer); if (first) first.focus(); return; }
