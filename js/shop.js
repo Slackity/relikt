@@ -121,6 +121,15 @@
       bodyEl, footEl);
     doc.body.appendChild(scrim);
     doc.body.appendChild(drawer);
+    /* on a phone the keyboard takes half the screen: while a field is being typed in, the total and the button
+       step aside (they come back when the keyboard closes) so the form keeps room to scroll */
+    var touch = !!(window.matchMedia && matchMedia('(pointer: coarse)').matches);
+    var typing = function (el) { return !!el && (el.tagName === 'TEXTAREA' || el.tagName === 'SELECT' || (el.tagName === 'INPUT' && !/^(checkbox|radio|button|submit|file|hidden)$/.test(el.type))); };
+    drawer.addEventListener('focusin', function (e) { if (touch && typing(e.target)) drawer.classList.add('is-typing'); });
+    drawer.addEventListener('focusout', function () {
+      // moving from one field to the next keeps the keyboard open: wait a moment before bringing the panel back
+      setTimeout(function () { if (!(drawer.contains(doc.activeElement) && typing(doc.activeElement))) drawer.classList.remove('is-typing'); }, 120);
+    });
     doc.addEventListener('keydown', function (e) {
       if (drawer.hidden) return;
       if (e.key === 'Escape') ui.closeCart();
