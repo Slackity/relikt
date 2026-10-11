@@ -137,8 +137,8 @@
       "category": "tops",
       "price": 3200,
       "oldPrice": null,
-      "availability": "instock",
-      "stock": 1,
+      "availability": "reserved",
+      "stock": 0,
       "condition": "new",
       "sizes": [],
       "descRu": "",
@@ -154,8 +154,9 @@
       "featured": false,
       "tgPost": 180,
       "createdAt": "2026-10-07T09:35:19+00:00",
-      "updatedAt": "2026-10-09T00:52:11.399Z",
-      "slug": "t-shirt-ed-hardy-180"
+      "updatedAt": "2026-10-11T20:15:42.554Z",
+      "slug": "t-shirt-ed-hardy-180",
+      "reservedUntil": "2026-10-14T20:15:42.554Z"
     },
     {
       "id": "pa133c88d",
