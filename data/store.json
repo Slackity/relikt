@@ -79,6 +79,7 @@
     },
     "orderWebhook": "https://relikt-orders.gleb-bugay.workers.dev",
     "orderSecret": "",
+    "miniAppUrl": "https://t.me/relikt_store_bot",
     "adminIds": [
       "315859108"
     ]
