@@ -132,6 +132,13 @@
     p.holds.forEach(function (x) { var u = Date.parse(x.u); if (u > now && x.k !== mine) { q += x.q || 1; until = Math.max(until, u); } });
     return q >= (p.stock || 1) ? until : 0;
   };
+  /* in-stock units nobody else is paying for right now (null for made-to-order / sold pieces) */
+  RK.freeUnits = function (p) {
+    if (!p || p.availability !== 'instock') return null;
+    var mine = (RK.store.get('rk-hold', null) || {}).key, now = Date.now(), held = 0;
+    (p.holds || []).forEach(function (x) { if (Date.parse(x.u) > now && x.k !== mine) held += x.q || 1; });
+    return Math.max(0, (p.stock || 1) - held);
+  };
   RK.minutesLeft = function (until) { return Math.max(1, Math.ceil((until - Date.now()) / 60000)); };
   RK.isRecent = function (p) { return Date.now() - new Date(p.createdAt).getTime() < 14 * 864e5; };
   RK.productUrl = function (p) { return 'product.html?id=' + encodeURIComponent(p.slug || p.id); };
@@ -203,7 +210,8 @@
     count: function () { return cartItems.reduce(function (n, i) { return n + i.qty; }, 0); },
     has: function (id) { return cartItems.some(function (i) { return i.id === id; }); },
     /* units of one product a cart may hold: a unique piece 1, several in stock up to the stock, made to order up to 5 */
-    max: function (p) { return p.availability === 'instock' ? RK.clamp(p.stock || 1, 1, 5) : 5; },
+    max: function (p) { return p.availability === 'instock' ? RK.clamp(RK.freeUnits(p) || 1, 1, 5) : 5; },
+    qtyOf: function (id) { return cartItems.reduce(function (n, i) { return n + (i.id === id ? i.qty : 0); }, 0); },
     /* returns 'added' | 'exists' */
     add: function (p, size, qty) {
       size = String(size || '').slice(0, 24);

@@ -21,6 +21,12 @@
     }
     return out;
   };
+  /* "In stock: 3 pcs." / "One of a kind" for pieces that can be bought now */
+  ui.stock = function (p, cls) {
+    var n = RK.available(p) && !RK.heldUntil(p) ? RK.freeUnits(p) : null;
+    if (!n) return null;
+    return h('p', { class: cls || 'card__stock', text: n > 1 ? RK.t('product.stockMany', { n: n }) : RK.t('product.stockNote') });
+  };
   ui.price = function (p) {
     if (p.availability === 'sold') return h('span', { class: 'price price--sold', text: RK.t('badge.sold') });
     return h('span', { class: 'price' },
@@ -84,7 +90,8 @@
         h('div', { class: 'card__text' },
           p.brand ? h('p', { class: 'eyebrow card__brand', text: p.brand }) : null,
           h('h3', { class: 'card__name' }, h('a', { href: url, text: RK.pname(p) })),
-          ui.price(p)),
+          ui.price(p),
+          ui.stock(p)),
         add));
     RK.ornaments(el);
     return el;

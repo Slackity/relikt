@@ -20,7 +20,7 @@
     el.hidden = !open;
     doc.documentElement.classList.toggle('drawer-open', open);
     if (open) RK.overlay.open(closeLb); else RK.overlay.closed(closeLb);
-    if (open) { showLb(); RK.$('#lbClose').focus(); } else if (lbOpener && lbOpener.focus) lbOpener.focus();
+    if (open) { showLb(); RK.$('#lbClose').focus(); } else { syncGallery('jump'); if (lbOpener && lbOpener.focus) lbOpener.focus(); }
   }
   function closeLb() { lb(false); }
   function showLb() {
@@ -34,7 +34,7 @@
     var n = current.images.length;
     photoIdx = (photoIdx + d + n) % n;
     if (lbOpen) showLb();
-    syncGallery();
+    syncGallery(true);
   }
   function initLightbox() {
     RK.$('#lbClose').addEventListener('click', function () { lb(false); });
@@ -56,9 +56,10 @@
     }, { passive: true });
   }
 
-  function syncGallery() {
-    var main = RK.$('#gMain');
-    if (main) main.src = RK.img(current.images[photoIdx]);
+  /* scroll: true glides the photo strip to the current photo, 'jump' moves it at once, false leaves it (the finger moved it) */
+  function syncGallery(scroll) {
+    var t = RK.$('#gTrack');
+    if (t && scroll) t.scrollTo({ left: photoIdx * t.clientWidth, behavior: scroll === 'jump' || RK.reduce ? 'auto' : 'smooth' });
     RK.$$('.thumb').forEach(function (t, i) { t.classList.toggle('is-on', i === photoIdx); t.setAttribute('aria-current', String(i === photoIdx)); });
     var c = RK.$('#gCount'); if (c) c.textContent = (photoIdx + 1) + ' / ' + current.images.length;
   }
@@ -74,13 +75,32 @@
     ] : null;
     return h('div', { class: 'gallery' },
       imgs.length > 1 ? h('div', { class: 'gallery__thumbs' }, imgs.map(function (u, i) {
-        return h('button', { class: 'thumb' + (i === 0 ? ' is-on' : ''), type: 'button', 'aria-label': 'Photo ' + (i + 1), onclick: function () { photoIdx = i; syncGallery(); } },
+        return h('button', { class: 'thumb' + (i === 0 ? ' is-on' : ''), type: 'button', 'aria-label': 'Photo ' + (i + 1), onclick: function () { photoIdx = i; syncGallery(true); } },
           h('img', { src: RK.img(u), alt: '', loading: 'lazy', decoding: 'async' }));
       })) : null,
-      h('div', { class: 'gallery__main', onclick: function () { lb(true); } },
-        h('img', { id: 'gMain', src: RK.img(imgs[0]), alt: RK.pname(p), decoding: 'async' }),
+      h('div', { class: 'gallery__main' }, photoStrip(p, imgs),
         h('span', { class: 'card__badges' }, RK.ui.badges(p)),
         nav));
+  }
+
+  /* the photos sit side by side in a strip that snaps photo by photo: swipe it, or use the arrows and thumbnails */
+  function photoStrip(p, imgs) {
+    var strip = h('div', { class: 'gallery__track', id: 'gTrack' }, imgs.map(function (u, i) {
+      return h('div', { class: 'gallery__slide' }, h('img', { src: RK.img(u), alt: i ? '' : RK.pname(p), loading: i ? 'lazy' : 'eager', decoding: 'async', draggable: 'false' }));
+    }));
+    var ticking = false;
+    strip.addEventListener('scroll', function () {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(function () {
+        ticking = false;
+        var i = Math.round(strip.scrollLeft / Math.max(1, strip.clientWidth));
+        if (i !== photoIdx && i >= 0 && i < imgs.length) { photoIdx = i; syncGallery(false); }
+      });
+    }, { passive: true });
+    // a tap opens the photo full screen; a swipe never fires a click
+    strip.addEventListener('click', function () { lb(true); });
+    return strip;
   }
 
   function sizeBlock(p) {
@@ -128,30 +148,33 @@
       return wrap;
     }
     var max = RK.cart.max(p);
-    var inCart = max === 1 && RK.cart.has(p.id);
-    qty = Math.min(qty, max);
-    if (max > 1) {
+    var inCartQty = RK.cart.qtyOf(p.id);
+    var left = p.availability === 'instock' ? Math.max(0, max - inCartQty) : max;
+    var inCart = left === 0;            // all units that can be bought are already in the cart
+    qty = Math.max(1, Math.min(qty, left || 1));
+    if (left > 1) {
       wrap.appendChild(h('div', { class: 'opt' },
         h('p', { class: 'opt__label eyebrow', text: RK.t('product.qty') }),
         h('div', { class: 'stepper stepper--lg' },
           h('button', { type: 'button', 'aria-label': '−', onclick: function () { qty = Math.max(1, qty - 1); RK.$('#qtyVal').textContent = qty; } }, '−'),
           h('span', { id: 'qtyVal', text: String(qty) }),
-          h('button', { type: 'button', 'aria-label': '+', onclick: function () { qty = Math.min(max, qty + 1); RK.$('#qtyVal').textContent = qty; } }, '+'))));
+          h('button', { type: 'button', 'aria-label': '+', onclick: function () { qty = Math.min(left, qty + 1); RK.$('#qtyVal').textContent = qty; } }, '+'))));
     }
     var addBtn = h('button', { class: 'btn btn--solid btn--lg btn--grow', type: 'button', id: 'addBtn', 'data-magnet': true },
       h('span', { text: inCart ? RK.t('product.inCart') : RK.t('product.add') }));
     addBtn.addEventListener('click', function () {
-      if (max === 1 && RK.cart.has(p.id)) { RK.ui.openCart(); return; }
+      if (inCart) { RK.ui.openCart(); return; }
       if ((p.sizes || []).length > 1 && !size) {
         RK.$('#sizeBlock').classList.add('has-error');
         RK.toast(RK.t('product.pickSize'));
         return;
       }
       RK.ui.addToCart(p, size, qty, { open: true });
-      RK.$('#addBtn span').textContent = max === 1 ? RK.t('product.inCart') : RK.t('product.add');
+      qty = 1;
     });
     wrap.appendChild(h('div', { class: 'actions__row' }, addBtn, RK.ui.favButton(p)));
-    wrap.appendChild(h('p', { class: 'note', text: p.availability === 'order' ? RK.t('product.orderNote') : max > 1 ? RK.t('product.stockMany', { n: p.stock }) : RK.t('product.stockNote') }));
+    if (p.availability === 'order') wrap.appendChild(h('p', { class: 'note', text: RK.t('product.orderNote') }));
+    else if (inCartQty && !inCart) wrap.appendChild(h('p', { class: 'note', text: RK.t('product.inCartN', { n: inCartQty }) }));
     return wrap;
   }
 
@@ -184,7 +207,7 @@
         cat ? [h('span', { 'aria-hidden': 'true', text: ' / ' }), h('a', { href: 'catalog.html?cat=' + encodeURIComponent(cat.id), text: RK.cname(cat) })] : null),
       p.brand ? h('p', { class: 'eyebrow pdp__brand', text: p.brand }) : null,
       h('h1', { class: 'pdp__name', text: RK.pname(p) }),
-      h('div', { class: 'pdp__price' }, RK.ui.price(p)),
+      h('div', { class: 'pdp__price' }, RK.ui.price(p), RK.ui.stock(p, 'pdp__stock')),
       RK.pdesc(p) ? h('p', { class: 'pdp__desc', text: RK.pdesc(p) }) : null,
       facts.length ? h('dl', { class: 'facts' }, facts.map(function (f) { return h('div', null, h('dt', { class: 'eyebrow', text: f[0] }), h('dd', { text: f[1] })); })) : null,
       sizeBlock(p),
@@ -200,6 +223,7 @@
         })));
 
     root.appendChild(h('article', { class: 'pdp', 'data-id': p.id }, gallery(p), info));
+    if (photoIdx) requestAnimationFrame(function () { syncGallery('jump'); });
     RK.ornaments(root);
 
     /* related */
@@ -215,9 +239,9 @@
     render();
     RK.on('lang', render);
     RK.on('cart', function () {
-      // the button label follows the cart (e.g. after removing the piece in the drawer)
-      var b = RK.$('#addBtn span'); if (!b || !current) return;
-      b.textContent = RK.cart.max(current) === 1 && RK.cart.has(current.id) ? RK.t('product.inCart') : RK.t('product.add');
+      // quantity and button follow the cart (e.g. after removing the piece in the drawer)
+      var box = RK.$('.pdp .actions'); if (!box || !current) return;
+      box.parentNode.replaceChild(actions(current), box);
     });
   });
   RK.run();

@@ -137,6 +137,7 @@
   add('product.qty', 'product', 'Количество', 'Количество', 'Quantity');
   add('product.add', 'product', 'Кнопка: в корзину', 'В корзину', 'Add to cart');
   add('product.inCart', 'product', 'Кнопка: уже в корзине', 'В корзине. Открыть', 'In cart. Open');
+  add('product.inCartN', 'product', 'Уже в корзине ({n})', 'В корзине уже {n} шт.', '{n} already in your cart.');
   add('product.ask', 'product', 'Кнопка: спросить', 'Спросить в Telegram', 'Ask on Telegram');
   add('product.askText', 'product', 'Сообщение менеджеру ({name}, {url})', 'Здравствуйте! Интересует: {name} {url}', 'Hello! I am interested in: {name} {url}');
   add('product.soldNote', 'product', 'Продано: пояснение', 'Эта вещь продана. Включай уведомления в канале, чтобы не пропустить новые поступления.', 'This piece is sold. Turn on notifications in the channel so you do not miss new arrivals.', { multi: true });
@@ -144,7 +145,7 @@
   add('product.reservedUntil', 'product', 'Бронь до даты ({date})', 'Вещь забронирована до {date}. Если её не выкупят, она вернётся в продажу.', 'This piece is reserved until {date}. If it is not bought out, it goes back on sale.', { multi: true });
   add('product.heldNote', 'product', 'Оформляется: пояснение ({min})', 'Эту вещь сейчас оформляет другой покупатель. Если он не оплатит, она вернётся в продажу примерно через {min} мин.', 'Someone is checking out this piece right now. If they do not pay, it is back on sale in about {min} min.', { multi: true });
   add('product.orderNote', 'product', 'Под заказ: пояснение', 'Под заказ: выкупим и привезём для тебя.', 'Made to order: we will buy it and ship it to you.', { multi: true });
-  add('product.stockNote', 'product', 'В наличии: пояснение', 'В наличии, одна единица.', 'In stock, one piece.');
+  add('product.stockNote', 'product', 'Метка: единственный экземпляр', 'Единственный экземпляр', 'One of a kind');
   add('product.stockMany', 'product', 'В наличии: несколько ({n})', 'В наличии: {n} шт.', 'In stock: {n} pcs.');
   add('product.brand', 'product', 'Бренд', 'Бренд', 'Brand');
   add('product.condition', 'product', 'Состояние', 'Состояние', 'Condition');
