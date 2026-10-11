@@ -137,8 +137,8 @@
       "category": "tops",
       "price": 3200,
       "oldPrice": null,
-      "availability": "instock",
-      "stock": 1,
+      "availability": "sold",
+      "stock": 0,
       "condition": "new",
       "sizes": [],
       "descRu": "",
@@ -154,7 +154,7 @@
       "featured": false,
       "tgPost": 180,
       "createdAt": "2026-10-07T09:35:19+00:00",
-      "updatedAt": "2026-10-11T20:19:35.508Z",
+      "updatedAt": "2026-10-11T20:56:30.932Z",
       "slug": "t-shirt-ed-hardy-180",
       "reservedUntil": ""
     },
@@ -166,8 +166,8 @@
       "category": "tops",
       "price": 3700,
       "oldPrice": null,
-      "availability": "instock",
-      "stock": 1,
+      "availability": "sold",
+      "stock": 0,
       "condition": "new",
       "sizes": [],
       "descRu": "",
@@ -181,8 +181,9 @@
       "featured": false,
       "tgPost": 177,
       "createdAt": "2026-10-07T09:34:33+00:00",
-      "updatedAt": "2026-10-09T00:52:10.764Z",
-      "slug": "t-shirt-ed-hardy-177"
+      "updatedAt": "2026-10-11T20:56:30.932Z",
+      "slug": "t-shirt-ed-hardy-177",
+      "reservedUntil": ""
     },
     {
       "id": "p8c4f184b",
@@ -193,7 +194,7 @@
       "price": 8500,
       "oldPrice": null,
       "availability": "instock",
-      "stock": 3,
+      "stock": 2,
       "condition": "new",
       "sizes": [
         "M"
@@ -209,7 +210,7 @@
       "featured": false,
       "tgPost": 169,
       "createdAt": "2026-09-16T12:40:23+00:00",
-      "updatedAt": "2026-10-09T00:52:10.287Z",
+      "updatedAt": "2026-10-11T20:56:30.932Z",
       "slug": "hoodie-ed-hardy-169"
     },
     {
@@ -220,8 +221,8 @@
       "category": "tops",
       "price": 2900,
       "oldPrice": null,
-      "availability": "instock",
-      "stock": 1,
+      "availability": "sold",
+      "stock": 0,
       "condition": "new",
       "sizes": [
         "L"
@@ -236,8 +237,9 @@
       "featured": false,
       "tgPost": 167,
       "createdAt": "2026-09-16T12:31:17+00:00",
-      "updatedAt": "2026-10-09T00:52:09.979Z",
-      "slug": "rare-vintage-t-shirt-christian-audigier-by-ed-hardy-167"
+      "updatedAt": "2026-10-11T20:56:30.932Z",
+      "slug": "rare-vintage-t-shirt-christian-audigier-by-ed-hardy-167",
+      "reservedUntil": ""
     },
     {
       "id": "p8e26c78d",
@@ -247,8 +249,8 @@
       "category": "outerwear",
       "price": 3800,
       "oldPrice": null,
-      "availability": "instock",
-      "stock": 1,
+      "availability": "sold",
+      "stock": 0,
       "condition": "",
       "sizes": [
         "M"
@@ -265,8 +267,9 @@
       "featured": false,
       "tgPost": 163,
       "createdAt": "2026-09-09T12:09:58+00:00",
-      "updatedAt": "2026-10-09T00:52:10.191Z",
-      "slug": "zip-hoodie-tch-163"
+      "updatedAt": "2026-10-11T20:56:30.932Z",
+      "slug": "zip-hoodie-tch-163",
+      "reservedUntil": ""
     },
     {
       "id": "p19d1af65",
@@ -301,8 +304,8 @@
       "category": "tops",
       "price": 4900,
       "oldPrice": null,
-      "availability": "instock",
-      "stock": 1,
+      "availability": "sold",
+      "stock": 0,
       "condition": "new",
       "sizes": [],
       "descRu": "",
@@ -315,8 +318,9 @@
       "featured": false,
       "tgPost": 159,
       "createdAt": "2026-09-09T11:59:58+00:00",
-      "updatedAt": "2026-10-09T00:52:09.000Z",
-      "slug": "t-shirt-ed-hardy-159"
+      "updatedAt": "2026-10-11T20:56:30.932Z",
+      "slug": "t-shirt-ed-hardy-159",
+      "reservedUntil": ""
     },
     {
       "id": "p45853386",
@@ -326,8 +330,8 @@
       "category": "bags",
       "price": 8990,
       "oldPrice": null,
-      "availability": "instock",
-      "stock": 1,
+      "availability": "sold",
+      "stock": 0,
       "condition": "new",
       "sizes": [],
       "descRu": "",
@@ -340,8 +344,9 @@
       "featured": false,
       "tgPost": 135,
       "createdAt": "2026-08-23T05:35:07+00:00",
-      "updatedAt": "2026-10-09T00:52:27.226Z",
-      "slug": "bag-paul-frank-135"
+      "updatedAt": "2026-10-11T20:56:30.932Z",
+      "slug": "bag-paul-frank-135",
+      "reservedUntil": ""
     },
     {
       "id": "pa6d10094",
@@ -351,8 +356,8 @@
       "category": "bags",
       "price": 7490,
       "oldPrice": null,
-      "availability": "instock",
-      "stock": 1,
+      "availability": "sold",
+      "stock": 0,
       "condition": "",
       "sizes": [],
       "descRu": "",
@@ -365,8 +370,9 @@
       "featured": false,
       "tgPost": 133,
       "createdAt": "2026-08-23T05:33:31+00:00",
-      "updatedAt": "2026-10-09T00:52:08.841Z",
-      "slug": "bag-paul-frank-133"
+      "updatedAt": "2026-10-11T20:56:30.932Z",
+      "slug": "bag-paul-frank-133",
+      "reservedUntil": ""
     },
     {
       "id": "p8e4cc06f",
@@ -376,8 +382,8 @@
       "category": "bags",
       "price": 2990,
       "oldPrice": null,
-      "availability": "instock",
-      "stock": 1,
+      "availability": "sold",
+      "stock": 0,
       "condition": "new",
       "sizes": [],
       "descRu": "",
@@ -390,8 +396,9 @@
       "featured": false,
       "tgPost": 131,
       "createdAt": "2026-08-23T05:25:01+00:00",
-      "updatedAt": "2026-10-09T00:52:08.438Z",
-      "slug": "bag-polo-ralph-lauren-type-131"
+      "updatedAt": "2026-10-11T20:56:30.932Z",
+      "slug": "bag-polo-ralph-lauren-type-131",
+      "reservedUntil": ""
     },
     {
       "id": "p068a44ec",
@@ -401,8 +408,8 @@
       "category": "bags",
       "price": 7990,
       "oldPrice": null,
-      "availability": "instock",
-      "stock": 1,
+      "availability": "sold",
+      "stock": 0,
       "condition": "new",
       "sizes": [],
       "descRu": "",
@@ -415,8 +422,9 @@
       "featured": false,
       "tgPost": 129,
       "createdAt": "2026-08-23T05:20:01+00:00",
-      "updatedAt": "2026-10-09T00:52:08.314Z",
-      "slug": "bag-juicy-couture-129"
+      "updatedAt": "2026-10-11T20:56:30.932Z",
+      "slug": "bag-juicy-couture-129",
+      "reservedUntil": ""
     },
     {
       "id": "pba568bb2",
@@ -426,8 +434,8 @@
       "category": "dresses",
       "price": 6500,
       "oldPrice": null,
-      "availability": "instock",
-      "stock": 1,
+      "availability": "sold",
+      "stock": 0,
       "condition": "new",
       "sizes": [
         "S"
@@ -444,8 +452,9 @@
       "featured": false,
       "tgPost": 115,
       "createdAt": "2026-08-16T23:35:00+00:00",
-      "updatedAt": "2026-10-09T00:52:08.258Z",
-      "slug": "dress-juicy-couture-115"
+      "updatedAt": "2026-10-11T20:56:30.932Z",
+      "slug": "dress-juicy-couture-115",
+      "reservedUntil": ""
     },
     {
       "id": "pe8f340f1",
@@ -455,8 +464,8 @@
       "category": "tops",
       "price": 4900,
       "oldPrice": null,
-      "availability": "instock",
-      "stock": 1,
+      "availability": "sold",
+      "stock": 0,
       "condition": "new",
       "sizes": [],
       "descRu": "",
@@ -471,8 +480,9 @@
       "featured": false,
       "tgPost": 111,
       "createdAt": "2026-08-16T23:33:09+00:00",
-      "updatedAt": "2026-10-09T00:52:07.887Z",
-      "slug": "tank-top-juicy-couture-111"
+      "updatedAt": "2026-10-11T20:56:30.932Z",
+      "slug": "tank-top-juicy-couture-111",
+      "reservedUntil": ""
     },
     {
       "id": "pdfd024e8",
@@ -509,8 +519,8 @@
       "category": "sets",
       "price": 8500,
       "oldPrice": null,
-      "availability": "instock",
-      "stock": 1,
+      "availability": "sold",
+      "stock": 0,
       "condition": "new",
       "sizes": [],
       "descRu": "Лонгслив и yoga pant",
@@ -527,8 +537,9 @@
       "featured": false,
       "tgPost": 101,
       "createdAt": "2026-08-16T23:06:11+00:00",
-      "updatedAt": "2026-10-09T00:52:07.710Z",
-      "slug": "suit-ed-hardy-dolls-kill-101"
+      "updatedAt": "2026-10-11T20:56:30.932Z",
+      "slug": "suit-ed-hardy-dolls-kill-101",
+      "reservedUntil": ""
     },
     {
       "id": "paacc0f29",
@@ -538,8 +549,8 @@
       "category": "sets",
       "price": 8500,
       "oldPrice": null,
-      "availability": "instock",
-      "stock": 1,
+      "availability": "sold",
+      "stock": 0,
       "condition": "new",
       "sizes": [],
       "descRu": "Лонгслив и yoga pant",
@@ -556,8 +567,9 @@
       "featured": false,
       "tgPost": 95,
       "createdAt": "2026-08-16T23:05:20+00:00",
-      "updatedAt": "2026-10-09T00:52:06.961Z",
-      "slug": "suit-ed-hardy-dolls-kill-95"
+      "updatedAt": "2026-10-11T20:56:30.932Z",
+      "slug": "suit-ed-hardy-dolls-kill-95",
+      "reservedUntil": ""
     },
     {
       "id": "pd28051d8",
@@ -696,8 +708,8 @@
       "category": "bottoms",
       "price": 6000,
       "oldPrice": null,
-      "availability": "instock",
-      "stock": 1,
+      "availability": "sold",
+      "stock": 0,
       "condition": "new",
       "sizes": [],
       "descRu": "",
@@ -711,8 +723,9 @@
       "featured": false,
       "tgPost": 73,
       "createdAt": "2026-08-16T20:56:00+00:00",
-      "updatedAt": "2026-10-09T00:52:04.397Z",
-      "slug": "shorts-juicy-couture-73"
+      "updatedAt": "2026-10-11T20:56:30.932Z",
+      "slug": "shorts-juicy-couture-73",
+      "reservedUntil": ""
     },
     {
       "id": "pb344780d",
@@ -784,8 +797,8 @@
       "category": "dresses",
       "price": 6500,
       "oldPrice": null,
-      "availability": "instock",
-      "stock": 1,
+      "availability": "sold",
+      "stock": 0,
       "condition": "",
       "sizes": [
         "S–M"
@@ -804,8 +817,9 @@
       "featured": false,
       "tgPost": 55,
       "createdAt": "2026-08-16T20:43:06+00:00",
-      "updatedAt": "2026-10-09T00:52:03.733Z",
-      "slug": "jumpsuit-dolls-kill-55"
+      "updatedAt": "2026-10-11T20:56:30.932Z",
+      "slug": "jumpsuit-dolls-kill-55",
+      "reservedUntil": ""
     },
     {
       "id": "p6c03f8ad",
@@ -845,8 +859,8 @@
       "category": "tops",
       "price": 3900,
       "oldPrice": null,
-      "availability": "instock",
-      "stock": 1,
+      "availability": "sold",
+      "stock": 0,
       "condition": "new",
       "sizes": [],
       "descRu": "",
@@ -860,8 +874,9 @@
       "featured": false,
       "tgPost": 47,
       "createdAt": "2026-08-16T15:32:50+00:00",
-      "updatedAt": "2026-10-09T00:52:03.034Z",
-      "slug": "t-shirt-paul-frank-47"
+      "updatedAt": "2026-10-11T20:56:30.932Z",
+      "slug": "t-shirt-paul-frank-47",
+      "reservedUntil": ""
     },
     {
       "id": "pa7e76775",
@@ -895,8 +910,8 @@
       "category": "bottoms",
       "price": 8000,
       "oldPrice": null,
-      "availability": "instock",
-      "stock": 1,
+      "availability": "sold",
+      "stock": 0,
       "condition": "",
       "sizes": [],
       "descRu": "Дополнительные фото в комментариях к посту в Telegram.",
@@ -910,8 +925,9 @@
       "featured": false,
       "tgPost": 43,
       "createdAt": "2026-08-16T15:24:02+00:00",
-      "updatedAt": "2026-10-09T00:52:02.315Z",
-      "slug": "pants-playboy-by-dolls-kill-43"
+      "updatedAt": "2026-10-11T20:56:30.932Z",
+      "slug": "pants-playboy-by-dolls-kill-43",
+      "reservedUntil": ""
     },
     {
       "id": "p9bcc6cc5",
@@ -921,8 +937,8 @@
       "category": "sets",
       "price": 13000,
       "oldPrice": null,
-      "availability": "instock",
-      "stock": 1,
+      "availability": "sold",
+      "stock": 0,
       "condition": "vintage",
       "sizes": [],
       "descRu": "",
@@ -936,8 +952,9 @@
       "featured": false,
       "tgPost": 40,
       "createdAt": "2026-08-16T15:17:39+00:00",
-      "updatedAt": "2026-10-09T00:52:02.415Z",
-      "slug": "rare-vintage-suit-juicy-couture-40"
+      "updatedAt": "2026-10-11T20:56:30.932Z",
+      "slug": "rare-vintage-suit-juicy-couture-40",
+      "reservedUntil": ""
     },
     {
       "id": "p52f32518",
@@ -947,8 +964,8 @@
       "category": "sets",
       "price": 13500,
       "oldPrice": null,
-      "availability": "instock",
-      "stock": 1,
+      "availability": "sold",
+      "stock": 0,
       "condition": "vintage",
       "sizes": [],
       "descRu": "Дополнительные фото в комментариях к посту в Telegram.",
@@ -962,8 +979,9 @@
       "featured": false,
       "tgPost": 37,
       "createdAt": "2026-08-16T15:16:24+00:00",
-      "updatedAt": "2026-10-09T00:52:02.217Z",
-      "slug": "rare-vintage-suit-juicy-couture-37"
+      "updatedAt": "2026-10-11T20:56:30.932Z",
+      "slug": "rare-vintage-suit-juicy-couture-37",
+      "reservedUntil": ""
     },
     {
       "id": "p7c75d121",
@@ -973,8 +991,8 @@
       "category": "bags",
       "price": 1500,
       "oldPrice": null,
-      "availability": "instock",
-      "stock": 1,
+      "availability": "sold",
+      "stock": 0,
       "condition": "",
       "sizes": [],
       "descRu": "Дополнительные фото в комментариях к посту в Telegram.",
@@ -987,8 +1005,9 @@
       "featured": false,
       "tgPost": 35,
       "createdAt": "2026-08-16T15:14:41+00:00",
-      "updatedAt": "2026-10-09T00:52:01.614Z",
-      "slug": "handbag-balenciaga-type-35"
+      "updatedAt": "2026-10-11T20:56:30.932Z",
+      "slug": "handbag-balenciaga-type-35",
+      "reservedUntil": ""
     },
     {
       "id": "p68f6e759",
@@ -1025,8 +1044,8 @@
       "category": "bottoms",
       "price": 1900,
       "oldPrice": null,
-      "availability": "instock",
-      "stock": 1,
+      "availability": "sold",
+      "stock": 0,
       "condition": "",
       "sizes": [],
       "descRu": "Дополнительные фото в комментариях к посту в Telegram.",
@@ -1040,8 +1059,9 @@
       "featured": false,
       "tgPost": 24,
       "createdAt": "2026-08-16T15:00:40+00:00",
-      "updatedAt": "2026-10-09T00:52:01.432Z",
-      "slug": "shorts-melanie-martinez-portals-merch-24"
+      "updatedAt": "2026-10-11T20:56:30.932Z",
+      "slug": "shorts-melanie-martinez-portals-merch-24",
+      "reservedUntil": ""
     },
     {
       "id": "pd4250125",
@@ -1051,8 +1071,8 @@
       "category": "outerwear",
       "price": 2900,
       "oldPrice": null,
-      "availability": "instock",
-      "stock": 1,
+      "availability": "sold",
+      "stock": 0,
       "condition": "",
       "sizes": [],
       "descRu": "",
@@ -1067,8 +1087,9 @@
       "featured": false,
       "tgPost": 20,
       "createdAt": "2026-08-16T14:49:14+00:00",
-      "updatedAt": "2026-10-09T00:52:28.303Z",
-      "slug": "puffer-bomber-jacket-marble-camo-20"
+      "updatedAt": "2026-10-11T20:56:30.932Z",
+      "slug": "puffer-bomber-jacket-marble-camo-20",
+      "reservedUntil": ""
     },
     {
       "id": "p23843db5",
@@ -1078,8 +1099,8 @@
       "category": "bottoms",
       "price": 2700,
       "oldPrice": null,
-      "availability": "instock",
-      "stock": 1,
+      "availability": "sold",
+      "stock": 0,
       "condition": "",
       "sizes": [],
       "descRu": "Дополнительные фото в комментариях к посту в Telegram.",
@@ -1094,8 +1115,9 @@
       "featured": false,
       "tgPost": 16,
       "createdAt": "2026-08-16T14:40:52+00:00",
-      "updatedAt": "2026-10-09T00:52:00.449Z",
-      "slug": "pants-roberto-cavalli-16"
+      "updatedAt": "2026-10-11T20:56:30.932Z",
+      "slug": "pants-roberto-cavalli-16",
+      "reservedUntil": ""
     },
     {
       "id": "p251ace29",
@@ -1105,8 +1127,8 @@
       "category": "bottoms",
       "price": 4000,
       "oldPrice": null,
-      "availability": "instock",
-      "stock": 1,
+      "availability": "sold",
+      "stock": 0,
       "condition": "new",
       "sizes": [],
       "descRu": "",
@@ -1121,8 +1143,9 @@
       "featured": false,
       "tgPost": 12,
       "createdAt": "2026-08-16T14:35:01+00:00",
-      "updatedAt": "2026-10-09T00:52:00.467Z",
-      "slug": "pants-ed-hardy-12"
+      "updatedAt": "2026-10-11T20:56:30.932Z",
+      "slug": "pants-ed-hardy-12",
+      "reservedUntil": ""
     }
   ],
   "content": {
