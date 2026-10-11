@@ -120,7 +120,7 @@
   add('badge.order', 'catalog', 'Метка: под заказ', 'Под заказ', 'To order');
   add('badge.reserved', 'catalog', 'Метка: бронь', 'Бронь', 'Reserved');
   add('badge.held', 'catalog', 'Метка: оформляется', 'Оформляется', 'Being bought');
-  add('cond.new', 'catalog', 'Состояние: новое', 'Новое', 'New');
+  add('cond.new', 'catalog', 'Состояние: новая', 'Новая', 'New');
   add('cond.vintage', 'catalog', 'Состояние: винтаж', 'Винтаж', 'Vintage');
   add('cond.used', 'catalog', 'Состояние: б/у', 'Б/у', 'Pre-owned');
   add('card.add', 'catalog', 'Карточка: в корзину', 'В корзину', 'Add to cart');

@@ -1,17 +1,19 @@
 /*
- * RELIKT — catalog page: category / availability filters, search, sort, favourites view, "show more".
- * State lives in the URL (?cat=&av=&q=&sort=&fav=1) so every view can be shared.
+ * RELIKT — catalog page: category / availability / condition filters, search, sort, favourites view, "show more".
+ * State lives in the URL (?cat=&av=&cond=&q=&sort=&fav=1) so every view can be shared.
  */
 (function () {
   'use strict';
   var RK = window.RK, h = RK.h, doc = document;
   var PAGE = 24;
-  var st = { cat: 'all', av: 'all', q: '', sort: 'new', fav: false, shown: PAGE };
+  var CONDS = ['new', 'vintage', 'used'];
+  var st = { cat: 'all', av: 'all', cond: 'all', q: '', sort: 'new', fav: false, shown: PAGE };
 
   function readUrl() {
     var p = new URLSearchParams(location.search);
     st.cat = p.get('cat') || 'all';
     st.av = ['instock', 'order', 'reserved', 'sold'].indexOf(p.get('av')) >= 0 ? p.get('av') : 'all';
+    st.cond = CONDS.indexOf(p.get('cond')) >= 0 ? p.get('cond') : 'all';
     st.q = (p.get('q') || '').slice(0, 80);
     st.sort = ['asc', 'desc'].indexOf(p.get('sort')) >= 0 ? p.get('sort') : 'new';
     st.fav = p.get('fav') === '1';
@@ -21,6 +23,7 @@
     var p = new URLSearchParams();
     if (st.cat !== 'all') p.set('cat', st.cat);
     if (st.av !== 'all') p.set('av', st.av);
+    if (st.cond !== 'all') p.set('cond', st.cond);
     if (st.q) p.set('q', st.q);
     if (st.sort !== 'new') p.set('sort', st.sort);
     if (st.fav) p.set('fav', '1');
@@ -35,6 +38,7 @@
   function matches(p) {
     if (st.cat !== 'all' && p.category !== st.cat) return false;
     if (st.av !== 'all' && p.availability !== st.av) return false;
+    if (st.cond !== 'all' && p.condition !== st.cond) return false;
     if (st.q) {
       var cat = RK.data.categories.filter(function (c) { return c.id === p.category; })[0];
       var hay = [p.ru, p.en, p.brand, cat ? cat.ru + ' ' + cat.en : ''].join(' ').toLowerCase();
@@ -76,6 +80,13 @@
       if (a[0] === 'reserved' && !RK.data.products.some(function (p) { return p.availability === 'reserved'; }) && st.av !== 'reserved') return;
       ac.appendChild(chip(RK.t(a[1]), st.av === a[0], function () { st.av = a[0]; update(); }));
     });
+    // condition: a tap turns the filter on, a second tap on the same chip turns it off
+    var nc = RK.$('#condChips'); nc.textContent = '';
+    CONDS.forEach(function (c) {
+      var n = all.filter(function (p) { return p.condition === c; }).length;
+      if (!n && st.cond !== c) return;
+      nc.appendChild(chip(RK.t('cond.' + c), st.cond === c, function () { st.cond = st.cond === c ? 'all' : c; update(); }, n));
+    });
   }
 
   function renderGrid() {
@@ -93,7 +104,7 @@
     more.hidden = list.length <= st.shown;
     empty.hidden = list.length > 0;
     if (!list.length) RK.$('#emptyText').textContent = RK.t(st.fav && !RK.favs.count() ? 'catalog.fav.empty' : 'catalog.empty');
-    RK.$('#resetBtn').hidden = !(st.cat !== 'all' || st.av !== 'all' || st.q);
+    RK.$('#resetBtn').hidden = !(st.cat !== 'all' || st.av !== 'all' || st.cond !== 'all' || st.q);
   }
 
   function renderHead() {
@@ -117,7 +128,7 @@
     });
     RK.$('#sort').addEventListener('change', function (e) { st.sort = e.target.value; update(); });
     RK.$('#more').addEventListener('click', function () { st.shown += PAGE; renderGrid(); });
-    RK.$('#resetBtn').addEventListener('click', function () { st.cat = 'all'; st.av = 'all'; st.q = ''; update(); });
+    RK.$('#resetBtn').addEventListener('click', function () { st.cat = 'all'; st.av = 'all'; st.cond = 'all'; st.q = ''; update(); });
     RK.on('lang', renderAll);
     // in the favourites view the grid must follow the hearts
     RK.on('favs', function () { if (st.fav) renderAll(); });
