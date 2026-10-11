@@ -212,7 +212,14 @@
       "createdAt": "2026-09-16T12:40:23+00:00",
       "updatedAt": "2026-10-11T20:58:10.546Z",
       "slug": "hoodie-ed-hardy-169",
-      "reservedUntil": ""
+      "reservedUntil": "",
+      "holds": [
+        {
+          "k": "60cf034015c3887866e15e47",
+          "q": 1,
+          "u": "2026-10-11T23:53:03.600Z"
+        }
+      ]
     },
     {
       "id": "p5ffa10ef",
