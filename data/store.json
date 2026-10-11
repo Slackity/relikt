@@ -69,12 +69,6 @@
         "type": "percent",
         "value": 10,
         "active": true
-      },
-      {
-        "code": "BOOST5",
-        "type": "percent",
-        "value": 5,
-        "active": true
       }
     ],
     "payment": {
