@@ -87,6 +87,7 @@
       c.classList.add('reveal'); c.style.setProperty('--d', (i % 4) * 70 + 'ms');
       grid.appendChild(c);
     });
+    RK.listShown = st.shown;
     RK.reveal(grid);
     RK.$('#count').textContent = RK.t('catalog.found', { n: list.length });
     more.hidden = list.length <= st.shown;
@@ -120,6 +121,9 @@
     RK.on('lang', renderAll);
     // in the favourites view the grid must follow the hearts
     RK.on('favs', function () { if (st.fav) renderAll(); });
+    // back from a product: as many cards as were open ("show more")
+    var memo = RK.scrollMemo();
+    if (memo && memo.shown > st.shown) st.shown = memo.shown;
     renderAll();
   });
   RK.run();

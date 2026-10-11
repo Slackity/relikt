@@ -365,6 +365,38 @@
     }, { passive: true });
   };
 
+  /* ---------- back from a product page: the list opens where the buyer left it ----------
+     The pages draw their lists only after the catalog has loaded, so the browser's own scroll memory lands too early.
+     On a tap on a product we note which card it was and where it sat on the screen, per page address. */
+  var MEMO = 'rk-scroll';
+  function memoKey() { return location.pathname + location.search; }
+  function memos() { try { return JSON.parse(sessionStorage.getItem(MEMO) || '{}') || {}; } catch (e) { return {}; } }
+  function saveMemos(m) { try { sessionStorage.setItem(MEMO, JSON.stringify(m)); } catch (e) { /* storage blocked */ } }
+  RK.listShown = 0;     // how many cards a paged list shows ("show more"), set by the page
+  doc.addEventListener('click', function (e) {
+    var a = e.target.closest && e.target.closest('a[href*="product.html"]');
+    if (!a) return;
+    var card = a.closest('[data-id]'), m = memos(), keys = Object.keys(m);
+    m[memoKey()] = { y: window.scrollY, id: card ? card.getAttribute('data-id') : '', top: card ? Math.round(card.getBoundingClientRect().top) : null, shown: RK.listShown, at: Date.now() };
+    keys.sort(function (a, b) { return m[a].at - m[b].at; }).slice(0, Math.max(0, keys.length - 8)).forEach(function (k) { delete m[k]; });
+    saveMemos(m);
+  }, true);
+  RK.scrollMemo = function () { var x = memos()[memoKey()]; return x && Date.now() - x.at < 3600000 ? x : null; };
+  RK.restoreScroll = function () {
+    var x = RK.scrollMemo(); if (!x) return;
+    var m = memos(); delete m[memoKey()]; saveMemos(m);
+    // no fade-in for cards the buyer has already seen
+    RK.$$('.reveal').forEach(function (el) { el.classList.add('in'); });
+    var go = function () {
+      var card = x.id && doc.querySelector('[data-id="' + x.id.replace(/[^\w-]/g, '') + '"]');
+      window.scrollTo(0, card && x.top != null ? card.getBoundingClientRect().top + window.scrollY - x.top : x.y);
+    };
+    go(); requestAnimationFrame(go);
+  };
+  if (RK.scrollMemo() && 'scrollRestoration' in history) history.scrollRestoration = 'manual';
+  // a page brought back whole from the browser cache already sits in the right place
+  window.addEventListener('pageshow', function (e) { if (e.persisted) { var m = memos(); delete m[memoKey()]; saveMemos(m); } });
+
   /* ---------- page boot ---------- */
   var starters = [];
   RK.start = function (fn) {
@@ -381,6 +413,7 @@
       if (RK.chrome) RK.chrome.update();
       RK.setLang(RK.lang);
       starters.forEach(function (fn) { fn(); });
+      RK.restoreScroll();
       RK.reveal();
     }).catch(function (e) {
       console.error(e);
