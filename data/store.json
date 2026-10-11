@@ -194,7 +194,7 @@
       "price": 8500,
       "oldPrice": null,
       "availability": "instock",
-      "stock": 3,
+      "stock": 2,
       "condition": "new",
       "sizes": [
         "M"
@@ -210,16 +210,9 @@
       "featured": false,
       "tgPost": 169,
       "createdAt": "2026-09-16T12:40:23+00:00",
-      "updatedAt": "2026-10-11T20:58:10.546Z",
+      "updatedAt": "2026-10-11T23:33:30.909Z",
       "slug": "hoodie-ed-hardy-169",
-      "reservedUntil": "",
-      "holds": [
-        {
-          "k": "60cf034015c3887866e15e47",
-          "q": 1,
-          "u": "2026-10-11T23:53:03.600Z"
-        }
-      ]
+      "reservedUntil": ""
     },
     {
       "id": "p5ffa10ef",
