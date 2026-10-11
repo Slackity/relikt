@@ -50,6 +50,7 @@
       'login.howto': 'Как получить токен', 'login.howto1': 'GitHub → Settings → Developer settings → Fine-grained tokens → Generate new token.',
       'login.howto2': 'Repository access: Only select repositories → ваш репозиторий магазина.', 'login.howto3': 'Permissions: Contents — Read and write, Actions — Read and write (для импорта из канала).',
       'login.howto4': 'Скопируйте токен и вставьте сюда. Никому его не пересылайте.', 'login.open': 'Открыть страницу создания токена ↗',
+      'nodata.title': 'Каталог не найден', 'nodata.text': 'Токен подошёл, но в этой ветке репозитория нет файла с каталогом:', 'nodata.hint': 'Так бывает, пока новая версия сайта не загружена в GitHub. После загрузки нажмите «Проверить снова». Если сайт лежит в другой ветке, укажите её.', 'nodata.retry': 'Проверить снова', 'nodata.change': 'Другой репозиторий или ветка',
       'login.denied': 'Доступ закрыт', 'login.deniedText': 'Эта панель только для владельца магазина.', 'login.toShop': 'В магазин',
       'nav.products': 'Товары', 'nav.categories': 'Категории', 'nav.texts': 'Тексты', 'nav.settings': 'Настройки',
       'nav.site': 'Открыть сайт', 'nav.logout': 'Отключить устройство', 'nav.logoutQ': 'Забыть токен на этом устройстве? Чтобы снова войти, его нужно будет вставить заново.',
@@ -97,6 +98,7 @@
       'login.howto': 'How to get a token', 'login.howto1': 'GitHub → Settings → Developer settings → Fine-grained tokens → Generate new token.',
       'login.howto2': 'Repository access: Only select repositories → your shop repository.', 'login.howto3': 'Permissions: Contents — Read and write, Actions — Read and write (for the channel import).',
       'login.howto4': 'Copy the token and paste it here. Never send it to anyone.', 'login.open': 'Open the token page ↗',
+      'nodata.title': 'Catalog not found', 'nodata.text': 'The token works, but this branch of the repository has no catalog file:', 'nodata.hint': 'This happens until the new site is uploaded to GitHub. After that press “Check again”. If the site is in another branch, enter it.', 'nodata.retry': 'Check again', 'nodata.change': 'Another repository or branch',
       'login.denied': 'Access denied', 'login.deniedText': 'This panel is for the shop owner only.', 'login.toShop': 'Back to the shop',
       'nav.products': 'Products', 'nav.categories': 'Categories', 'nav.texts': 'Texts', 'nav.settings': 'Settings',
       'nav.site': 'View site', 'nav.logout': 'Disconnect device', 'nav.logoutQ': 'Forget the token on this device? You will need to paste it again to sign in.',
@@ -309,6 +311,19 @@
       logoSvg('login__logo'), h('p', { class: 'eyebrow login__title', text: t('login.denied') }),
       h('p', { class: 'muted', style: 'text-align:center', text: t('login.deniedText') }),
       h('a', { class: 'btn', href: 'index.html' }, h('span', { text: t('login.toShop') })))));
+  }
+
+  /* the token works, but the branch has no shop data: the new site is not on GitHub yet, or the branch is wrong */
+  function renderNoData() {
+    var where = CONN.owner + '/' + CONN.repo + ' · ' + (CONN.branch || 'main');
+    clear($('#app')).appendChild(h('div', { class: 'login' }, h('div', { class: 'login__card' },
+      logoSvg('login__logo'), h('p', { class: 'eyebrow login__title', text: t('nodata.title') }),
+      h('p', { text: t('nodata.text') }),
+      h('code', { text: where + ' → ' + DATA_PATH }),
+      h('p', { class: 'muted', style: 'font-size:13px', text: t('nodata.hint') }),
+      h('button', { class: 'btn btn--solid', type: 'button', onclick: start }, h('span', { text: t('nodata.retry') })),
+      h('button', { class: 'link', type: 'button', style: 'justify-self:center', onclick: renderLogin, text: t('nodata.change') }),
+      langSwitch())));
   }
 
   function renderLogin() {
@@ -863,8 +878,10 @@
       if (!connected()) { renderLogin(); return; }
       if (!CONN.branch) CONN.branch = 'main';
       return loadStore().then(renderShell, function (e) {
-        if (e.status === 401 || e.status === 403 || e.status === 404) { CONN.token = ''; saveConn(); renderLogin(); toast(e.status === 401 ? t('err.auth') : t('login.noRepo'), true); }
-        else { renderLogin(); toast(t('login.net'), true); }
+        // only a rejected token is forgotten; a missing file or a refusal keeps it so nothing has to be pasted again
+        if (e.status === 401) { CONN.token = ''; saveConn(); renderLogin(); toast(t('err.auth'), true); }
+        else if (e.status === 404) renderNoData();
+        else { renderLogin(); toast(e.status === 403 ? t('err.forbidden') : t('login.net'), true); }
       });
     });
   }
