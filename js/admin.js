@@ -85,6 +85,7 @@
       'set.delivery': 'Службы доставки', 'set.deliveryHint': 'Показываются списком при оформлении заказа.', 'set.discounts': 'Скидки-галочки', 'set.discountsHint': 'Покупатель отмечает подходящие в корзине, менеджер проверяет. Не дублируйте их промокодами, иначе скидка сложится дважды.',
       'set.orders': 'Приём заказов', 'set.ordersHint': 'Адрес Cloudflare Worker: он пересылает заказ и чек менеджеру в Telegram. Без адреса покупатель отправляет заказ сообщением сам.',
       'set.webhook': 'Адрес Worker', 'set.secret': 'Секрет заказа (APP_SECRET)', 'set.secretHint': 'Нужен только для заказов с обычного сайта, не из Telegram. Он виден в данных сайта, поэтому защищает слабо. Если оставить пустым, через Worker принимаются только заказы из мини-аппа (их Telegram подписывает сам), а с сайта заказ уходит сообщением менеджеру.',
+      'set.bot': 'Подключить бота', 'set.botHint': 'Чтобы бот отвечал на /start кнопкой «Открыть каталог». Нажать один раз после обновления Worker; повторно — если меняли адрес Worker или токен бота.', 'set.botOk': 'Готово: бот отвечает на /start и открывает каталог.', 'set.botMenu': 'Кнопка меню «Каталог» добавлена.', 'set.botPrev': 'Раньше сообщения бота уходили на другой адрес:',
       'set.check': 'Проверить Worker', 'set.checkOld': 'Worker отвечает, но это старая версия: заказы не сохраняются и вещи не отмечаются. Обновите его код (README).', 'set.checkMissing': 'Worker новый, но в нём не настроено:', 'set.checkAll': 'Worker на связи: Telegram, заказы и наличие в каталоге настроены.', 'set.webhookBad': 'Адрес Worker должен начинаться с https://', 'set.checkOk': 'Worker на связи, Telegram настроен.', 'set.checkNoTg': 'Worker отвечает, но в нём не заданы BOT_TOKEN и CHAT_ID.', 'set.checkFail': 'Worker не отвечает по этому адресу.',
       'set.access': 'Доступ', 'set.accessHint': 'Telegram ID тех, кому в мини-аппе видна кнопка «Админка» (через запятую). Свой ID можно узнать у @userinfobot. Для входа всё равно нужен GitHub-токен.',
       'set.adminIds': 'Telegram ID админов', 'set.yourId': 'Ваш Telegram ID',
@@ -134,6 +135,7 @@
       'set.delivery': 'Delivery services', 'set.deliveryHint': 'Shown as a dropdown at checkout.', 'set.discounts': 'Tick-box discounts', 'set.discountsHint': 'Buyers tick the ones that apply in the cart and the manager checks them. Do not duplicate them with promo codes or the discount adds up twice.',
       'set.orders': 'Order intake', 'set.ordersHint': 'Address of the Cloudflare Worker that forwards the order and receipt to the manager on Telegram. Without it the buyer sends the order as a message.',
       'set.webhook': 'Worker address', 'set.secret': 'Order secret (APP_SECRET)', 'set.secretHint': 'Only needed for orders from the plain website, not from Telegram. It is readable in the site data, so it protects weakly. Leave it empty and the Worker only accepts mini-app orders (signed by Telegram); website orders then go to the manager as a message.',
+      'set.bot': 'Connect the bot', 'set.botHint': 'Makes the bot answer /start with an “Open catalog” button. Press once after updating the Worker; again if the Worker address or the bot token changes.', 'set.botOk': 'Done: the bot answers /start and opens the catalog.', 'set.botMenu': 'A “Catalog” menu button was added.', 'set.botPrev': 'Before, the bot’s messages went to another address:',
       'set.check': 'Test the Worker', 'set.checkOld': 'The Worker answers but it is the old version: orders are not kept and pieces are not marked. Update its code (README).', 'set.checkMissing': 'The Worker is new but these are not set up:', 'set.checkAll': 'The Worker answers: Telegram, orders and catalog availability are set up.', 'set.webhookBad': 'The Worker address must start with https://', 'set.checkOk': 'The Worker answers and Telegram is set up.', 'set.checkNoTg': 'The Worker answers but BOT_TOKEN and CHAT_ID are not set in it.', 'set.checkFail': 'No Worker answers at this address.',
       'set.access': 'Access', 'set.accessHint': 'Telegram IDs of the people who see the Admin button in the mini app (comma separated). @userinfobot shows your ID. Signing in still needs the GitHub token.',
       'set.adminIds': 'Admin Telegram IDs', 'set.yourId': 'Your Telegram ID',
@@ -1033,10 +1035,21 @@
       h('div', { class: 'row row--2' }, fld(t('set.bannerRu'), inp('bannerRu', s.banner.ru, { maxlength: '200' })), fld(t('set.bannerEn'), inp('bannerEn', s.banner.en, { maxlength: '200' })))));
     main.appendChild(panel(t('set.delivery'), t('set.deliveryHint'), dHost,
       h('div', null, h('button', { class: 'btn btn--sm', type: 'button', onclick: function () { delivery.push({ id: '', ru: '', en: '' }); drawDelivery(); } }, h('span', { text: '+ ' + t('common.add') })))));
+    var botOut = h('span', { class: 'muted', style: 'font-size:13px' });
+    var botBtn = h('button', { class: 'btn btn--sm', type: 'button', onclick: function () {
+      if (!workerBase()) { botOut.textContent = t('ord.noWorker'); return; }
+      botBtn.disabled = true; botOut.textContent = '…';
+      worker('/bot/setup').then(function (r) {
+        botBtn.disabled = false;
+        botOut.textContent = t('set.botOk') + (r.menuSet ? ' ' + t('set.botMenu') : '') + (r.previous ? ' ' + t('set.botPrev') + ' ' + r.previous : '');
+      }, function (e) { botBtn.disabled = false; botOut.textContent = e.code === 'telegram_not_configured' ? t('set.checkNoTg') : orderError(e); });
+    } }, h('span', { text: t('set.bot') }));
     main.appendChild(panel(t('set.orders'), t('set.ordersHint'),
       h('div', { class: 'row row--2' }, fld(t('set.webhook'), inp('orderWebhook', s.orderWebhook, { type: 'url', placeholder: 'https://…workers.dev', spellcheck: 'false' })),
         fld(t('set.secret'), inp('orderSecret', s.orderSecret, { spellcheck: 'false', autocomplete: 'off' }), t('set.secretHint'))),
-      h('div', { class: 'head__actions', style: 'align-items:center' }, checkBtn, checkOut)));
+      h('div', { class: 'head__actions', style: 'align-items:center' }, checkBtn, checkOut),
+      h('p', { class: 'panel__hint', text: t('set.botHint') }),
+      h('div', { class: 'head__actions', style: 'align-items:center' }, botBtn, botOut)));
     main.appendChild(panel(t('set.access'), t('set.accessHint'),
       h('div', { class: 'row row--2' }, fld(t('set.adminIds'), inp('adminIds', (s.adminIds || []).join(', '), { inputmode: 'numeric', spellcheck: 'false' })),
         tgUser ? fld(t('set.yourId'), h('input', { type: 'text', readonly: true, value: String(tgUser.id) })) : null)));

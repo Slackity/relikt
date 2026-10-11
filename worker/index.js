@@ -11,6 +11,8 @@
  * POST /cdek                  — servicePath для CDEK Widget 3
  * POST /yandex/geo            — определение geo_id Яндекс Доставки
  * POST /yandex/pickup-points  — реальные ПВЗ Яндекс Доставки
+ * POST /tg                    — сообщения боту от Telegram (webhook): на /start бот присылает кнопку «Открыть каталог»
+ * POST /bot/setup             — подключить webhook бота к этому Worker (кнопка в админке, нужен GitHub-токен админки)
  * GET  /health                — проверка конфигурации без выдачи секретов
  *
  * Secrets / settings:
@@ -24,6 +26,7 @@
  * GITHUB_REPO                 — необязательно, по умолчанию Slackity/relikt
  * GITHUB_BRANCH               — необязательно, по умолчанию main
  * ORDERS                      — привязка KV namespace, в нём хранятся заказы (год)
+ * SHOP_URL                    — необязательно, адрес мини-аппа, по умолчанию https://slackity.github.io/relikt/
  */
 const CDEK_BASE='https://api.cdek.ru/v2';
 const YANDEX_BASE='https://b2b-authproxy.taxi.yandex.net';
@@ -44,11 +47,14 @@ export default {
         cdek:!!env.CDEK_CLIENT_ID&&!!env.CDEK_CLIENT_SECRET,
         yandexDelivery:!!env.YANDEX_DELIVERY_TOKEN,
         orders:!!env.ORDERS,
+        bot:true,
         catalog:!!env.GITHUB_TOKEN
       });
       if(url.pathname==='/cdek') return await cdek(request,env);
       if(url.pathname==='/yandex/geo') return await yandexGeo(request,env);
       if(url.pathname==='/yandex/pickup-points') return await yandexPickupPoints(request,env);
+      if(url.pathname==='/tg') return await telegramUpdate(request,env);
+      if(url.pathname==='/bot/setup') return await botSetup(request,env);
       if(url.pathname==='/hold') return await hold(request,env);
       if(url.pathname==='/order') return await order(request,env);
       if(url.pathname.startsWith('/orders/')) return await adminOrders(request,env,url.pathname.slice(8));
@@ -337,6 +343,60 @@ async function order(request,env){
     await env.ORDERS.put(rec.key,JSON.stringify(rec),{expirationTtl:ORDER_TTL});
   }
   return json(problem?{ok:true,number,problem:'unavailable'}:{ok:true,number});
+}
+
+/* ---------- the bot itself: /start opens the shop ---------- */
+const shopUrl=env=>String(env.SHOP_URL||'https://slackity.github.io/relikt/').replace(/\/?$/,'/');
+async function tgApi(env,method,payload){
+  const r=await fetch(`https://api.telegram.org/bot${env.BOT_TOKEN}/${method}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload||{})});
+  return r.json().catch(()=>({ok:false}));
+}
+/* Telegram signs every webhook call with this value, so nobody else can post fake messages here */
+async function webhookSecret(env){
+  return hex(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode('relikt-webhook:'+env.BOT_TOKEN)))).slice(0,48);
+}
+async function telegramUpdate(request,env){
+  if(request.method!=='POST'||!env.BOT_TOKEN)return new Response('ok');
+  if(request.headers.get('X-Telegram-Bot-Api-Secret-Token')!==await webhookSecret(env))return new Response('forbidden',{status:403});
+  const u=await request.json().catch(()=>null);
+  const m=u&&u.message;
+  // only private chats and only the commands below: the manager's own chat with the bot stays quiet
+  if(!m||!m.chat||m.chat.type!=='private'||typeof m.text!=='string')return new Response('ok');
+  const cmd=m.text.trim().match(/^\/(start|catalog|help)(?:@\w+)?(?:\s+(\S+))?/i);
+  if(!cmd)return new Response('ok');
+  let s={};
+  try{s=(await (await fetch(shopUrl(env)+'data/store.json?t='+Date.now())).json()).settings||{};}catch(e){}
+  // t.me/<bot>?start=p_<product> — a link to one piece
+  const product=/^p_[A-Za-z0-9_-]{1,100}$/.test(cmd[2]||'')?cmd[2].slice(2):'';
+  const name=m.from&&m.from.first_name?', '+String(m.from.first_name).slice(0,40):'';
+  const text='Привет'+name+'! Это RELIKT — твой личный импорт.\n\nКаталог, корзина и оформление заказа — в приложении: жми кнопку ниже.'+
+    (s.manager?'\nВопросы — менеджеру @'+s.manager+'.':'');
+  const rows=[];
+  if(product)rows.push([{text:'Открыть вещь',web_app:{url:shopUrl(env)+'product.html?id='+encodeURIComponent(product)}}]);
+  rows.push([{text:'Открыть каталог',web_app:{url:shopUrl(env)}}]);
+  if(s.channel)rows.push([{text:'Канал RELIKT',url:'https://t.me/'+s.channel}]);
+  await tgApi(env,'sendMessage',{chat_id:m.chat.id,text,reply_markup:{inline_keyboard:rows}});
+  return new Response('ok');
+}
+/* one tap in the admin panel: Telegram starts sending the bot's messages here; commands and the menu button get set */
+async function botSetup(request,env){
+  if(request.method!=='POST')return json({ok:false,error:'method'},405);
+  if(!(await isAdmin(request,env)))return json({ok:false,error:'forbidden'},403);
+  if(!env.BOT_TOKEN)return json({ok:false,error:'telegram_not_configured'},501);
+  const hook=new URL(request.url).origin+'/tg';
+  const info=await tgApi(env,'getWebhookInfo');
+  const before=info.result&&info.result.url||'';
+  // presses of Start that waited while nobody listened are answered now (Telegram keeps them up to a day)
+  const set=await tgApi(env,'setWebhook',{url:hook,secret_token:await webhookSecret(env),allowed_updates:['message'],drop_pending_updates:false});
+  if(!set.ok)return json({ok:false,error:set.description||'telegram_error'},502);
+  await tgApi(env,'setMyCommands',{commands:[{command:'start',description:'Открыть магазин'},{command:'catalog',description:'Каталог'}]});
+  let menuSet=false;
+  const menu=await tgApi(env,'getChatMenuButton',{});
+  if(menu.ok&&menu.result&&menu.result.type==='default'){
+    const r=await tgApi(env,'setChatMenuButton',{menu_button:{type:'web_app',text:'Каталог',web_app:{url:shopUrl(env)}}});
+    menuSet=!!r.ok;
+  }
+  return json({ok:true,webhook:hook,previous:before&&before!==hook?before:'',menuSet});
 }
 
 /* ---------- orders for the admin panel ---------- */
