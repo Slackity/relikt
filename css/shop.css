@@ -272,6 +272,9 @@ html.has-banner { --banner-h: 34px; }
 .stepper--card[hidden] { display: none; }
 .stepper--lg button { width: 44px; height: 44px; font-size: 20px; }
 .stepper--lg span { min-width: 48px; font-size: 14px; }
+/* on the product page the stepper spans the column: minus at the left edge, the number in the middle, plus at the right */
+.stepper--lg { display: flex; width: 100%; }
+.stepper--lg span { flex: 1 1 auto; }
 .disc { margin: 22px 0 0; padding: 0; border: 0; display: grid; gap: 10px; }
 .disc legend { padding: 0 0 6px; }
 .sum { margin: 0; display: grid; gap: 6px; }
