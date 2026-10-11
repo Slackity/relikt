@@ -39,6 +39,14 @@
     RK.tgInitData = app.initData;
     root.classList.add('in-tg');
 
+    /* opened from a product link (t.me/<bot>?startapp=p_<slug>): go to that product once */
+    var start = app.initDataUnsafe && app.initDataUnsafe.start_param;
+    if (start && /^p_[A-Za-z0-9_-]{1,100}$/.test(start)) {
+      var mark = 'rk-start-' + start, fresh = false;
+      try { fresh = !sessionStorage.getItem(mark); sessionStorage.setItem(mark, '1'); } catch (e) { /* storage blocked */ }
+      if (fresh) { call(function () { app.ready(); }); location.replace('product.html?id=' + encodeURIComponent(start.slice(2))); return; }
+    }
+
     /* ---------- look ---------- */
     call(function () { app.ready(); });
     call(function () { app.expand(); });

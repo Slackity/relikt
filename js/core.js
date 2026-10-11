@@ -34,6 +34,7 @@
     payment: { bank: '', recipient: '', details: '', note: '' },
     orderWebhook: '',
     orderSecret: '',
+    miniAppUrl: '',
     adminIds: []
   };
 
@@ -46,7 +47,8 @@
     { id: 'bags', ru: 'Сумки', en: 'Bags', subRu: 'Сумки и сумочки', subEn: 'Handbags and shoulder bags' }
   ];
 
-  var AVAILABILITY = ['instock', 'order', 'sold'];
+  // reserved: a buyer paid the deposit (set by the order Worker, released from the Orders tab)
+  var AVAILABILITY = ['instock', 'order', 'reserved', 'sold'];
   var CONDITIONS = ['', 'new', 'vintage', 'used'];
   var IMAGE_RE = /^\/uploads\/[A-Za-z0-9._-]+$/;
 
@@ -115,6 +117,7 @@
       price: price('price'),
       oldPrice: price('oldPrice'),
       availability: availability,
+      reservedUntil: availability === 'reserved' ? str(input.reservedUntil != null ? input.reservedUntil : prev.reservedUntil, 40) : '',
       // back in stock from sold / made to order without a number: one piece
       stock: availability === 'instock' ? int(input.stock != null ? input.stock : prev.availability === 'instock' ? prev.stock : 1, 0, 999, 1) : 0,
       condition: CONDITIONS.indexOf(input.condition) >= 0 ? input.condition : prev.condition || '',
@@ -204,6 +207,12 @@
       next.orderWebhook = w.replace(/\/+$/, '');
     }
     if (input.orderSecret != null) next.orderSecret = str(input.orderSecret, 120);
+    if (input.miniAppUrl != null) {
+      // t.me/<bot> (main Mini App) or t.me/<bot>/<app>; product links add ?startapp=p_<slug>
+      var m = str(input.miniAppUrl, 200).replace(/^@/, '').replace(/^(https?:\/\/)?(t\.me|telegram\.me)\//i, '').replace(/[?#].*$/, '').replace(/\/+$/, '');
+      if (m && !/^[A-Za-z0-9_]{4,32}(\/[A-Za-z0-9_]{3,30})?$/.test(m)) throw err('MINIAPP', 'Mini App link must look like t.me/your_bot or t.me/your_bot/app');
+      next.miniAppUrl = m ? 'https://t.me/' + m : '';
+    }
     if (input.adminIds != null) {
       var ids = Array.isArray(input.adminIds) ? input.adminIds : String(input.adminIds).split(/[\s,;]+/);
       next.adminIds = ids.map(function (x) { return String(x).replace(/\D/g, ''); }).filter(Boolean).slice(0, 10);

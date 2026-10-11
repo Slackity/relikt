@@ -84,7 +84,7 @@
   }
 
   function sizeBlock(p) {
-    if (p.availability === 'sold') return null;
+    if (p.availability === 'sold' || p.availability === 'reserved') return null;
     var sizes = p.sizes || [];
     if (sizes.length > 1) {
       return h('div', { class: 'opt', id: 'sizeBlock' },
@@ -107,10 +107,16 @@
       h('p', { class: 'opt__hint', text: RK.t('product.sizeAsk') }));
   }
 
+  function reservedNote(p) {
+    var d = p.reservedUntil ? new Date(p.reservedUntil) : null;
+    var until = d && !isNaN(d) ? d.toLocaleDateString(RK.lang === 'en' ? 'en-GB' : 'ru-RU', { day: 'numeric', month: 'long' }) : '';
+    return RK.t(until ? 'product.reservedUntil' : 'product.reservedNote', { date: until });
+  }
+
   function actions(p) {
     var wrap = h('div', { class: 'actions' });
-    if (p.availability === 'sold') {
-      wrap.appendChild(h('p', { class: 'note', text: RK.t('product.soldNote') }));
+    if (p.availability === 'sold' || p.availability === 'reserved') {
+      wrap.appendChild(h('p', { class: 'note', text: p.availability === 'sold' ? RK.t('product.soldNote') : reservedNote(p) }));
       wrap.appendChild(h('a', { class: 'btn btn--ghost', href: RK.tg('channel'), target: '_blank', rel: 'noopener' }, h('span', null, h('span', { text: RK.t('cta.channel') }), ' ', h('b', { 'aria-hidden': 'true', text: '↗' }))));
       return wrap;
     }
@@ -138,7 +144,7 @@
       RK.$('#addBtn span').textContent = max === 1 ? RK.t('product.inCart') : RK.t('product.add');
     });
     wrap.appendChild(h('div', { class: 'actions__row' }, addBtn, RK.ui.favButton(p)));
-    wrap.appendChild(h('p', { class: 'note', text: RK.t(p.availability === 'order' ? 'product.orderNote' : 'product.stockNote') }));
+    wrap.appendChild(h('p', { class: 'note', text: p.availability === 'order' ? RK.t('product.orderNote') : max > 1 ? RK.t('product.stockMany', { n: p.stock }) : RK.t('product.stockNote') }));
     return wrap;
   }
 
@@ -158,7 +164,7 @@
     doc.title = RK.pname(p) + ' — RELIKT';
     if (!(p.images || [])[photoIdx]) photoIdx = 0;
     var cat = RK.data.categories.filter(function (c) { return c.id === p.category; })[0];
-    var url = location.href.split('#')[0];
+    var url = RK.shareUrl(p);
     var askUrl = RK.tg('manager') + '?text=' + encodeURIComponent(RK.t('product.askText', { name: RK.pname(p), url: url }));
 
     var facts = [];

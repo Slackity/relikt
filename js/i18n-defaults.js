@@ -111,12 +111,14 @@
   add('catalog.fav.empty', 'catalog', 'Избранное: пусто', 'Пока пусто. Нажми на сердечко у вещи, и она появится здесь.', 'Nothing yet. Tap the heart on a piece and it will appear here.', { multi: true });
   add('filter.instock', 'catalog', 'Фильтр: в наличии', 'В наличии', 'In stock');
   add('filter.order', 'catalog', 'Фильтр: под заказ', 'Под заказ', 'Made to order');
+  add('filter.reserved', 'catalog', 'Фильтр: бронь', 'Бронь', 'Reserved');
   add('filter.sold', 'catalog', 'Фильтр: продано', 'Продано', 'Sold');
   add('sort.new', 'catalog', 'Сортировка: новые', 'Сначала новые', 'Newest first');
   add('sort.asc', 'catalog', 'Сортировка: дешевле', 'Цена: по возрастанию', 'Price: low to high');
   add('sort.desc', 'catalog', 'Сортировка: дороже', 'Цена: по убыванию', 'Price: high to low');
   add('badge.sold', 'catalog', 'Метка: продано', 'Продано', 'Sold');
   add('badge.order', 'catalog', 'Метка: под заказ', 'Под заказ', 'To order');
+  add('badge.reserved', 'catalog', 'Метка: бронь', 'Бронь', 'Reserved');
   add('cond.new', 'catalog', 'Состояние: новое', 'Новое', 'New');
   add('cond.vintage', 'catalog', 'Состояние: винтаж', 'Винтаж', 'Vintage');
   add('cond.used', 'catalog', 'Состояние: б/у', 'Б/у', 'Pre-owned');
@@ -137,8 +139,11 @@
   add('product.ask', 'product', 'Кнопка: спросить', 'Спросить в Telegram', 'Ask on Telegram');
   add('product.askText', 'product', 'Сообщение менеджеру ({name}, {url})', 'Здравствуйте! Интересует: {name} {url}', 'Hello! I am interested in: {name} {url}');
   add('product.soldNote', 'product', 'Продано: пояснение', 'Эта вещь продана. Включай уведомления в канале, чтобы не пропустить новые поступления.', 'This piece is sold. Turn on notifications in the channel so you do not miss new arrivals.', { multi: true });
+  add('product.reservedNote', 'product', 'Бронь: пояснение', 'Вещь забронирована. Если бронь снимут, она вернётся в продажу.', 'This piece is reserved. If the reservation is released, it goes back on sale.', { multi: true });
+  add('product.reservedUntil', 'product', 'Бронь до даты ({date})', 'Вещь забронирована до {date}. Если её не выкупят, она вернётся в продажу.', 'This piece is reserved until {date}. If it is not bought out, it goes back on sale.', { multi: true });
   add('product.orderNote', 'product', 'Под заказ: пояснение', 'Под заказ: выкупим и привезём для тебя.', 'Made to order: we will buy it and ship it to you.', { multi: true });
   add('product.stockNote', 'product', 'В наличии: пояснение', 'В наличии, одна единица.', 'In stock, one piece.');
+  add('product.stockMany', 'product', 'В наличии: несколько ({n})', 'В наличии: {n} шт.', 'In stock: {n} pcs.');
   add('product.brand', 'product', 'Бренд', 'Бренд', 'Brand');
   add('product.condition', 'product', 'Состояние', 'Состояние', 'Condition');
   add('product.more', 'product', 'Блок «Ещё»', 'Ещё из этой категории', 'More from this category');
@@ -210,6 +215,7 @@
   add('done.text', 'cart', 'Заказ принят: текст', 'Осталось отправить заказ менеджеру: нажми кнопку ниже, текст уже готов. Чек об оплате приложи в том же чате.', 'One last step: send the order to the manager with the button below, the text is ready. Attach the payment receipt in the same chat.', { multi: true });
   add('done.sent', 'cart', 'Заказ отправлен: текст', 'Заказ и чек у менеджера. Он проверит оплату и напишет тебе в Telegram.', 'The manager has your order and receipt. They will check the payment and message you on Telegram.', { multi: true });
   add('done.open', 'cart', 'Кнопка: написать менеджеру', 'Написать менеджеру', 'Message the manager');
+  add('done.msg', 'cart', 'Сообщение менеджеру после заказа ({number}, {items}, {amount})', 'Здравствуйте! Пишу по заказу {number}: {items}. Оплачено: {amount}.', 'Hello! I am writing about order {number}: {items}. Paid: {amount}.', { multi: true });
   add('done.copy', 'cart', 'Кнопка: скопировать текст', 'Скопировать текст заказа', 'Copy order text');
   add('done.copied', 'cart', 'Скопировано', 'Скопировано', 'Copied');
   add('done.close', 'cart', 'Продолжить покупки', 'Продолжить покупки', 'Continue shopping');

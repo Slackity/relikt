@@ -124,9 +124,15 @@
     for (var i = 0; i < list.length; i++) if (list[i].id === id || list[i].slug === id) return list[i];
     return null;
   };
-  RK.available = function (p) { return p && p.availability !== 'sold' && p.price != null; };
+  RK.available = function (p) { return p && p.availability !== 'sold' && p.availability !== 'reserved' && p.price != null; };
   RK.isRecent = function (p) { return Date.now() - new Date(p.createdAt).getTime() < 14 * 864e5; };
   RK.productUrl = function (p) { return 'product.html?id=' + encodeURIComponent(p.slug || p.id); };
+  /* link to share a product: opens it inside the Telegram Mini App when its link is set in the admin panel, otherwise the web page */
+  RK.shareUrl = function (p) {
+    var app = RK.data && RK.data.settings && RK.data.settings.miniAppUrl;
+    if (app) return app + '?startapp=p_' + String(p.slug || p.id).replace(/[^A-Za-z0-9_-]/g, '');
+    return new URL(RK.productUrl(p), location.href).href;
+  };
 
   /* ---------- loading ---------- */
   function fetchJson(url, opts) {

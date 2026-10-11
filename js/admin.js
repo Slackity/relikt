@@ -51,6 +51,7 @@
       'login.howto2': 'Repository access: Only select repositories → ваш репозиторий магазина.', 'login.howto3': 'Permissions: Contents — Read and write, Actions — Read and write (для импорта из канала).',
       'login.howto4': 'Скопируйте токен и вставьте сюда. Никому его не пересылайте.', 'login.open': 'Открыть страницу создания токена ↗',
       'nodata.title': 'Каталог не найден', 'nodata.text': 'Токен подошёл, но в этой ветке репозитория нет файла с каталогом:', 'nodata.hint': 'Так бывает, пока новая версия сайта не загружена в GitHub. После загрузки нажмите «Проверить снова». Если сайт лежит в другой ветке, укажите её.', 'nodata.retry': 'Проверить снова', 'nodata.change': 'Другой репозиторий или ветка',
+      'nav.orders': 'Заказы', 'ord.status': 'Статус', 'ord.note': 'Заметка (видна только вам)', 'ord.items': 'Состав', 'ord.subtotal': 'Сумма', 'ord.discount': 'Скидка', 'ord.total': 'Итого', 'ord.deposit': 'Задаток', 'ord.paid': 'Оплачено', 'ord.contact': 'Telegram', 'ord.phone': 'Телефон', 'ord.city': 'Город', 'ord.delivery': 'Доставка', 'ord.address': 'ПВЗ', 'ord.comment': 'Комментарий', 'ord.bank': 'Банк', 'ord.receipt': 'Чек', 'ord.receiptYes': 'прислан в чат менеджера', 'ord.source': 'Откуда', 'ord.site': 'сайт', 'ord.miniapp': 'мини-апп', 'ord.catalog': 'В каталоге', 'ord.released': 'возвращено в продажу', 'ord.gone': 'товар удалён', 'ord.photos': 'Все фото вещи', 'ord.post': 'пост', 'ord.openPost': 'Открыть пост в канале', 'ord.copy': 'Скопировать заказ', 'ord.copied': 'Скопировано', 'ord.chat': 'Написать покупателю', 'ord.more': 'Показать ещё', 'ord.newCount': 'нов. заказ(ов)', 'ord.empty': 'Заказов пока нет. Новые заказы из мини-аппа и с сайта появятся здесь.', 'ord.hint': '«Новый» — оплачен полностью, проверьте чек. «Бронь» — внесён задаток, вещь отмечена бронью. «Оплачен» для брони переводит вещь в «Продано». «Отменён» возвращает вещи в продажу. Заказы хранятся год.', 'ord.cancelQ': 'Отменить заказ? Вещи из него снова появятся в продаже.', 'ord.deleteQ': 'Удалить заказ из списка? Это не меняет каталог: чтобы вернуть вещи в продажу, сначала отмените заказ.', 'ord.skipped': 'Часть вещей вы меняли вручную, их наличие не тронуто — проверьте на вкладке «Товары».', 'ord.noWorker': 'Укажите адрес Worker в «Настройки → Приём заказов».', 'ord.offline': 'Worker не отвечает. Проверьте интернет и адрес в настройках.', 'ord.oldWorker': 'В Cloudflare ещё старая версия Worker. Замените его код на worker/index.js из репозитория (инструкция в README).', 'ord.noKv': 'Worker не подключён к хранилищу заказов: добавьте ему KV namespace с именем привязки ORDERS (инструкция в README).', 'ord.noCatalog': 'В Worker нет секрета GITHUB_TOKEN, поэтому он не может менять наличие в каталоге.', 'ord.forbidden': 'Worker не принял GitHub-токен этой админки: у токена должно быть право записи в репозиторий.', 'ord.unavailable': 'Эту вещь уже купили в другом заказе.', 'st.new': 'Новый', 'st.reserved': 'Бронь', 'st.paid': 'Оплачен', 'st.shipped': 'Отправлен', 'st.done': 'Выполнен', 'st.cancelled': 'Отменён', 'set.miniApp': 'Ссылка на мини-апп', 'set.miniAppHint': 'Например https://t.me/имя_бота или https://t.me/имя_бота/app. По ней «Скопировать ссылку» и «Спросить в Telegram» дают ссылку, которая открывает товар прямо в мини-аппе.', 'set.miniAppBad': 'Ссылка на мини-апп должна быть вида t.me/имя_бота или t.me/имя_бота/app',
       'login.denied': 'Доступ закрыт', 'login.deniedText': 'Эта панель только для владельца магазина.', 'login.toShop': 'В магазин',
       'nav.products': 'Товары', 'nav.categories': 'Категории', 'nav.texts': 'Тексты', 'nav.settings': 'Настройки',
       'nav.site': 'Открыть сайт', 'nav.logout': 'Отключить устройство', 'nav.logoutQ': 'Забыть токен на этом устройстве? Чтобы снова войти, его нужно будет вставить заново.',
@@ -61,7 +62,7 @@
       'prod.title': 'Товары', 'prod.add': 'Добавить товар', 'prod.import': 'Импорт из Telegram', 'prod.empty': 'Ничего не найдено.', 'prod.name': 'Название', 'prod.category': 'Категория', 'prod.price': 'Цена',
       'prod.stock': 'Наличие', 'prod.visible': 'Опубликован', 'prod.draft': 'Черновик', 'prod.filter.all': 'Все товары', 'prod.filter.pub': 'Опубликованные', 'prod.filter.draft': 'Черновики',
       'prod.allcats': 'Все категории', 'prod.selected': 'выбрано', 'prod.publish': 'Опубликовать', 'prod.hide': 'Скрыть', 'prod.deleteQ': 'Удалить выбранные товары?', 'prod.deleteOne': 'Удалить этот товар?',
-      'av.instock': 'В наличии', 'av.order': 'Под заказ', 'av.sold': 'Продано',
+      'av.instock': 'В наличии', 'av.order': 'Под заказ', 'av.reserved': 'Бронь', 'av.sold': 'Продано',
       'prod.new': 'Новый товар', 'prod.edit': 'Редактирование товара', 'prod.nameRu': 'Название (рус.)', 'prod.nameEn': 'Название (англ.)', 'prod.brand': 'Бренд', 'prod.oldPrice': 'Старая цена (зачёркнутая)',
       'prod.qty': 'Штук в наличии', 'prod.cond': 'Состояние', 'prod.sizes': 'Размеры (через запятую)', 'prod.descRu': 'Описание (рус.)', 'prod.descEn': 'Описание (англ.)',
       'prod.tgPost': 'Номер поста в Telegram', 'prod.featured': 'Закрепить вверху каталога', 'prod.photos': 'Фото', 'prod.addPhotos': 'Добавить фото', 'prod.photosHint': 'Первое фото — обложка. Стрелками фото двигаются, × убирает.',
@@ -84,7 +85,7 @@
       'set.delivery': 'Службы доставки', 'set.deliveryHint': 'Показываются списком при оформлении заказа.', 'set.discounts': 'Скидки-галочки', 'set.discountsHint': 'Покупатель отмечает подходящие в корзине, менеджер проверяет. Не дублируйте их промокодами, иначе скидка сложится дважды.',
       'set.orders': 'Приём заказов', 'set.ordersHint': 'Адрес Cloudflare Worker: он пересылает заказ и чек менеджеру в Telegram. Без адреса покупатель отправляет заказ сообщением сам.',
       'set.webhook': 'Адрес Worker', 'set.secret': 'Секрет заказа (APP_SECRET)', 'set.secretHint': 'Нужен только для заказов с обычного сайта, не из Telegram. Он виден в данных сайта, поэтому защищает слабо. Если оставить пустым, через Worker принимаются только заказы из мини-аппа (их Telegram подписывает сам), а с сайта заказ уходит сообщением менеджеру.',
-      'set.check': 'Проверить Worker', 'set.webhookBad': 'Адрес Worker должен начинаться с https://', 'set.checkOk': 'Worker на связи, Telegram настроен.', 'set.checkNoTg': 'Worker отвечает, но в нём не заданы BOT_TOKEN и CHAT_ID.', 'set.checkFail': 'Worker не отвечает по этому адресу.',
+      'set.check': 'Проверить Worker', 'set.checkOld': 'Worker отвечает, но это старая версия: заказы не сохраняются и вещи не отмечаются. Обновите его код (README).', 'set.checkMissing': 'Worker новый, но в нём не настроено:', 'set.checkAll': 'Worker на связи: Telegram, заказы и наличие в каталоге настроены.', 'set.webhookBad': 'Адрес Worker должен начинаться с https://', 'set.checkOk': 'Worker на связи, Telegram настроен.', 'set.checkNoTg': 'Worker отвечает, но в нём не заданы BOT_TOKEN и CHAT_ID.', 'set.checkFail': 'Worker не отвечает по этому адресу.',
       'set.access': 'Доступ', 'set.accessHint': 'Telegram ID тех, кому в мини-аппе видна кнопка «Админка» (через запятую). Свой ID можно узнать у @userinfobot. Для входа всё равно нужен GitHub-токен.',
       'set.adminIds': 'Telegram ID админов', 'set.yourId': 'Ваш Telegram ID',
       'set.github': 'GitHub', 'set.githubHint': 'Панель работает с этим репозиторием. Токен хранится только на этом устройстве.', 'set.repo': 'Репозиторий', 'set.branch': 'Ветка',
@@ -99,6 +100,7 @@
       'login.howto2': 'Repository access: Only select repositories → your shop repository.', 'login.howto3': 'Permissions: Contents — Read and write, Actions — Read and write (for the channel import).',
       'login.howto4': 'Copy the token and paste it here. Never send it to anyone.', 'login.open': 'Open the token page ↗',
       'nodata.title': 'Catalog not found', 'nodata.text': 'The token works, but this branch of the repository has no catalog file:', 'nodata.hint': 'This happens until the new site is uploaded to GitHub. After that press “Check again”. If the site is in another branch, enter it.', 'nodata.retry': 'Check again', 'nodata.change': 'Another repository or branch',
+      'nav.orders': 'Orders', 'ord.status': 'Status', 'ord.note': 'Private note', 'ord.items': 'Items', 'ord.subtotal': 'Subtotal', 'ord.discount': 'Discount', 'ord.total': 'Total', 'ord.deposit': 'Deposit', 'ord.paid': 'Paid', 'ord.contact': 'Telegram', 'ord.phone': 'Phone', 'ord.city': 'City', 'ord.delivery': 'Delivery', 'ord.address': 'Pickup point', 'ord.comment': 'Comment', 'ord.bank': 'Bank', 'ord.receipt': 'Receipt', 'ord.receiptYes': 'sent to the manager chat', 'ord.source': 'From', 'ord.site': 'website', 'ord.miniapp': 'mini app', 'ord.catalog': 'Catalog', 'ord.released': 'back on sale', 'ord.gone': 'product deleted', 'ord.photos': 'All photos of the piece', 'ord.post': 'post', 'ord.openPost': 'Open the channel post', 'ord.copy': 'Copy order', 'ord.copied': 'Copied', 'ord.chat': 'Message buyer', 'ord.more': 'Show more', 'ord.newCount': 'new order(s)', 'ord.empty': 'No orders yet. New orders from the mini app and the website appear here.', 'ord.hint': '“New” is paid in full, check the receipt. “Reserved” has a deposit and the piece is marked reserved. “Paid” turns a reserved piece into sold. “Cancelled” puts the pieces back on sale. Orders are kept for a year.', 'ord.cancelQ': 'Cancel this order? Its pieces go back on sale.', 'ord.deleteQ': 'Remove this order from the list? The catalog does not change: cancel the order first to put pieces back on sale.', 'ord.skipped': 'Some pieces were changed by hand, their availability was left as is. Check the Products tab.', 'ord.noWorker': 'Set the Worker address in Settings → Order intake.', 'ord.offline': 'The Worker does not answer. Check the connection and the address in Settings.', 'ord.oldWorker': 'Cloudflare still runs the old Worker. Replace its code with worker/index.js from the repository (see README).', 'ord.noKv': 'The Worker has no order storage: add a KV namespace binding named ORDERS (see README).', 'ord.noCatalog': 'The Worker has no GITHUB_TOKEN secret, so it cannot change availability in the catalog.', 'ord.forbidden': 'The Worker did not accept this panel’s GitHub token: it needs write access to the repository.', 'ord.unavailable': 'This piece was bought in another order.', 'st.new': 'New', 'st.reserved': 'Reserved', 'st.paid': 'Paid', 'st.shipped': 'Shipped', 'st.done': 'Done', 'st.cancelled': 'Cancelled', 'set.miniApp': 'Mini App link', 'set.miniAppHint': 'For example https://t.me/your_bot or https://t.me/your_bot/app. “Copy link” and “Ask on Telegram” then give a link that opens the product right in the mini app.', 'set.miniAppBad': 'The Mini App link must look like t.me/your_bot or t.me/your_bot/app',
       'login.denied': 'Access denied', 'login.deniedText': 'This panel is for the shop owner only.', 'login.toShop': 'Back to the shop',
       'nav.products': 'Products', 'nav.categories': 'Categories', 'nav.texts': 'Texts', 'nav.settings': 'Settings',
       'nav.site': 'View site', 'nav.logout': 'Disconnect device', 'nav.logoutQ': 'Forget the token on this device? You will need to paste it again to sign in.',
@@ -109,7 +111,7 @@
       'prod.title': 'Products', 'prod.add': 'Add product', 'prod.import': 'Import from Telegram', 'prod.empty': 'No products match.', 'prod.name': 'Name', 'prod.category': 'Category', 'prod.price': 'Price',
       'prod.stock': 'Availability', 'prod.visible': 'Published', 'prod.draft': 'Draft', 'prod.filter.all': 'All products', 'prod.filter.pub': 'Published', 'prod.filter.draft': 'Drafts',
       'prod.allcats': 'All categories', 'prod.selected': 'selected', 'prod.publish': 'Publish', 'prod.hide': 'Hide', 'prod.deleteQ': 'Delete the selected products?', 'prod.deleteOne': 'Delete this product?',
-      'av.instock': 'In stock', 'av.order': 'Made to order', 'av.sold': 'Sold',
+      'av.instock': 'In stock', 'av.order': 'Made to order', 'av.reserved': 'Reserved', 'av.sold': 'Sold',
       'prod.new': 'New product', 'prod.edit': 'Edit product', 'prod.nameRu': 'Name (Russian)', 'prod.nameEn': 'Name (English)', 'prod.brand': 'Brand', 'prod.oldPrice': 'Old price (crossed out)',
       'prod.qty': 'Units in stock', 'prod.cond': 'Condition', 'prod.sizes': 'Sizes (comma separated)', 'prod.descRu': 'Description (Russian)', 'prod.descEn': 'Description (English)',
       'prod.tgPost': 'Telegram post number', 'prod.featured': 'Pin to the top of the catalog', 'prod.photos': 'Photos', 'prod.addPhotos': 'Add photos', 'prod.photosHint': 'The first photo is the cover. Arrows move a photo, × removes it.',
@@ -132,7 +134,7 @@
       'set.delivery': 'Delivery services', 'set.deliveryHint': 'Shown as a dropdown at checkout.', 'set.discounts': 'Tick-box discounts', 'set.discountsHint': 'Buyers tick the ones that apply in the cart and the manager checks them. Do not duplicate them with promo codes or the discount adds up twice.',
       'set.orders': 'Order intake', 'set.ordersHint': 'Address of the Cloudflare Worker that forwards the order and receipt to the manager on Telegram. Without it the buyer sends the order as a message.',
       'set.webhook': 'Worker address', 'set.secret': 'Order secret (APP_SECRET)', 'set.secretHint': 'Only needed for orders from the plain website, not from Telegram. It is readable in the site data, so it protects weakly. Leave it empty and the Worker only accepts mini-app orders (signed by Telegram); website orders then go to the manager as a message.',
-      'set.check': 'Test the Worker', 'set.webhookBad': 'The Worker address must start with https://', 'set.checkOk': 'The Worker answers and Telegram is set up.', 'set.checkNoTg': 'The Worker answers but BOT_TOKEN and CHAT_ID are not set in it.', 'set.checkFail': 'No Worker answers at this address.',
+      'set.check': 'Test the Worker', 'set.checkOld': 'The Worker answers but it is the old version: orders are not kept and pieces are not marked. Update its code (README).', 'set.checkMissing': 'The Worker is new but these are not set up:', 'set.checkAll': 'The Worker answers: Telegram, orders and catalog availability are set up.', 'set.webhookBad': 'The Worker address must start with https://', 'set.checkOk': 'The Worker answers and Telegram is set up.', 'set.checkNoTg': 'The Worker answers but BOT_TOKEN and CHAT_ID are not set in it.', 'set.checkFail': 'No Worker answers at this address.',
       'set.access': 'Access', 'set.accessHint': 'Telegram IDs of the people who see the Admin button in the mini app (comma separated). @userinfobot shows your ID. Signing in still needs the GitHub token.',
       'set.adminIds': 'Admin Telegram IDs', 'set.yourId': 'Your Telegram ID',
       'set.github': 'GitHub', 'set.githubHint': 'The panel works with this repository. The token is stored on this device only.', 'set.repo': 'Repository', 'set.branch': 'Branch',
@@ -219,16 +221,22 @@
   }
 
   /* Every change: apply it to a copy of the data, commit the file, keep the copy only if GitHub took it.
-     Changes run one after another, so two quick clicks never fight over the same file version. */
+     Changes run one after another, so two quick clicks never fight over the same file version.
+     If the file changed on GitHub meanwhile (an order marked a piece sold, an import finished),
+     the fresh file is loaded and the same change is applied to it. */
   var queue = Promise.resolve(), pending = 0;
   function mutate(fn, message) {
-    var job = queue.then(function () {
+    function attempt(tries) {
       var next = Core.clone(S), out = fn(next);
       return putFile(DATA_PATH, b64encode(JSON.stringify(next, null, 2) + '\n'), message, SHA).then(function (r) {
         S = next; SHA = r.content.sha;
         return out;
+      }, function (e) {
+        if ((e.status !== 409 && e.status !== 422) || tries >= 2) throw e;
+        return loadStore().then(function () { return attempt(tries + 1); });
       });
-    });
+    }
+    var job = queue.then(function () { return attempt(0); });
     queue = job.catch(function () {});
     pending++; busy(true);
     return job.then(function (out) { pending--; busy(pending > 0); return out; }, function (e) { pending--; busy(pending > 0); throw e; });
@@ -252,7 +260,7 @@
   }
 
   function fail(e) {
-    var msg = !e ? t('common.error') : e.code === 'WEBHOOK' ? t('set.webhookBad') : e.status === 401 ? t('err.auth') : e.status === 403 ? t('err.forbidden') : e.status === 409 || e.status === 422 ? t('err.conflict') : e.status === 0 ? t('err.net') : e.message || t('common.error');
+    var msg = !e ? t('common.error') : e.code === 'WEBHOOK' ? t('set.webhookBad') : e.code === 'MINIAPP' ? t('set.miniAppBad') : e.status === 401 ? t('err.auth') : e.status === 403 ? t('err.forbidden') : e.status === 409 || e.status === 422 ? t('err.conflict') : e.status === 0 ? t('err.net') : e.message || t('common.error');
     toast(msg, true);
     if (e && e.status === 401) { CONN.token = ''; saveConn(); start(); }
   }
@@ -364,16 +372,17 @@
   /* ======================================================================
      SHELL
      ====================================================================== */
-  var VIEWS = ['products', 'categories', 'texts', 'settings'];
+  var VIEWS = ['orders', 'products', 'categories', 'texts', 'settings'];
   var view = location.hash.replace('#/', '');
-  if (VIEWS.indexOf(view) < 0) view = 'products';
+  if (VIEWS.indexOf(view) < 0) view = 'orders';
 
   function renderShell() {
     var app = clear($('#app'));
     var side = h('aside', { class: 'side' },
       h('a', { class: 'side__brand', href: 'index.html', 'aria-label': 'RELIKT' }, logoSvg()),
       h('nav', { class: 'nav', 'aria-label': 'Admin' }, VIEWS.map(function (v) {
-        return h('button', { type: 'button', class: view === v ? 'on' : '', onclick: function () { go(v); } }, h('span', { text: t('nav.' + v) }));
+        var n = v === 'orders' ? newOrders() : 0;
+        return h('button', { type: 'button', class: view === v ? 'on' : '', onclick: function () { go(v); } }, h('span', { text: t('nav.' + v) }), n ? h('span', { class: 'pill', text: String(n) }) : null);
       })),
       h('div', { class: 'side__foot' },
         h('p', { class: 'muted mono', style: 'font-size:11px;word-break:break-all', text: CONN.owner + '/' + CONN.repo }),
@@ -381,7 +390,8 @@
         h('button', { class: 'link', type: 'button', style: 'text-align:left', onclick: logout, text: t('nav.logout') }),
         langSwitch()));
     var top = h('div', { class: 'topbar' }, VIEWS.map(function (v) {
-      return h('button', { type: 'button', class: view === v ? 'on' : '', onclick: function () { go(v); } }, t('nav.' + v));
+      var n = v === 'orders' ? newOrders() : 0;
+      return h('button', { type: 'button', class: view === v ? 'on' : '', onclick: function () { go(v); } }, t('nav.' + v), n ? h('span', { class: 'pill', text: String(n) }) : null);
     }), langSwitch());
     app.appendChild(h('div', { class: 'shell' }, side, h('div', null, top, h('main', { class: 'main', id: 'main' }))));
     route();
@@ -395,7 +405,7 @@
   function go(v) { view = v; history.replaceState(null, '', '#/' + v); renderShell(); window.scrollTo(0, 0); }
   function route() {
     var main = clear($('#main'));
-    ({ products: viewProducts, categories: viewCategories, texts: viewTexts, settings: viewSettings })[view](main);
+    ({ orders: viewOrders, products: viewProducts, categories: viewCategories, texts: viewTexts, settings: viewSettings })[view](main);
   }
   function head(title, actions) {
     return h('div', { class: 'head' }, h('h1', { text: title }), actions ? h('div', { class: 'head__actions' }, actions) : null);
@@ -403,6 +413,171 @@
   function catName(id) { var c = S.categories.filter(function (x) { return x.id === id; })[0]; return c ? (lang === 'ru' ? c.ru : c.en) : id; }
   function reload() {
     return loadStore().then(function () { toast(t('common.reload') + ' ✓'); renderShell(); }).catch(fail);
+  }
+
+  /* ======================================================================
+     ORDERS (kept by the order Worker in Cloudflare KV, never in the public repository)
+     ====================================================================== */
+  var ORDER_STATUSES = ['new', 'reserved', 'paid', 'shipped', 'done', 'cancelled'];
+  var OR = { list: null, cursor: null, filter: 'all', error: '', loading: false, seen: null };
+
+  function workerBase() {
+    var w = S && S.settings.orderWebhook;
+    if (!w) return '';
+    try { return new URL(w).origin; } catch (e) { return ''; }
+  }
+  function worker(path, body) {
+    return fetch(workerBase() + path, {
+      method: 'POST', cache: 'no-store',
+      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + CONN.token },
+      body: JSON.stringify(body || {})
+    }).then(function (r) {
+      return r.json().catch(function () { return {}; }).then(function (j) {
+        if (!r.ok || !j.ok) { var e = new Error(j.error || 'HTTP ' + r.status); e.status = r.status; e.code = j.error; throw e; }
+        return j;
+      });
+    }, function () { var e = new Error(t('ord.offline')); e.status = 0; throw e; });
+  }
+  function orderError(e) {
+    if (!e) return t('common.error');
+    if (e.status === 0) return t('ord.offline');
+    if (e.code === 'not_found' || e.code === 'method') return t('ord.oldWorker');
+    if (e.code === 'orders_not_configured') return t('ord.noKv');
+    if (e.code === 'catalog_not_configured') return t('ord.noCatalog');
+    if (e.code === 'forbidden') return t('ord.forbidden');
+    if (e.code === 'unavailable') return t('ord.unavailable');
+    return t('common.error') + ': ' + (e.message || '');
+  }
+
+  /* first page (or the next one) of orders; new ones since the last look are announced */
+  function loadOrders(more, quiet) {
+    if (!workerBase()) { OR.error = t('ord.noWorker'); return Promise.resolve(); }
+    OR.loading = true;
+    return worker('/orders/list', { cursor: more ? OR.cursor : null, limit: 50 }).then(function (r) {
+      OR.error = '';
+      var fresh = OR.seen ? r.orders.filter(function (o) { return !OR.seen[o.key]; }) : [];
+      OR.list = more ? (OR.list || []).concat(r.orders) : r.orders;
+      OR.cursor = r.cursor;
+      OR.seen = OR.seen || {};
+      OR.list.forEach(function (o) { OR.seen[o.key] = true; });
+      if (fresh.length && !more) { toast(fresh.length + ' ' + t('ord.newCount')); loadStore().catch(function () { /* products refresh later */ }); }
+    }, function (e) {
+      if (quiet && OR.list) return;
+      OR.error = orderError(e);
+      // the old Worker refuses the admin request outright (no CORS for it); its /health tells the versions apart
+      if (e.status !== 0) return;
+      return fetch(workerBase() + '/health', { cache: 'no-store' }).then(function (r) { return r.json(); })
+        .then(function (j) { if (j && j.ok && j.orders === undefined) OR.error = t('ord.oldWorker'); }, function () { /* really offline */ });
+    }).then(function () { OR.loading = false; });
+  }
+  function newOrders() { return (OR.list || []).filter(function (o) { return o.status === 'new' || o.status === 'reserved'; }).length; }
+
+  function viewOrders(main) {
+    main.appendChild(head(t('nav.orders'), h('button', { class: 'btn btn--sm', type: 'button', onclick: function () { loadOrders(false).then(route); } }, h('span', { text: t('common.reload') }))));
+    if (OR.list === null && !OR.error) {
+      main.appendChild(h('div', { class: 'empty' }, h('span', { class: 'spinner', style: 'display:inline-block' })));
+      loadOrders(false).then(function () { if (view === 'orders') renderShell(); });
+      return;
+    }
+    if (OR.error) { main.appendChild(h('div', { class: 'empty', text: OR.error })); return; }
+    var counts = {}; OR.list.forEach(function (o) { counts[o.status] = (counts[o.status] || 0) + 1; });
+    main.appendChild(h('div', { class: 'chips', style: 'margin-bottom:18px' },
+      ordChip(t('common.all'), OR.list.length, OR.filter === 'all', function () { OR.filter = 'all'; route(); }),
+      ORDER_STATUSES.map(function (s) { return ordChip(t('st.' + s), counts[s] || 0, OR.filter === s, function () { OR.filter = s; route(); }); })));
+    var list = OR.list.filter(function (o) { return OR.filter === 'all' || o.status === OR.filter; });
+    if (!list.length) main.appendChild(h('div', { class: 'empty', text: t('ord.empty') }));
+    else main.appendChild(h('div', { class: 'orders' }, list.map(orderCard)));
+    if (OR.cursor) main.appendChild(h('div', { style: 'margin-top:14px' }, h('button', { class: 'btn btn--sm', type: 'button', onclick: function () { loadOrders(true).then(route); } }, h('span', { text: t('ord.more') }))));
+    main.appendChild(h('p', { class: 'field__hint', style: 'margin-top:16px', text: t('ord.hint') }));
+  }
+  function ordChip(label, n, on, fn) { return h('button', { class: 'chip' + (on ? ' on' : ''), type: 'button', onclick: fn }, label, h('i', { text: String(n) })); }
+
+  function dt(iso) { try { return new Date(iso).toLocaleString(lang === 'ru' ? 'ru-RU' : 'en-GB', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }); } catch (e) { return iso; } }
+  function chatLink(o) {
+    var u = o.tg && o.tg.username ? o.tg.username : String(o.customer.contact || '').trim().replace(/^@/, '').replace(/^https?:\/\/t\.me\//i, '');
+    return /^[A-Za-z0-9_]{4,32}$/.test(u) ? 'https://t.me/' + u : null;
+  }
+  function orderSummary(o) {
+    var c = o.customer, L = ['Заказ ' + o.number + ' · ' + dt(o.createdAt), ''];
+    o.items.forEach(function (it, i) { L.push((i + 1) + '. ' + it.name + (it.size ? ' (' + it.size + ')' : '') + (it.qty > 1 ? ' × ' + it.qty : '') + ' — ' + money(it.price * it.qty)); });
+    L.push('', 'Итого: ' + money(o.total), o.payment === 'reserve' ? 'Задаток: ' + money(o.pay) : 'Оплачено: ' + money(o.pay), '');
+    L.push('Имя: ' + c.name, 'Telegram: ' + c.contact, 'Телефон: ' + c.phone, 'Город: ' + c.city);
+    if (c.delivery) L.push('Доставка: ' + c.delivery);
+    L.push('Пункт выдачи: ' + c.address);
+    if (c.comment) L.push('Комментарий: ' + c.comment);
+    return L.join('\n');
+  }
+
+  function orderCard(o) {
+    var c = o.customer || {}, link = chatLink(o);
+    var statusSel = h('select', { 'aria-label': t('ord.status') }, ORDER_STATUSES.map(function (s) { var op = h('option', { value: s, text: t('st.' + s) }); if (s === o.status) op.selected = true; return op; }));
+    statusSel.addEventListener('change', function () {
+      var next = statusSel.value;
+      var ask = next === 'cancelled' ? confirmBox(t('ord.cancelQ'), true) : Promise.resolve(true);
+      ask.then(function (ok) {
+        if (!ok) { statusSel.value = o.status; return; }
+        statusSel.disabled = true; busy(true);
+        worker('/orders/update', { key: o.key, status: next }).then(function (r) {
+          Object.assign(o, r.order); busy(false);
+          toast(t('common.saved'));
+          if (r.order.skipped && r.order.skipped.length) toast(t('ord.skipped'), true);
+          return loadStore().catch(function () { /* the products tab refreshes on reload */ });
+        }).then(function () { route(); }, function (e) { busy(false); statusSel.disabled = false; statusSel.value = o.status; toast(orderError(e), true); });
+      });
+    });
+    var note = h('textarea', { rows: '2', 'aria-label': t('ord.note') }); note.value = o.note || '';
+    note.addEventListener('change', function () { worker('/orders/update', { key: o.key, note: note.value }).then(function () { o.note = note.value; toast(t('common.saved')); }, function (e) { toast(orderError(e), true); }); });
+    var kv = function (k, v) { return v ? h('div', null, h('dt', { text: k }), h('dd', { text: v })) : null; };
+    var marked = (o.claims || []).map(function (x) { return x.to === 'instock' ? '−' + x.qty : t('av.' + x.to); });
+    return h('details', { class: 'order' + (o.status === 'new' || o.status === 'reserved' ? ' order--fresh' : '') },
+      h('summary', null,
+        h('span', { class: 'order__num', text: o.number }),
+        h('span', { class: 'order__who' }, h('b', { text: c.name || '—' }), h('span', { class: 'muted', text: dt(o.createdAt) + ' · ' + (c.contact || '') })),
+        h('span', { class: 'tag tag--' + o.status, text: t('st.' + o.status) }),
+        h('span', { class: 'order__total', text: money(o.pay || o.total) })),
+      h('div', { class: 'order__body' },
+        h('div', { class: 'order__cols' },
+          h('div', { class: 'stack' }, h('p', { class: 'eyebrow', text: t('ord.items') }), h('div', { class: 'items' }, o.items.map(function (it) {
+            var p = S.products.filter(function (x) { return x.id === it.id; })[0];
+            var cover = it.image || (p && p.images[0]) || '';
+            return h('div', { class: 'item item--photo' },
+              cover ? h('button', { class: 'item__ph', type: 'button', 'aria-label': t('ord.photos'), onclick: function () { showPhotos(it, p); } }, h('img', { src: img(cover), alt: '', loading: 'lazy' })) : h('span', { class: 'item__ph' }),
+              h('div', null, h('span', { text: it.name }), h('small', { text: [it.size, it.qty > 1 ? '× ' + it.qty : '', it.order ? t('av.order') : '', p && p.tgPost ? t('ord.post') + ' ' + p.tgPost : '', p ? t('av.' + p.availability) + (p.availability === 'instock' ? ' · ' + p.stock : '') : t('ord.gone')].filter(Boolean).join(' · ') })),
+              h('span', { class: 'mono', text: money(it.price * it.qty) }));
+          })),
+            h('dl', { class: 'kv' },
+              kv(t('ord.subtotal'), money(o.subtotal)), o.cut ? kv(t('ord.discount'), '−' + money(o.cut) + [o.discounts.join(', '), o.promo].filter(Boolean).map(function (x) { return ' · ' + x; }).join('')) : null,
+              kv(t('ord.total'), money(o.total)), kv(o.payment === 'reserve' ? t('ord.deposit') : t('ord.paid'), money(o.pay)))),
+          h('dl', { class: 'kv' },
+            kv(t('ord.contact'), c.contact), kv(t('ord.phone'), c.phone), kv(t('ord.city'), c.city), kv(t('ord.delivery'), c.delivery), kv(t('ord.address'), c.address), kv(t('ord.comment'), c.comment),
+            kv(t('ord.bank'), o.bank), kv(t('ord.receipt'), o.receipt ? t('ord.receiptYes') : ''),
+            kv(t('ord.source'), (o.source === 'site' ? t('ord.site') : t('ord.miniapp')) + (o.tg ? ' · ID ' + o.tg.id : '')),
+            kv(t('ord.catalog'), o.catalogNote ? '⚠ ' + o.catalogNote : marked.length ? marked.join(', ') + (o.released ? ' · ' + t('ord.released') : '') : ''))),
+        h('div', { class: 'order__actions' },
+          h('label', { class: 'field' }, h('span', { text: t('ord.status') }), statusSel),
+          h('label', { class: 'field', style: 'flex:1;min-width:220px' }, h('span', { text: t('ord.note') }), note),
+          h('button', { class: 'btn btn--sm', type: 'button', onclick: function () { copyText(orderSummary(o)); } }, h('span', { text: t('ord.copy') })),
+          link ? h('a', { class: 'btn btn--sm', href: link, target: '_blank', rel: 'noopener' }, h('span', { text: t('ord.chat') + ' ↗' })) : null,
+          h('button', { class: 'btn btn--sm btn--danger', type: 'button', onclick: function () {
+            confirmBox(t('ord.deleteQ'), true).then(function (ok) {
+              if (!ok) return;
+              worker('/orders/delete', { key: o.key }).then(function () { OR.list = OR.list.filter(function (x) { return x.key !== o.key; }); route(); }, function (e) { toast(orderError(e), true); });
+            });
+          } }, h('span', { text: t('common.delete') })))));
+  }
+  /* every photo of the ordered piece, large: tells apart pieces with the same name in different colours */
+  function showPhotos(it, p) {
+    var list = p && p.images.length ? p.images.slice() : [it.image];
+    if (it.image && list.indexOf(it.image) < 0) list.unshift(it.image);
+    var channel = S.settings.channel;
+    modal(it.name + (it.size ? ' · ' + it.size : ''), h('div', { class: 'stack' },
+      h('div', { class: 'ophotos' }, list.map(function (u) { return h('img', { src: img(u), alt: '' }); })),
+      h('p', { class: 'muted', text: [p && p.brand, money(it.price), p && p.tgPost ? t('ord.post') + ' ' + p.tgPost : ''].filter(Boolean).join(' · ') }),
+      p && p.tgPost && channel ? h('a', { class: 'link', href: 'https://t.me/' + channel + '/' + p.tgPost, target: '_blank', rel: 'noopener', text: t('ord.openPost') + ' ↗' }) : null));
+  }
+  function copyText(text) {
+    var done = function () { toast(t('ord.copied')); };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, function () { toast(t('common.error'), true); });
   }
 
   /* ======================================================================
@@ -434,7 +609,7 @@
       if (pf.cat !== 'all' && p.category !== pf.cat) return false;
       if (pf.status === 'pub' && !p.visible) return false;
       if (pf.status === 'draft' && p.visible) return false;
-      if (['instock', 'order', 'sold'].indexOf(pf.status) >= 0 && p.availability !== pf.status) return false;
+      if (['instock', 'order', 'reserved', 'sold'].indexOf(pf.status) >= 0 && p.availability !== pf.status) return false;
       if (q && [p.ru, p.en, p.brand].join(' ').toLowerCase().indexOf(q) < 0) return false;
       return true;
     });
@@ -458,7 +633,7 @@
     list.forEach(function (p) {
       var cb = h('input', { type: 'checkbox', 'aria-label': p.ru }); cb.checked = !!pf.selected[p.id];
       cb.addEventListener('change', function () { pf.selected[p.id] = cb.checked; renderTable(host); });
-      var av = h('select', { 'aria-label': t('prod.stock') }, ['instock', 'order', 'sold'].map(function (a) { var op = h('option', { value: a, text: t('av.' + a) }); if (a === p.availability) op.selected = true; return op; }));
+      var av = h('select', { 'aria-label': t('prod.stock') }, ['instock', 'order', 'reserved', 'sold'].map(function (a) { var op = h('option', { value: a, text: t('av.' + a) }); if (a === p.availability) op.selected = true; return op; }));
       av.addEventListener('change', function () { quick(p, { availability: av.value }); });
       var sw = h('label', { class: 'switch', title: t('prod.visible') }, h('input', { type: 'checkbox', 'aria-label': t('prod.visible') }), h('i'));
       $('input', sw).checked = !!p.visible;
@@ -504,7 +679,7 @@
     var sel = function (name, opts, val) { var s = h('select', { id: 'pf_' + name }, opts.map(function (o) { var op = h('option', { value: o[0], text: o[1] }); if (o[0] === val) op.selected = true; return op; })); f[name] = s; return s; };
     var ta = function (name, val) { var e = h('textarea', { id: 'pf_' + name, rows: '3' }); e.value = val || ''; f[name] = e; return e; };
 
-    var avSel = sel('availability', ['instock', 'order', 'sold'].map(function (a) { return [a, t('av.' + a)]; }), d.availability);
+    var avSel = sel('availability', ['instock', 'order', 'reserved', 'sold'].map(function (a) { return [a, t('av.' + a)]; }), d.availability);
     var stockInp = inp('stock', 'number', d.stock, { min: '0', max: '999' });
     var stockFld = fld(t('prod.qty'), stockInp);
     var syncStock = function () { stockFld.hidden = avSel.value !== 'instock'; };
@@ -557,6 +732,17 @@
           h('label', { class: 'check' }, (f.featured = h('input', { type: 'checkbox' })), h('span', { text: t('prod.featured') })))),
       h('div', { class: 'stack' }, h('span', { class: 'field__label', text: t('prod.photos') }), photosHost, h('p', { class: 'field__hint', text: t('prod.photosHint') })));
     f.visible.checked = !!d.visible; f.featured.checked = !!d.featured;
+    function formPayload() {
+      return {
+        ru: f.ru.value.trim(), en: f.en.value.trim(), brand: f.brand.value.trim(), category: f.category.value,
+        price: f.price.value === '' ? '' : Number(f.price.value), oldPrice: f.oldPrice.value === '' ? '' : Number(f.oldPrice.value),
+        availability: f.availability.value, stock: Number(f.stock.value || 0), condition: f.condition.value,
+        sizes: f.sizes.value.split(',').map(function (x) { return x.trim(); }).filter(Boolean),
+        descRu: f.descRu.value.trim(), descEn: f.descEn.value.trim(), images: photos.slice(),
+        visible: f.visible.checked, featured: f.featured.checked, tgPost: f.tgPost.value === '' ? 0 : Number(f.tgPost.value)
+      };
+    }
+    var initial = formPayload();
 
     var m;
     var saveBtn = h('button', { class: 'btn btn--solid', type: 'button' }, h('span', { text: t('common.save') }));
@@ -564,15 +750,13 @@
     saveBtn.addEventListener('click', function () {
       var ru = f.ru.value.trim(), en = f.en.value.trim();
       if (!ru && !en) { toast(t('prod.nameReq'), true); f.ru.focus(); return; }
-      var payload = {
-        ru: ru, en: en, brand: f.brand.value.trim(), category: f.category.value,
-        price: f.price.value === '' ? '' : Number(f.price.value), oldPrice: f.oldPrice.value === '' ? '' : Number(f.oldPrice.value),
-        availability: f.availability.value, stock: Number(f.stock.value || 0), condition: f.condition.value,
-        sizes: f.sizes.value.split(',').map(function (x) { return x.trim(); }).filter(Boolean),
-        descRu: f.descRu.value.trim(), descEn: f.descEn.value.trim(), images: photos,
-        visible: f.visible.checked, featured: f.featured.checked, tgPost: f.tgPost.value === '' ? 0 : Number(f.tgPost.value)
-      };
-      if (!isNew) payload.id = p.id;
+      var payload = formPayload();
+      if (!isNew) {
+        // only what was edited here: an order may have marked the piece sold while this window was open
+        Object.keys(payload).forEach(function (k) { if (JSON.stringify(payload[k]) === JSON.stringify(initial[k])) delete payload[k]; });
+        if (!Object.keys(payload).length) { m.close(); return; }
+        payload.id = p.id;
+      }
       saveBtn.disabled = true;
       mutate(function (dd) { return Core.upsertProduct(dd, payload); }, (isNew ? 'Новый товар: ' : 'Товар: ') + (ru || en))
         .then(function () { m.close(); toast(t('common.saved')); renderShell(); }).catch(function (e) { saveBtn.disabled = false; fail(e); });
@@ -805,7 +989,7 @@
         banner: { on: banner.checked, ru: f.bannerRu.value, en: f.bannerEn.value },
         payment: { bank: f.payBank.value, recipient: f.payRecipient.value, details: f.payDetails.value, note: f.payNote.value },
         promos: promos, delivery: delivery, discounts: discounts,
-        orderWebhook: f.orderWebhook.value, orderSecret: f.orderSecret.value, adminIds: f.adminIds.value
+        orderWebhook: f.orderWebhook.value, orderSecret: f.orderSecret.value, adminIds: f.adminIds.value, miniAppUrl: f.miniAppUrl.value
       };
       saveBtn.disabled = true;
       mutate(function (d) { return Core.setSettings(d, payload); }, 'Настройки магазина').then(function () { toast(t('common.saved')); saveBtn.disabled = false; route(); })
@@ -819,14 +1003,22 @@
       var url; try { url = new URL(raw); } catch (e) { checkOut.textContent = t('set.checkFail'); return; }
       checkOut.textContent = '…';
       fetch(url.origin + '/health', { cache: 'no-store' }).then(function (r) { return r.json(); })
-        .then(function (j) { checkOut.textContent = j && j.ok ? (j.telegram ? t('set.checkOk') : t('set.checkNoTg')) : t('set.checkFail'); })
+        .then(function (j) {
+          if (!j || !j.ok) { checkOut.textContent = t('set.checkFail'); return; }
+          if (!j.telegram) { checkOut.textContent = t('set.checkNoTg'); return; }
+          // the old Worker does not report orders / catalog at all
+          if (j.orders === undefined) { checkOut.textContent = t('set.checkOld'); return; }
+          var missing = [j.orders ? '' : 'KV ORDERS', j.catalog ? '' : 'GITHUB_TOKEN'].filter(Boolean);
+          checkOut.textContent = missing.length ? t('set.checkMissing') + ' ' + missing.join(', ') : t('set.checkAll');
+        })
         .catch(function () { checkOut.textContent = t('set.checkFail'); });
     } }, h('span', { text: t('set.check') }));
 
     main.appendChild(head(t('set.title'), saveBtn));
     main.appendChild(panel(t('set.telegram'), null,
       h('div', { class: 'row row--3' }, fld(t('set.channel'), inp('channel', s.channel)), fld(t('set.manager'), inp('manager', s.manager)), fld(t('set.reviews'), inp('reviews', s.reviews))),
-      h('div', { class: 'row row--3' }, fld(t('set.currency'), inp('currency', s.currency, { maxlength: '6' })))));
+      h('div', { class: 'row row--3' }, fld(t('set.currency'), inp('currency', s.currency, { maxlength: '6' })),
+        h('div', { style: 'grid-column: span 2' }, fld(t('set.miniApp'), inp('miniAppUrl', s.miniAppUrl, { placeholder: 'https://t.me/your_bot', spellcheck: 'false' }), t('set.miniAppHint'))))));
     main.appendChild(panel(t('set.payment'), t('set.paymentHint'),
       h('div', { class: 'row row--3' }, fld(t('set.payBank'), inp('payBank', s.payment.bank, { maxlength: '60' })), fld(t('set.payRecipient'), inp('payRecipient', s.payment.recipient, { maxlength: '80' })), fld(t('set.payDetails'), inp('payDetails', s.payment.details, { maxlength: '120' }))),
       fld(t('set.payNote'), inp('payNote', s.payment.note, { maxlength: '300' }))));
@@ -870,6 +1062,8 @@
     return gate;
   }
 
+  var pollTimer = null;
+  function refreshNav() { if ($('.shell') && !$('.modal')) { var y = window.scrollY; var open = Array.prototype.map.call(doc.querySelectorAll('details.order[open] .order__num'), function (x) { return x.textContent; }); renderShell(); Array.prototype.forEach.call(doc.querySelectorAll('details.order'), function (d) { if (open.indexOf(d.querySelector('.order__num').textContent) >= 0) d.open = true; }); window.scrollTo(0, y); } }
   function start() {
     doc.documentElement.lang = lang;
     loading();
@@ -877,7 +1071,16 @@
       if (!ok) { renderDenied(); return; }
       if (!connected()) { renderLogin(); return; }
       if (!CONN.branch) CONN.branch = 'main';
-      return loadStore().then(renderShell, function (e) {
+      return loadStore().then(function () {
+        renderShell();
+        clearInterval(pollTimer);
+        pollTimer = setInterval(function () {
+          if (doc.hidden || !workerBase()) return;
+          // never redraw under an open window or a field being typed in
+          loadOrders(false, true).then(function () { if (!$('.modal') && !(doc.activeElement && doc.activeElement.closest && doc.activeElement.closest('.main'))) refreshNav(); });
+        }, 60000);
+        if (view !== 'orders' && workerBase()) loadOrders(false, true).then(refreshNav);
+      }, function (e) {
         // only a rejected token is forgotten; a missing file or a refusal keeps it so nothing has to be pasted again
         if (e.status === 401) { CONN.token = ''; saveConn(); renderLogin(); toast(t('err.auth'), true); }
         else if (e.status === 404) renderNoData();

@@ -1,0 +1,388 @@
+/**
+ * RELIKT Cloudflare Worker
+ *
+ * Routes:
+ * POST /order                 — заказ + чек -> Telegram; заказ сохраняется (KV ORDERS), вещи отмечаются в каталоге (GitHub)
+ * POST /orders/list           — заказы для админки            (Authorization: Bearer <GitHub-токен админки>)
+ * POST /orders/update         — статус / заметка заказа       (отмена возвращает вещи в продажу, «Оплачен» превращает бронь в продажу)
+ * POST /orders/delete         — удалить заказ из списка
+ * POST /cdek                  — servicePath для CDEK Widget 3
+ * POST /yandex/geo            — определение geo_id Яндекс Доставки
+ * POST /yandex/pickup-points  — реальные ПВЗ Яндекс Доставки
+ * GET  /health                — проверка конфигурации без выдачи секретов
+ *
+ * Secrets / settings:
+ * BOT_TOKEN
+ * CHAT_ID
+ * APP_SECRET                  — legacy/fallback, необязателен если используется Telegram initData
+ * CDEK_CLIENT_ID
+ * CDEK_CLIENT_SECRET
+ * YANDEX_DELIVERY_TOKEN
+ * GITHUB_TOKEN                — fine-grained токен: Contents Read and write на репозиторий магазина (отмечает «продано» / «бронь»)
+ * GITHUB_REPO                 — необязательно, по умолчанию Slackity/relikt
+ * GITHUB_BRANCH               — необязательно, по умолчанию main
+ * ORDERS                      — привязка KV namespace, в нём хранятся заказы (год)
+ */
+const CDEK_BASE='https://api.cdek.ru/v2';
+const YANDEX_BASE='https://b2b-authproxy.taxi.yandex.net';
+const WIDGET_VERSION='4.0.0';
+const GITHUB_API='https://api.github.com';
+const STORE_PATH='data/store.json';
+const ORDER_TTL=365*24*3600;
+const STATUSES=['new','reserved','paid','shipped','done','cancelled'];
+
+export default {
+  async fetch(request,env){
+    const url=new URL(request.url);
+    if(request.method==='OPTIONS') return new Response(null,{headers:cors()});
+    try{
+      if(url.pathname==='/health') return json({
+        ok:true,
+        telegram:!!env.BOT_TOKEN&&!!env.CHAT_ID,
+        cdek:!!env.CDEK_CLIENT_ID&&!!env.CDEK_CLIENT_SECRET,
+        yandexDelivery:!!env.YANDEX_DELIVERY_TOKEN,
+        orders:!!env.ORDERS,
+        catalog:!!env.GITHUB_TOKEN
+      });
+      if(url.pathname==='/cdek') return await cdek(request,env);
+      if(url.pathname==='/yandex/geo') return await yandexGeo(request,env);
+      if(url.pathname==='/yandex/pickup-points') return await yandexPickupPoints(request,env);
+      if(url.pathname==='/order') return await order(request,env);
+      if(url.pathname.startsWith('/orders/')) return await adminOrders(request,env,url.pathname.slice(8));
+      return json({ok:false,error:'not_found'},404);
+    }catch(e){
+      return json({ok:false,error:e?.message||'server_error'},e?.status&&e.status<500?e.status:500);
+    }
+  }
+};
+
+function cors(){return {
+  'Access-Control-Allow-Origin':'*',
+  'Access-Control-Allow-Methods':'GET,POST,OPTIONS',
+  'Access-Control-Allow-Headers':'Content-Type,Authorization',
+  'Access-Control-Max-Age':'86400'
+}}
+function json(o,status=200,extra={}){return new Response(JSON.stringify(o),{status,headers:{...cors(),'Content-Type':'application/json',...extra}})}
+function httpError(status,message){const e=new Error(message);e.status=status;return e;}
+const str=(v,max)=>String(v??'').replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/g,'').trim().slice(0,max);
+const num=(v,min,max,d)=>{const n=Math.round(Number(v));return Number.isFinite(n)?Math.min(max,Math.max(min,n)):d;};
+
+async function hmacSha256(keyBytes,message){
+  const key=await crypto.subtle.importKey('raw',keyBytes,{name:'HMAC',hash:'SHA-256'},false,['sign']);
+  return new Uint8Array(await crypto.subtle.sign('HMAC',key,new TextEncoder().encode(message)));
+}
+function hex(bytes){return [...bytes].map(b=>b.toString(16).padStart(2,'0')).join('')}
+function timingSafeEqual(a,b){
+  if(a.length!==b.length)return false;
+  let x=0;for(let i=0;i<a.length;i++)x|=a.charCodeAt(i)^b.charCodeAt(i);
+  return x===0;
+}
+async function verifyTelegramInitData(initData,botToken){
+  if(!initData||!botToken)return null;
+  const p=new URLSearchParams(initData);
+  const received=p.get('hash'); if(!received)return null;
+  p.delete('hash');
+  const pairs=[...p.entries()].sort(([a],[b])=>a.localeCompare(b)).map(([k,v])=>`${k}=${v}`);
+  const dataCheckString=pairs.join('\n');
+  const secret=await hmacSha256(new TextEncoder().encode('WebAppData'),botToken);
+  const calculated=hex(await hmacSha256(secret,dataCheckString));
+  if(!timingSafeEqual(calculated,received))return null;
+  const authDate=Number(p.get('auth_date')||0);
+  if(!authDate||Math.abs(Date.now()/1000-authDate)>86400)return null;
+  let user=null;try{user=JSON.parse(p.get('user')||'null')}catch(e){}
+  return user;
+}
+async function authOrder(body,env){
+  if(env.APP_SECRET&&body?.secret===env.APP_SECRET)return {id:null,legacy:true};
+  const user=await verifyTelegramInitData(String(body?.initData||''),env.BOT_TOKEN);
+  if(!user)return null;
+  return {id:String(user.id),username:user.username||''};
+}
+async function tgSend(env,text){
+  const r=await fetch(`https://api.telegram.org/bot${env.BOT_TOKEN}/sendMessage`,{
+    method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({chat_id:env.CHAT_ID,text:text.slice(0,4090),disable_web_page_preview:true})
+  });
+  return r.json();
+}
+
+/* ---------- catalog in GitHub (data/store.json) ---------- */
+const repoName=env=>env.GITHUB_REPO||'Slackity/relikt';
+const branchName=env=>env.GITHUB_BRANCH||'main';
+async function gh(env,token,method,path,body){
+  const r=await fetch(`${GITHUB_API}/repos/${repoName(env)}${path}`,{
+    method,
+    headers:{'Authorization':'Bearer '+token,'Accept':'application/vnd.github+json','User-Agent':'relikt-worker','X-GitHub-Api-Version':'2022-11-28',...(body?{'Content-Type':'application/json'}:{})},
+    body:body?JSON.stringify(body):undefined
+  });
+  const j=await r.json().catch(()=>({}));
+  if(!r.ok)throw httpError(r.status,'github_'+r.status+(j.message?': '+j.message:''));
+  return j;
+}
+function b64decode(b64){const bin=atob(String(b64).replace(/\s/g,''));return new TextDecoder().decode(Uint8Array.from(bin,c=>c.charCodeAt(0)));}
+function b64encode(text){const bytes=new TextEncoder().encode(text);let bin='';for(let i=0;i<bytes.length;i+=0x8000)bin+=String.fromCharCode.apply(null,bytes.subarray(i,i+0x8000));return btoa(bin);}
+async function loadCatalog(env){
+  const f=await gh(env,env.GITHUB_TOKEN,'GET',`/contents/${STORE_PATH}?ref=${encodeURIComponent(branchName(env))}`);
+  return {sha:f.sha,data:JSON.parse(b64decode(f.content||''))};
+}
+/* read, change, save; starts over when the admin panel or an import saved in between */
+async function editCatalog(env,message,change){
+  for(let attempt=0;attempt<4;attempt++){
+    const cat=await loadCatalog(env);
+    const result=change(cat.data);
+    try{
+      await gh(env,env.GITHUB_TOKEN,'PUT',`/contents/${STORE_PATH}`,{message,content:b64encode(JSON.stringify(cat.data,null,2)+'\n'),sha:cat.sha,branch:branchName(env)});
+      return result;
+    }catch(e){if(e.status!==409&&e.status!==422)throw e;}
+  }
+  throw httpError(409,'catalog_busy');
+}
+/* pieces that cannot be bought: gone, hidden, sold, reserved or not enough units */
+function unavailable(data,items){
+  const bad=[];
+  for(const it of items){
+    const p=(data.products||[]).find(x=>x.id===it.id);
+    if(!p||!p.visible||p.availability==='sold'||p.availability==='reserved'){bad.push(it.id);continue;}
+    if(p.availability==='instock'&&(Number(p.stock)||1)<it.qty)bad.push(it.id);
+  }
+  return bad;
+}
+/* takes the ordered units out of stock; the last unit makes the piece sold (or reserved for a deposit) */
+function claim(data,items,payment){
+  const days=num(data.settings?.reserveDays,0,60,3), now=new Date(), done=[];
+  for(const it of items){
+    const p=(data.products||[]).find(x=>x.id===it.id);
+    if(!p||p.availability!=='instock')continue;   // made-to-order pieces are not limited
+    const stock=Number(p.stock)||1, qty=Math.min(stock,it.qty);
+    p.stock=stock-qty;
+    if(p.stock===0){
+      p.availability=payment==='reserve'?'reserved':'sold';
+      p.reservedUntil=payment==='reserve'?new Date(now.getTime()+days*864e5).toISOString():'';
+    }
+    p.updatedAt=now.toISOString();
+    done.push({id:p.id,qty,to:p.availability});
+  }
+  return done;
+}
+/* cancelled order: its units go back on sale, unless the piece was changed by hand since */
+function release(data,claims){
+  const skipped=[];
+  for(const c of claims){
+    const p=(data.products||[]).find(x=>x.id===c.id);
+    if(!p){skipped.push(c.id);continue;}
+    if(p.availability==='instock'||p.availability===c.to||(c.to==='reserved'&&p.availability==='sold')){
+      p.stock=(p.availability==='instock'?Number(p.stock)||0:0)+c.qty;
+      p.availability='instock'; p.reservedUntil=''; p.updatedAt=new Date().toISOString();
+    }else skipped.push(c.id);
+  }
+  return skipped;
+}
+/* reservation paid in full: reserved pieces become sold */
+function sellReserved(data,claims){
+  for(const c of claims){
+    const p=(data.products||[]).find(x=>x.id===c.id);
+    if(p&&c.to==='reserved'&&p.availability==='reserved'){p.availability='sold';p.reservedUntil='';p.updatedAt=new Date().toISOString();c.to='sold';}
+  }
+  return claims;
+}
+
+async function order(request,env){
+  const body=await request.json().catch(()=>null);
+  const auth=await authOrder(body,env);
+  if(!auth)return json({ok:false,error:'forbidden'},403);
+  const text=String(body?.text||'').slice(0,3900);
+  if(!text.trim())return json({ok:false,error:'empty_text'},400);
+  if(!env.BOT_TOKEN||!env.CHAT_ID)return json({ok:false,error:'telegram_not_configured'},500);
+
+  const receiptData=String(body?.receipt||'');
+  if(receiptData && receiptData.length>12_000_000)return json({ok:false,error:'receipt_too_large'},413);
+
+  const o=body?.order&&typeof body.order==='object'?body.order:{};
+  const number=/^RK-[A-Z0-9]{3,12}$/.test(String(o.number||''))?o.number:'RK-'+Date.now().toString(36).slice(-5).toUpperCase();
+  const payment=o.payment==='reserve'?'reserve':'full';
+  const items=(Array.isArray(body?.items)?body.items:[]).slice(0,30)
+    .map(it=>({id:str(it?.id,40),qty:num(it?.qty,1,5,1),size:str(it?.size,24)})).filter(it=>it.id);
+
+  // a piece that is already sold or reserved is refused before anything reaches the manager
+  let warn='';
+  if(env.GITHUB_TOKEN&&items.length){
+    try{
+      const cat=await loadCatalog(env);
+      const bad=unavailable(cat.data,items);
+      if(bad.length)return json({ok:false,error:'unavailable',ids:bad},409);
+    }catch(e){warn=e.message;}
+  }
+
+  const suffix=auth.id?`\nTelegram ID: ${auth.id}${auth.username?' (@'+auth.username+')':''}`:'';
+  const data=await tgSend(env,text+suffix);
+  if(!data.ok)return json({ok:false,error:data.description||'telegram_error'},502);
+
+  if(receiptData){
+    const m=receiptData.match(/^data:([^;]+);base64,(.+)$/s);
+    if(m){
+      const raw=atob(m[2]);
+      const bytes=Uint8Array.from(raw,c=>c.charCodeAt(0));
+      const safeName=String(body?.name||'receipt').replace(/[^\w.\-а-яА-ЯёЁ ]/g,'_').slice(0,100)||'receipt';
+      const caption='Чек об оплате · '+safeName;
+      if(m[1].startsWith('image/')){
+        const f=new FormData();f.append('chat_id',String(env.CHAT_ID));f.append('caption',caption);f.append('photo',new File([bytes],safeName,{type:m[1]}));
+        await fetch(`https://api.telegram.org/bot${env.BOT_TOKEN}/sendPhoto`,{method:'POST',body:f});
+      }else{
+        const f=new FormData();f.append('chat_id',String(env.CHAT_ID));f.append('caption',caption);f.append('document',new File([bytes],safeName,{type:m[1]||'application/octet-stream'}));
+        await fetch(`https://api.telegram.org/bot${env.BOT_TOKEN}/sendDocument`,{method:'POST',body:f});
+      }
+    }
+  }
+
+  // mark the pieces sold / reserved in the catalog (the site picks it up after GitHub Pages rebuilds, 1–2 min)
+  let claims=[];
+  if(env.GITHUB_TOKEN&&items.length&&!warn){
+    try{
+      claims=await editCatalog(env,`Заказ ${number}: ${payment==='reserve'?'бронь':'продажа'}`,d=>{
+        const bad=unavailable(d,items);
+        if(bad.length)throw httpError(409,'уже купили в другом заказе: '+bad.join(', '));
+        return claim(d,items,payment);
+      });
+    }catch(e){warn=e.message;}
+  }
+  if(warn&&env.GITHUB_TOKEN)await tgSend(env,`⚠️ Заказ ${number}: вещи не отмечены в каталоге (${warn}). Проверьте наличие в админке.`).catch(()=>{});
+
+  if(env.ORDERS){
+    const c=o.customer||{};
+    const rec={
+      key:'o:'+String(9999999999999-Date.now()).padStart(13,'0')+':'+number,
+      number,createdAt:new Date().toISOString(),status:payment==='reserve'?'reserved':'new',payment,
+      source:o.source==='site'?'site':'miniapp',tg:auth.id?{id:auth.id,username:auth.username}:null,
+      items:(Array.isArray(o.items)?o.items:[]).slice(0,30).map(it=>({id:str(it?.id,40),name:str(it?.name,160),size:str(it?.size,24),qty:num(it?.qty,1,5,1),price:num(it?.price,0,1e7,0),order:!!it?.order,image:/^\/uploads\/[A-Za-z0-9._-]{1,120}$/.test(String(it?.image||''))?it.image:''})),
+      subtotal:num(o.subtotal,0,1e8,0),cut:num(o.cut,0,1e8,0),total:num(o.total,0,1e8,0),pay:num(o.pay,0,1e8,0),
+      discounts:(Array.isArray(o.discounts)?o.discounts:[]).slice(0,8).map(x=>str(x,80)),promo:str(o.promo,60),bank:str(o.bank,60),receipt:!!receiptData,
+      customer:{name:str(c.name,80),contact:str(c.contact,80),phone:str(c.phone,32),city:str(c.city,80),delivery:str(c.delivery,40),address:str(c.address,300),comment:str(c.comment,600)},
+      claims,catalogNote:warn,released:false,note:''
+    };
+    await env.ORDERS.put(rec.key,JSON.stringify(rec),{expirationTtl:ORDER_TTL});
+  }
+  return json({ok:true,number});
+}
+
+/* ---------- orders for the admin panel ---------- */
+const adminCache=new Map();
+async function isAdmin(request,env){
+  const m=(request.headers.get('Authorization')||'').match(/^Bearer\s+(\S{10,255})$/);
+  if(!m)return false;
+  const key=hex(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(m[1]))));
+  if((adminCache.get(key)||0)>Date.now())return true;
+  // the same GitHub token the admin panel uses: it must be able to write to the shop repository
+  try{const r=await gh(env,m[1],'GET','');if(r.permissions&&r.permissions.push){adminCache.set(key,Date.now()+600000);return true;}}catch(e){}
+  return false;
+}
+
+async function adminOrders(request,env,action){
+  if(request.method!=='POST')return json({ok:false,error:'method'},405);
+  if(!(await isAdmin(request,env)))return json({ok:false,error:'forbidden'},403);
+  if(!env.ORDERS)return json({ok:false,error:'orders_not_configured'},501);
+  const body=await request.json().catch(()=>({}));
+
+  if(action==='list'){
+    const page=await env.ORDERS.list({prefix:'o:',limit:num(body.limit,1,100,50),cursor:body.cursor||undefined});
+    const orders=(await Promise.all(page.keys.map(k=>env.ORDERS.get(k.name,'json')))).filter(Boolean);
+    return json({ok:true,orders,cursor:page.list_complete?null:page.cursor});
+  }
+
+  const key=str(body.key,80);
+  if(!/^o:\d{13}:RK-[A-Z0-9]{3,12}$/.test(key))return json({ok:false,error:'bad_key'},400);
+  const rec=await env.ORDERS.get(key,'json');
+  if(!rec)return json({ok:false,error:'not_found'},404);
+
+  if(action==='delete'){await env.ORDERS.delete(key);return json({ok:true});}
+
+  if(action==='update'){
+    if(body.note!=null)rec.note=str(body.note,1000);
+    const next=body.status;
+    try{
+    if(next!=null&&next!==rec.status){
+      if(!STATUSES.includes(next))return json({ok:false,error:'bad_status'},400);
+      if(!env.GITHUB_TOKEN&&rec.claims?.length&&(next==='cancelled'||rec.status==='cancelled'))return json({ok:false,error:'catalog_not_configured'},501);
+      if(next==='cancelled'&&rec.claims?.length&&!rec.released){
+        rec.skipped=await editCatalog(env,`Отмена заказа ${rec.number}: вещи снова в продаже`,d=>release(d,rec.claims));
+        rec.released=true;
+      }else if(rec.status==='cancelled'&&rec.released){
+        // brought back from cancelled: take the pieces again, if nobody bought them meanwhile
+        const items=rec.claims.map(c=>({id:c.id,qty:c.qty}));
+        rec.claims=await editCatalog(env,`Заказ ${rec.number} восстановлен`,d=>{
+          const bad=unavailable(d,items);
+          if(bad.length)throw httpError(409,'unavailable');
+          return claim(d,items,next==='reserved'?'reserve':'full');
+        });
+        rec.released=false;
+      }
+      if(next==='paid'&&rec.claims?.some(c=>c.to==='reserved')&&!rec.released){
+        rec.claims=await editCatalog(env,`Заказ ${rec.number}: бронь выкуплена`,d=>sellReserved(d,rec.claims));
+      }
+      rec.status=next;
+    }
+    }catch(e){
+      // catalog changes failed: the order keeps its old status, the admin panel shows why
+      return json({ok:false,error:e.message||'catalog_error'},e.message==='unavailable'?409:502);
+    }
+    rec.updatedAt=new Date().toISOString();
+    await env.ORDERS.put(key,JSON.stringify(rec),{expirationTtl:ORDER_TTL});
+    return json({ok:true,order:rec});
+  }
+  return json({ok:false,error:'not_found'},404);
+}
+
+async function yandexRequest(path,payload,env){
+  if(!env.YANDEX_DELIVERY_TOKEN)return json({ok:false,error:'yandex_delivery_not_configured'},500);
+  const r=await fetch(YANDEX_BASE+path,{
+    method:'POST',
+    headers:{'Content-Type':'application/json','Authorization':'Bearer '+env.YANDEX_DELIVERY_TOKEN},
+    body:JSON.stringify(payload||{})
+  });
+  const text=await r.text();
+  let data;try{data=JSON.parse(text)}catch(e){data={message:text}};
+  if(!r.ok)return json({ok:false,error:data?.message||data?.error||('yandex_http_'+r.status),details:data},r.status);
+  return json({ok:true,...data});
+}
+async function yandexGeo(request,env){
+  const body=await request.json().catch(()=>null);
+  const location=String(body?.location||'').trim();
+  if(!location)return json({ok:false,error:'location_required'},400);
+  return yandexRequest('/api/b2b/platform/location/detect',{location},env);
+}
+async function yandexPickupPoints(request,env){
+  const body=await request.json().catch(()=>null);
+  const payload={
+    geo_id:Number(body?.geo_id||0),
+    type:body?.type||'pickup_point',
+    operator_ids:Array.isArray(body?.operator_ids)?body.operator_ids:['market_l4g','5post'],
+    payment_methods:Array.isArray(body?.payment_methods)?body.payment_methods:['already_paid']
+  };
+  if(body?.latitude)payload.latitude=body.latitude;
+  if(body?.longitude)payload.longitude=body.longitude;
+  return yandexRequest('/api/b2b/platform/pickup-points/list',payload,env);
+}
+
+async function cdek(request,env){
+  if(!env.CDEK_CLIENT_ID||!env.CDEK_CLIENT_SECRET)return json({message:'CDEK secrets are not configured'},500,{'X-Service-Version':WIDGET_VERSION});
+  const body=await request.text();
+  let incoming={};
+  try{incoming={...Object.fromEntries(new URL(request.url).searchParams.entries()),...(body?JSON.parse(body):{})}}catch(e){return json({message:'Invalid JSON'},400)}
+  const action=incoming.action;
+  if(!['offices','calculate','byCoordinate'].includes(action))return json({message:'Action is required or unknown'},400,{'X-Service-Version':WIDGET_VERSION});
+  const tokenRes=await fetch(`${CDEK_BASE}/oauth/token`,{
+    method:'POST',
+    headers:{'Content-Type':'application/x-www-form-urlencoded','Accept':'application/json','X-App-Name':'widget_pvz','X-App-Version':WIDGET_VERSION},
+    body:new URLSearchParams({grant_type:'client_credentials',client_id:env.CDEK_CLIENT_ID,client_secret:env.CDEK_CLIENT_SECRET})
+  });
+  const token=await tokenRes.json();if(!token.access_token)return json({message:'Server not authorized to CDEK API'},502);
+  let path,init;
+  if(action==='offices'){path='deliverypoints';init={method:'GET'};}
+  else if(action==='byCoordinate'){path='deliverypoints/byPolygons';init={method:'GET'};}
+  else {path='calculator/tarifflist';init={method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(incoming)};}
+  const headers={'Accept':'application/json','Authorization':`Bearer ${token.access_token}`,'X-App-Name':'widget_pvz','X-App-Version':WIDGET_VERSION};
+  const target=new URL(`${CDEK_BASE}/${path}`);
+  if(init.method==='GET')for(const[k,v]of Object.entries(incoming))if(k!=='action')target.searchParams.set(k,String(v));
+  const r=await fetch(target.toString(),{...init,headers:{...headers,...(init.headers||{})}});
+  const txt=await r.text();
+  return new Response(txt,{status:r.status,headers:{...cors(),'Content-Type':'application/json','X-Service-Version':WIDGET_VERSION}});
+}

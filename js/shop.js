@@ -13,6 +13,7 @@
   ui.badges = function (p) {
     var out = [];
     if (p.availability === 'sold') out.push(h('span', { class: 'badge badge--sold', text: RK.t('badge.sold') }));
+    else if (p.availability === 'reserved') out.push(h('span', { class: 'badge badge--reserved', text: RK.t('badge.reserved') }));
     else {
       if (p.availability === 'order') out.push(h('span', { class: 'badge', text: RK.t('badge.order') }));
       if (p.condition) out.push(h('span', { class: 'badge badge--ghost', text: RK.t('cond.' + p.condition) }));
@@ -75,7 +76,7 @@
         ui.addToCart(p, (p.sizes || [])[0] || '', 1);
       }
     }, RK.svg(PLUS, 'card__add-icon')) : null;
-    var el = h('article', { class: 'card' + (p.availability === 'sold' ? ' is-sold' : ''), 'data-id': p.id },
+    var el = h('article', { class: 'card' + (p.availability === 'sold' ? ' is-sold' : p.availability === 'reserved' ? ' is-reserved' : ''), 'data-id': p.id },
       media,
       ui.favButton(p),
       h('div', { class: 'card__info' },
@@ -449,7 +450,7 @@
       number: 'RK-' + Date.now().toString(36).slice(-5).toUpperCase(),
       items: RK.cart.lines().map(function (l) {
         return { id: l.product.id, name: l.product.ru, size: l.item.size, qty: l.item.qty, price: l.product.price,
-          order: l.product.availability === 'order', url: new URL(RK.productUrl(l.product), location.href).href };
+          order: l.product.availability === 'order', url: RK.shareUrl(l.product), image: (l.product.images || [])[0] || '' };
       }),
       subtotal: t.subtotal, cut: t.cut, total: t.total,
       discounts: t.picked.map(function (d) { return d.ru + ' −' + d.percent + '%'; }),
@@ -485,10 +486,16 @@
       body: JSON.stringify({
         secret: S().orderSecret || '', initData: RK.tgInitData || '', text: o.text,
         receipt: o.receipt ? receipt.data : '', name: o.receipt ? receipt.name : '', mime: o.receipt ? receipt.mime : '',
-        items: o.items.map(function (it) { return { id: it.id, qty: it.qty, size: it.size }; })
+        items: o.items.map(function (it) { return { id: it.id, qty: it.qty, size: it.size }; }),
+        // the same order as data: the Worker keeps it for the Orders tab and marks the pieces sold / reserved
+        order: {
+          number: o.number, payment: o.payment, pay: o.pay, subtotal: o.subtotal, cut: o.cut, total: o.total,
+          discounts: o.discounts, promo: o.promo, bank: o.bank, receipt: o.receipt, customer: o.customer, lang: RK.lang, source: RK.tgApp ? 'miniapp' : 'site',
+          items: o.items.map(function (it) { return { id: it.id, name: it.name, size: it.size, qty: it.qty, price: it.price, order: it.order, image: it.image }; })
+        }
       })
     }).then(function (r) {
-      return r.json().catch(function () { return {}; }).then(function (j) { if (!r.ok || !j.ok) throw new Error(j.error || 'HTTP ' + r.status); });
+      return r.json().catch(function () { return {}; }).then(function (j) { if (!r.ok || !j.ok) { var e = new Error(j.error || 'HTTP ' + r.status); e.code = j.error; throw e; } });
     }).then(function () {
       sending = false; clearTimeout(timer);
       finish(o, true);
@@ -498,6 +505,12 @@
       RK.haptic('error');
       if (btn) btn.disabled = false;
       if (label) label.textContent = was;
+      // someone was faster: the Worker refused because a piece is already sold or reserved
+      if (er.code === 'unavailable') {
+        if (errEl) errEl.textContent = RK.t('checkout.err.sold');
+        RK.load().then(function () { RK.cart.prune(); setTimeout(function () { go('cart'); }, 2500); });
+        return;
+      }
       if (errEl) {
         errEl.textContent = RK.t('checkout.err.generic') + ' ';
         errEl.appendChild(h('button', { class: 'link-inline', type: 'button', onclick: function () { o.receipt = false; o.bank = ''; o.text = orderText(o); o.chatUrl = RK.tg('manager') + '?text=' + encodeURIComponent(o.text.slice(0, 3000)); finish(o, false); } }, RK.t('checkout.err.manual')));
@@ -524,7 +537,9 @@
       h('p', { class: 'done__text', text: RK.t(o.sent ? 'done.sent' : 'done.text') }),
       o.sent ? null : h('pre', { class: 'done__summary', text: o.text })));
     RK.ornaments(bodyEl);
-    footEl.appendChild(h('a', { class: 'btn ' + (o.sent ? 'btn--ghost' : 'btn--solid') + ' btn--block', href: o.sent ? RK.tg('manager') : o.chatUrl, target: '_blank', rel: 'noopener' },
+    // after an automatic order the chat opens with a short note, so the buyer never has to copy the number
+    var followUp = RK.tg('manager') + '?text=' + encodeURIComponent(RK.t('done.msg', { number: o.number, items: o.items.map(function (it) { return it.name + (it.qty > 1 ? ' × ' + it.qty : ''); }).join(', '), amount: RK.money(o.pay) }));
+    footEl.appendChild(h('a', { class: 'btn ' + (o.sent ? 'btn--ghost' : 'btn--solid') + ' btn--block', href: o.sent ? followUp : o.chatUrl, target: '_blank', rel: 'noopener' },
       h('span', null, h('span', { text: RK.t('done.open') }), ' ', h('b', { 'aria-hidden': 'true', text: '↗' }))));
     if (!o.sent) {
       var copyBtn = h('button', { class: 'btn btn--ghost btn--block', type: 'button' }, h('span', { text: RK.t('done.copy') }));

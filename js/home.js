@@ -59,7 +59,7 @@
     var grid = RK.$('#newGrid');
     if (!grid) return;
     grid.textContent = '';
-    var list = RK.data.products.filter(function (p) { return p.availability !== 'sold'; })
+    var list = RK.data.products.filter(function (p) { return RK.available(p); })
       .sort(function (a, b) { return String(b.createdAt).localeCompare(String(a.createdAt)); }).slice(0, 8);
     list.forEach(function (p, i) {
       var c = RK.ui.card(p);
@@ -76,7 +76,7 @@
     wrap.textContent = '';
     RK.data.categories.forEach(function (c, i) {
       var sg = SIGILS[i % SIGILS.length];
-      var count = RK.data.products.filter(function (p) { return p.category === c.id && p.availability !== 'sold'; }).length;
+      var count = RK.data.products.filter(function (p) { return p.category === c.id && RK.available(p); }).length;
       var a = h('a', { class: 'plate reveal', href: 'catalog.html?cat=' + encodeURIComponent(c.id), style: { '--d': (i % 3) * 120 + 'ms' } },
         h('span', { class: 'plate__corner', 'data-orn': 'corner', 'aria-hidden': 'true' }),
         h('span', { class: 'plate__sigil', 'data-orn': 'sigil', 'data-n': sg.n, 'data-curl': sg.curl, 'data-reach': sg.reach || 1, 'aria-hidden': 'true' }),

@@ -11,7 +11,7 @@
   function readUrl() {
     var p = new URLSearchParams(location.search);
     st.cat = p.get('cat') || 'all';
-    st.av = ['instock', 'order', 'sold'].indexOf(p.get('av')) >= 0 ? p.get('av') : 'all';
+    st.av = ['instock', 'order', 'reserved', 'sold'].indexOf(p.get('av')) >= 0 ? p.get('av') : 'all';
     st.q = (p.get('q') || '').slice(0, 80);
     st.sort = ['asc', 'desc'].indexOf(p.get('sort')) >= 0 ? p.get('sort') : 'new';
     st.fav = p.get('fav') === '1';
@@ -45,7 +45,7 @@
   }
 
   function sorted(list) {
-    var rank = function (p) { return p.availability === 'sold' ? 1 : 0; };
+    var rank = function (p) { return p.availability === 'sold' ? 2 : p.availability === 'reserved' ? 1 : 0; };
     return list.slice().sort(function (a, b) {
       if (rank(a) !== rank(b)) return rank(a) - rank(b);
       if (st.sort === 'asc' || st.sort === 'desc') {
@@ -72,7 +72,8 @@
       cc.appendChild(chip(RK.cname(c), st.cat === c.id, function () { st.cat = c.id; update(); }, n));
     });
     var ac = RK.$('#avChips'); ac.textContent = '';
-    [['all', 'catalog.all'], ['instock', 'filter.instock'], ['order', 'filter.order'], ['sold', 'filter.sold']].forEach(function (a) {
+    [['all', 'catalog.all'], ['instock', 'filter.instock'], ['order', 'filter.order'], ['reserved', 'filter.reserved'], ['sold', 'filter.sold']].forEach(function (a) {
+      if (a[0] === 'reserved' && !RK.data.products.some(function (p) { return p.availability === 'reserved'; }) && st.av !== 'reserved') return;
       ac.appendChild(chip(RK.t(a[1]), st.av === a[0], function () { st.av = a[0]; update(); }));
     });
   }
