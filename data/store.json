@@ -156,7 +156,14 @@
       "createdAt": "2026-10-07T09:35:19+00:00",
       "updatedAt": "2026-10-11T20:58:10.546Z",
       "slug": "t-shirt-ed-hardy-180",
-      "reservedUntil": ""
+      "reservedUntil": "",
+      "holds": [
+        {
+          "k": "e2c2fc2222a09cb97d30c18d",
+          "q": 1,
+          "u": "2026-10-11T23:56:34.277Z"
+        }
+      ]
     },
     {
       "id": "pa133c88d",
