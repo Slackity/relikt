@@ -66,6 +66,26 @@
     return r;
   };
 
+  /* ---------- quantity on a card: pieces with several units in stock ----------
+     The chosen number stays while the page is open; the add button puts that many in the cart. */
+  var cardQty = {};
+  function cardLeft(p) { return p.availability === 'instock' ? Math.max(0, RK.cart.max(p) - RK.cart.qtyOf(p.id)) : 0; }
+  function drawCardQty(box, p) {
+    var left = cardLeft(p);
+    box.textContent = '';
+    box.hidden = left < 2;
+    if (box.hidden) return;
+    var q = cardQty[p.id] = RK.clamp(cardQty[p.id] || 1, 1, left);
+    var set = function (v) { cardQty[p.id] = v; RK.haptic('select'); drawCardQty(box, p); };
+    box.appendChild(h('button', { type: 'button', 'aria-label': '−', disabled: q <= 1, onclick: function (e) { e.preventDefault(); set(q - 1); } }, '−'));
+    box.appendChild(h('span', { text: String(q), 'aria-live': 'polite' }));
+    box.appendChild(h('button', { type: 'button', 'aria-label': '+', disabled: q >= left, onclick: function (e) { e.preventDefault(); set(q + 1); } }, '+'));
+  }
+  // the cart changed (added here, removed in the drawer): every card on the page shows what is still left
+  RK.on('cart', function () {
+    RK.$$('[data-qty-for]').forEach(function (box) { var p = RK.productById(box.getAttribute('data-qty-for')); if (p) drawCardQty(box, p); });
+  });
+
   /* ---------- product card ---------- */
   ui.card = function (p) {
     var imgs = p.images || [];
@@ -80,6 +100,14 @@
       onclick: function (e) {
         e.preventDefault();
         if (!canQuick) { location.href = url; return; }
+        if (p.availability === 'instock' && RK.cart.max(p) > 1) {
+          var left = cardLeft(p);
+          if (!left) { ui.openCart(); return; }          // every unit is already in the cart
+          var q = RK.clamp(cardQty[p.id] || 1, 1, left);
+          cardQty[p.id] = 1;
+          ui.addToCart(p, (p.sizes || [])[0] || '', q);
+          return;
+        }
         ui.addToCart(p, (p.sizes || [])[0] || '', 1);
       }
     }, RK.svg(PLUS, 'card__add-icon')) : null;
@@ -91,11 +119,13 @@
           p.brand ? h('p', { class: 'eyebrow card__brand', text: p.brand }) : null,
           h('h3', { class: 'card__name' }, h('a', { href: url, text: RK.pname(p) })),
           ui.price(p),
-          ui.stock(p)),
+          ui.stock(p),
+          add && p.availability === 'instock' && RK.cart.max(p) > 1 ? qtyBox(p) : null),
         add));
     RK.ornaments(el);
     return el;
   };
+  function qtyBox(p) { var box = h('div', { class: 'stepper stepper--card', 'data-qty-for': p.id, role: 'group', 'aria-label': RK.t('product.qty') }); drawCardQty(box, p); return box; }
 
 
   /* ======================================================================

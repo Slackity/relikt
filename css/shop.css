@@ -268,6 +268,8 @@ html.has-banner { --banner-h: 34px; }
 .stepper button:hover:not(:disabled) { color: var(--bone); background: var(--bone-08); }
 .stepper button:disabled { opacity: .3; cursor: default; }
 .stepper span { min-width: 30px; text-align: center; font-family: var(--f-mono); font-size: 12px; }
+.stepper--card { margin-top: 10px; }
+.stepper--card[hidden] { display: none; }
 .stepper--lg button { width: 44px; height: 44px; font-size: 20px; }
 .stepper--lg span { min-width: 48px; font-size: 14px; }
 .disc { margin: 22px 0 0; padding: 0; border: 0; display: grid; gap: 10px; }
