@@ -78,7 +78,7 @@
       "note": "После перевода пожалуйста прикрепите чек!"
     },
     "orderWebhook": "https://relikt-orders.gleb-bugay.workers.dev",
-    "orderSecret": "reliktshop0726",
+    "orderSecret": "",
     "adminIds": [
       "315859108"
     ]
