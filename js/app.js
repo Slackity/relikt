@@ -125,6 +125,14 @@
     return null;
   };
   RK.available = function (p) { return p && p.availability !== 'sold' && p.availability !== 'reserved' && p.price != null; };
+  /* another buyer is paying for this piece right now (the order Worker holds it for them): when the hold ends, else 0 */
+  RK.heldUntil = function (p) {
+    if (!p || p.availability !== 'instock' || !p.holds) return 0;
+    var mine = (RK.store.get('rk-hold', null) || {}).key, now = Date.now(), q = 0, until = 0;
+    p.holds.forEach(function (x) { var u = Date.parse(x.u); if (u > now && x.k !== mine) { q += x.q || 1; until = Math.max(until, u); } });
+    return q >= (p.stock || 1) ? until : 0;
+  };
+  RK.minutesLeft = function (until) { return Math.max(1, Math.ceil((until - Date.now()) / 60000)); };
   RK.isRecent = function (p) { return Date.now() - new Date(p.createdAt).getTime() < 14 * 864e5; };
   RK.productUrl = function (p) { return 'product.html?id=' + encodeURIComponent(p.slug || p.id); };
   /* link to share a product: opens it inside the Telegram Mini App when its link is set in the admin panel, otherwise the web page */

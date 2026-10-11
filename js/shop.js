@@ -15,6 +15,7 @@
     if (p.availability === 'sold') out.push(h('span', { class: 'badge badge--sold', text: RK.t('badge.sold') }));
     else if (p.availability === 'reserved') out.push(h('span', { class: 'badge badge--reserved', text: RK.t('badge.reserved') }));
     else {
+      if (RK.heldUntil(p)) out.push(h('span', { class: 'badge badge--reserved', text: RK.t('badge.held') }));
       if (p.availability === 'order') out.push(h('span', { class: 'badge', text: RK.t('badge.order') }));
       if (p.condition) out.push(h('span', { class: 'badge badge--ghost', text: RK.t('cond.' + p.condition) }));
     }
@@ -68,7 +69,7 @@
       imgs[1] ? h('img', { class: 'card__alt', src: RK.img(imgs[1]), alt: '', loading: 'lazy', decoding: 'async' }) : null,
       h('span', { class: 'card__badges' }, ui.badges(p)));
     var canQuick = RK.available(p) && (p.sizes || []).length <= 1;
-    var add = RK.available(p) ? h('button', {
+    var add = RK.available(p) && !RK.heldUntil(p) ? h('button', {
       class: 'card__add', type: 'button', 'aria-label': RK.t('card.add'),
       onclick: function (e) {
         e.preventDefault();
@@ -196,6 +197,7 @@
         h('div', { class: 'line__info' },
           h('a', { class: 'line__name', href: RK.productUrl(p), text: RK.pname(p), onclick: function () { ui.closeCart(); } }),
           it.size ? h('p', { class: 'line__meta', text: RK.t('product.size') + ': ' + it.size }) : null,
+          RK.heldUntil(p) ? h('p', { class: 'line__meta line__meta--warn', text: RK.t('cart.heldLine', { min: RK.minutesLeft(RK.heldUntil(p)) }) }) : null,
           h('div', { class: 'line__row' },
             max > 1 ? stepper(l.idx, it.qty, max) : h('span', { class: 'line__meta', text: '1 ×' }),
             h('span', { class: 'price', text: RK.money(p.price * it.qty) }))),
@@ -397,8 +399,77 @@
     });
     if (bad) { RK.haptic('error'); var first = RK.$('[aria-invalid="true"]', drawer); if (first) first.focus(); return; }
     RK.store.set('rk-customer', { name: c.name, contact: c.contact, phone: c.phone, city: c.city, delivery: c.delivery, address: c.address });
-    if (payDetails()) go('pay');
+    if (payDetails() && canSendDirect()) holdThenPay(doc.getElementById('submitBtn'), doc.getElementById('formError'));
+    else if (payDetails()) go('pay');
     else send(doc.getElementById('submitBtn'), doc.getElementById('formError'));
+  }
+
+  /* ----- holding the pieces while the buyer pays ----- */
+  var HOLD = null, holdTimer = null;
+  function savedHold() { var x = RK.store.get('rk-hold', null); return x && x.token && Date.parse(x.until) > Date.now() ? x : null; }
+  function requestHold() {
+    var prev = savedHold();
+    return fetch(new URL('/hold', workerUrl()).href, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ secret: S().orderSecret || '', initData: RK.tgInitData || '', token: prev ? prev.token : '',
+        items: RK.cart.lines().map(function (l) { return { id: l.product.id, qty: l.item.qty, size: l.item.size }; }) })
+    }).then(function (r) {
+      return r.json().catch(function () { return {}; }).then(function (j) {
+        if (r.ok && j.ok) { HOLD = { token: j.token, key: j.key, until: j.until }; RK.store.set('rk-hold', HOLD); return HOLD; }
+        // the Worker in Cloudflare is still the version without holds: go on as before
+        if (j.error === 'not_found' || j.error === 'catalog_not_configured') { HOLD = null; return null; }
+        var e = new Error(j.error || 'HTTP ' + r.status); e.code = j.error; e.until = j.until; throw e;
+      });
+    }, function () { var e = new Error('offline'); e.code = 'offline'; throw e; });
+  }
+  function holdError(er) {
+    if (er.code === 'held') return RK.t('checkout.err.held', { min: RK.minutesLeft(Date.parse(er.until) || Date.now()) });
+    if (er.code === 'unavailable') return RK.t('checkout.err.sold');
+    return RK.t('checkout.err.offline');
+  }
+  function holdThenPay(btn, errEl) {
+    if (sending) return;
+    sending = true;
+    var label = btn && btn.querySelector('span'), was = label && label.textContent;
+    if (btn) btn.disabled = true;
+    if (label) label.textContent = RK.t('pay.holding');
+    if (errEl) errEl.textContent = '';
+    requestHold().then(function () { sending = false; go('pay'); }, function (er) {
+      sending = false; RK.haptic('error');
+      if (btn) btn.disabled = false;
+      if (label) label.textContent = was;
+      if (errEl) errEl.textContent = holdError(er);
+      if (er.code === 'unavailable') RK.load().then(function () { RK.cart.prune(); });
+    });
+  }
+  /* the countdown on the payment step; at zero the buyer holds the pieces again before paying */
+  function holdBar() {
+    clearInterval(holdTimer); holdTimer = null;
+    if (!HOLD) return null;
+    var bar = h('div', { class: 'holdbar', role: 'status' });
+    var tick = function () {
+      var left = Date.parse(HOLD.until) - Date.now();
+      if (!bar.isConnected && holdTimer) { clearInterval(holdTimer); return; }
+      if (left > 0) {
+        var m = Math.floor(left / 60000), s = Math.floor(left / 1000) % 60;
+        bar.className = 'holdbar';
+        bar.textContent = RK.t(RK.cart.lines().length > 1 ? 'pay.heldMany' : 'pay.held', { time: m + ':' + (s < 10 ? '0' : '') + s });
+        return;
+      }
+      clearInterval(holdTimer);
+      bar.className = 'holdbar holdbar--over';
+      bar.textContent = '';
+      var again = h('button', { class: 'link-inline', type: 'button' }, RK.t('pay.rehold'));
+      again.addEventListener('click', function () {
+        again.disabled = true;
+        requestHold().then(function () { render(false); }, function (er) { again.disabled = false; bar.firstChild.textContent = holdError(er) + ' '; });
+      });
+      bar.appendChild(h('span', { text: RK.t('pay.expired') + ' ' }));
+      bar.appendChild(again);
+    };
+    tick();
+    holdTimer = setInterval(tick, 1000);
+    return bar;
   }
 
   /* ----- pay: details to transfer to, the bank and the receipt ----- */
@@ -407,6 +478,7 @@
     var t = RK.cart.totals(), c = formState, p = payDetails();
     var amount = c.payment === 'reserve' ? t.deposit : t.total;
     var direct = canSendDirect();
+    if (direct && !HOLD) HOLD = savedHold();
 
     var row = function (label, value, copyable) {
       return h('div', { class: 'paycard__row' },
@@ -415,6 +487,7 @@
           copyable ? h('button', { class: 'paycard__copy', type: 'button', onclick: function () { RK.copy(value).then(function () { RK.haptic('success'); RK.toast(RK.t('pay.copied')); }); } }, RK.t('pay.copy')) : null));
     };
     bodyEl.appendChild(h('button', { class: 'back', type: 'button', onclick: stepBack }, '← ' + RK.t('pay.back')));
+    if (direct) { var bar = holdBar(); if (bar) bodyEl.appendChild(bar); }
     bodyEl.appendChild(h('div', { class: 'paycard' },
       h('p', { class: 'eyebrow', text: RK.t(c.payment === 'reserve' ? 'pay.leadReserve' : 'pay.leadFull') }),
       h('p', { class: 'paycard__amount', text: RK.money(amount) }),
@@ -529,7 +602,7 @@
     fetch(workerUrl(), {
       method: 'POST', headers: { 'Content-Type': 'application/json' }, signal: ctrl ? ctrl.signal : undefined,
       body: JSON.stringify({
-        secret: S().orderSecret || '', initData: RK.tgInitData || '', text: o.text,
+        secret: S().orderSecret || '', initData: RK.tgInitData || '', text: o.text, hold: HOLD ? HOLD.token : '',
         receipt: o.receipt ? receipt.data : '', name: o.receipt ? receipt.name : '', mime: o.receipt ? receipt.mime : '',
         items: o.items.map(function (it) { return { id: it.id, qty: it.qty, size: it.size }; }),
         // the same order as data: the Worker keeps it for the Orders tab and marks the pieces sold / reserved
@@ -540,9 +613,10 @@
         }
       })
     }).then(function (r) {
-      return r.json().catch(function () { return {}; }).then(function (j) { if (!r.ok || !j.ok) { var e = new Error(j.error || 'HTTP ' + r.status); e.code = j.error; throw e; } });
-    }).then(function () {
+      return r.json().catch(function () { return {}; }).then(function (j) { if (!r.ok || !j.ok) { var e = new Error(j.error || 'HTTP ' + r.status); e.code = j.error; e.until = j.until; throw e; } return j; });
+    }).then(function (j) {
       sending = false; clearTimeout(timer);
+      o.problem = j.problem === 'unavailable';
       finish(o, true);
     }).catch(function (er) {
       sending = false; clearTimeout(timer);
@@ -551,8 +625,8 @@
       if (btn) btn.disabled = false;
       if (label) label.textContent = was;
       // someone was faster: the Worker refused because a piece is already sold or reserved
-      if (er.code === 'unavailable') {
-        if (errEl) errEl.textContent = RK.t('checkout.err.sold');
+      if (er.code === 'unavailable' || er.code === 'held') {
+        if (errEl) errEl.textContent = er.code === 'held' ? holdError(er) : RK.t('checkout.err.sold');
         RK.load().then(function () { RK.cart.prune(); setTimeout(function () { go('cart'); }, 2500); });
         return;
       }
@@ -565,6 +639,7 @@
 
   function finish(o, sent) {
     o.sent = sent;
+    HOLD = null; clearInterval(holdTimer); RK.store.set('rk-hold', null);
     lastOrder = o;
     RK.haptic('success');
     RK.cart.clear(); RK.cart.setPromo('');
@@ -579,7 +654,7 @@
       h('div', { class: 'done__mark', 'data-orn': 'sigil', 'data-n': '8' }),
       h('p', { class: 'eyebrow', text: RK.t('done.number') }),
       h('p', { class: 'done__num', text: o.number }),
-      h('p', { class: 'done__text', text: RK.t(o.sent ? 'done.sent' : 'done.text') }),
+      h('p', { class: 'done__text' + (o.problem ? ' done__text--warn' : ''), text: RK.t(o.problem ? 'done.problem' : o.sent ? 'done.sent' : 'done.text') }),
       o.sent ? null : h('pre', { class: 'done__summary', text: o.text })));
     RK.ornaments(bodyEl);
     // after an automatic order the chat opens with a short note, so the buyer never has to copy the number

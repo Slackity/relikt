@@ -314,6 +314,12 @@ html.has-banner { --banner-h: 34px; }
 .sum__pay dt { font-family: var(--f-mono); font-size: 11px; letter-spacing: .2em; text-transform: uppercase; align-self: center; }
 .sum__pay dd { font-family: var(--f-display); font-size: 24px; line-height: 1; color: var(--blood-hot); }
 
+/* the hold countdown on the payment step */
+.holdbar { margin: 0 0 14px; padding: 12px 14px; font-size: 13px; color: var(--bone); border: 1px solid var(--bone-14); border-left: 2px solid var(--blood-hot); background: var(--bone-08); }
+.holdbar--over { border-color: var(--blood); color: var(--blood-hot); }
+.line__meta--warn { color: var(--blood-hot); }
+.done__text--warn { color: var(--blood-hot) !important; }
+
 /* payment details */
 .paycard { position: relative; margin: 4px 0 20px; padding: 22px 20px 18px; border: 1px solid var(--bone-14); background: var(--soot); }
 .paycard::before { content: ""; position: absolute; inset: 5px; border: 1px solid var(--bone-08); pointer-events: none; }

@@ -2,7 +2,9 @@
  * RELIKT Cloudflare Worker
  *
  * Routes:
- * POST /order                 — заказ + чек -> Telegram; заказ сохраняется (KV ORDERS), вещи отмечаются в каталоге (GitHub)
+ * POST /hold                  — шаг оплаты: вещи закрепляются за покупателем на 20 минут, другим их не оплатить
+ * POST /order                 — заказ + чек -> Telegram; заказ сохраняется (KV ORDERS), вещи отмечаются в каталоге (GitHub);
+ *                               если вещь уже недоступна, а чек есть — заказ всё равно уходит менеджеру с пометкой о возврате
  * POST /orders/list           — заказы для админки            (Authorization: Bearer <GitHub-токен админки>)
  * POST /orders/update         — статус / заметка заказа       (отмена возвращает вещи в продажу, «Оплачен» превращает бронь в продажу)
  * POST /orders/delete         — удалить заказ из списка
@@ -29,7 +31,7 @@ const WIDGET_VERSION='4.0.0';
 const GITHUB_API='https://api.github.com';
 const STORE_PATH='data/store.json';
 const ORDER_TTL=365*24*3600;
-const STATUSES=['new','reserved','paid','shipped','done','cancelled'];
+const STATUSES=['new','reserved','problem','paid','shipped','done','cancelled'];
 
 export default {
   async fetch(request,env){
@@ -47,6 +49,7 @@ export default {
       if(url.pathname==='/cdek') return await cdek(request,env);
       if(url.pathname==='/yandex/geo') return await yandexGeo(request,env);
       if(url.pathname==='/yandex/pickup-points') return await yandexPickupPoints(request,env);
+      if(url.pathname==='/hold') return await hold(request,env);
       if(url.pathname==='/order') return await order(request,env);
       if(url.pathname.startsWith('/orders/')) return await adminOrders(request,env,url.pathname.slice(8));
       return json({ok:false,error:'not_found'},404);
@@ -125,11 +128,13 @@ async function loadCatalog(env){
   const f=await gh(env,env.GITHUB_TOKEN,'GET',`/contents/${STORE_PATH}?ref=${encodeURIComponent(branchName(env))}`);
   return {sha:f.sha,data:JSON.parse(b64decode(f.content||''))};
 }
-/* read, change, save; starts over when the admin panel or an import saved in between */
+/* read, change, save; starts over when the admin panel or an import saved in between.
+   change() may return {noSave:true,result} when nothing needs to be written. */
 async function editCatalog(env,message,change){
   for(let attempt=0;attempt<4;attempt++){
     const cat=await loadCatalog(env);
     const result=change(cat.data);
+    if(result&&result.noSave)return result.result;
     try{
       await gh(env,env.GITHUB_TOKEN,'PUT',`/contents/${STORE_PATH}`,{message,content:b64encode(JSON.stringify(cat.data,null,2)+'\n'),sha:cat.sha,branch:branchName(env)});
       return result;
@@ -137,27 +142,58 @@ async function editCatalog(env,message,change){
   }
   throw httpError(409,'catalog_busy');
 }
-/* pieces that cannot be bought: gone, hidden, sold, reserved or not enough units */
-function unavailable(data,items){
-  const bad=[];
+
+/* ---------- holds: a buyer on the payment step has the pieces to themselves for HOLD_MINUTES ----------
+   Kept on the product as holds:[{k,q,u}] — k is a hash of the buyer's token (the token itself never lands in the
+   public catalog), q the units, u the end time. Expired holds mean nothing and are swept on every write. */
+async function holdKey(token){
+  return hex(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode('relikt-hold:'+token)))).slice(0,24);
+}
+function sweepHolds(data,now){
+  for(const p of data.products||[]){
+    if(!Array.isArray(p.holds))continue;
+    p.holds=p.holds.filter(h=>h&&Date.parse(h.u)>now);
+    if(!p.holds.length)delete p.holds;
+  }
+}
+/* units of p held by other buyers right now, and when the last of those holds ends */
+function heldByOthers(p,key,now){
+  let q=0,until=0;
+  for(const h of p.holds||[]){const u=Date.parse(h.u);if(u>now&&h.k!==key){q+=Number(h.q)||1;until=Math.max(until,u);}}
+  return {q,until};
+}
+/* pieces that cannot be bought: gone, hidden, sold, reserved, not enough units, or held by another buyer */
+function unavailable(data,items,key){
+  const bad=[], now=Date.now();
   for(const it of items){
     const p=(data.products||[]).find(x=>x.id===it.id);
-    if(!p||!p.visible||p.availability==='sold'||p.availability==='reserved'){bad.push(it.id);continue;}
-    if(p.availability==='instock'&&(Number(p.stock)||1)<it.qty)bad.push(it.id);
+    if(!p||!p.visible||p.availability==='sold'||p.availability==='reserved'){bad.push({id:it.id,reason:'unavailable'});continue;}
+    if(p.availability!=='instock')continue;   // made-to-order pieces are not limited
+    const stock=Number(p.stock)||1, held=heldByOthers(p,key,now);
+    if(stock<it.qty)bad.push({id:it.id,reason:'unavailable'});
+    else if(stock-held.q<it.qty)bad.push({id:it.id,reason:'held',until:new Date(held.until).toISOString()});
   }
   return bad;
 }
+function refusal(bad){
+  const held=bad.filter(b=>b.reason==='held');
+  if(held.length===bad.length)return json({ok:false,error:'held',ids:bad.map(b=>b.id),until:held.map(b=>b.until).sort().pop()},409);
+  return json({ok:false,error:'unavailable',ids:bad.map(b=>b.id)},409);
+}
+
 /* takes the ordered units out of stock; the last unit makes the piece sold (or reserved for a deposit) */
-function claim(data,items,payment){
+function claim(data,items,payment,key){
   const days=num(data.settings?.reserveDays,0,60,3), now=new Date(), done=[];
   for(const it of items){
     const p=(data.products||[]).find(x=>x.id===it.id);
-    if(!p||p.availability!=='instock')continue;   // made-to-order pieces are not limited
+    if(!p||p.availability!=='instock')continue;
     const stock=Number(p.stock)||1, qty=Math.min(stock,it.qty);
     p.stock=stock-qty;
+    if(Array.isArray(p.holds)){p.holds=p.holds.filter(h=>h.k!==key);if(!p.holds.length)delete p.holds;}
     if(p.stock===0){
       p.availability=payment==='reserve'?'reserved':'sold';
       p.reservedUntil=payment==='reserve'?new Date(now.getTime()+days*864e5).toISOString():'';
+      delete p.holds;
     }
     p.updatedAt=now.toISOString();
     done.push({id:p.id,qty,to:p.availability});
@@ -185,12 +221,45 @@ function sellReserved(data,claims){
   }
   return claims;
 }
+function parseItems(body){
+  return (Array.isArray(body?.items)?body.items:[]).slice(0,30)
+    .map(it=>({id:str(it?.id,40),qty:num(it?.qty,1,5,1),size:str(it?.size,24)})).filter(it=>it.id);
+}
+const HOLD_MINUTES=20;
+
+/* POST /hold — the buyer opens the payment step: the pieces are theirs for HOLD_MINUTES, nobody else can get to paying */
+async function hold(request,env){
+  const body=await request.json().catch(()=>null);
+  const auth=await authOrder(body,env);
+  if(!auth)return json({ok:false,error:'forbidden'},403);
+  if(!env.GITHUB_TOKEN)return json({ok:false,error:'catalog_not_configured'},501);
+  const items=parseItems(body);
+  if(!items.length)return json({ok:false,error:'empty'},400);
+  const token=/^[a-f0-9]{32}$/.test(String(body?.token||''))?body.token:hex(crypto.getRandomValues(new Uint8Array(16)));
+  const key=await holdKey(token);
+  const now=Date.now(), until=new Date(now+HOLD_MINUTES*60000).toISOString();
+  let bad=[];
+  await editCatalog(env,`Оформление заказа: вещи закреплены на ${HOLD_MINUTES} мин`,d=>{
+    sweepHolds(d,now);
+    bad=unavailable(d,items,key);
+    if(bad.length)return {noSave:true};
+    // the same buyer coming back to the payment step: their earlier holds are replaced by these
+    for(const p of d.products||[])if(Array.isArray(p.holds)){p.holds=p.holds.filter(h=>h.k!==key);if(!p.holds.length)delete p.holds;}
+    for(const it of items){
+      const p=d.products.find(x=>x.id===it.id);
+      if(p&&p.availability==='instock')(p.holds=p.holds||[]).push({k:key,q:it.qty,u:until});
+    }
+    if(!(d.products||[]).some(p=>(p.holds||[]).some(h=>h.k===key)))return {noSave:true};   // only made-to-order pieces: nothing to hold
+  });
+  if(bad.length)return refusal(bad);
+  return json({ok:true,token,key,until});
+}
 
 async function order(request,env){
   const body=await request.json().catch(()=>null);
   const auth=await authOrder(body,env);
   if(!auth)return json({ok:false,error:'forbidden'},403);
-  const text=String(body?.text||'').slice(0,3900);
+  let text=String(body?.text||'').slice(0,3900);
   if(!text.trim())return json({ok:false,error:'empty_text'},400);
   if(!env.BOT_TOKEN||!env.CHAT_ID)return json({ok:false,error:'telegram_not_configured'},500);
 
@@ -200,16 +269,21 @@ async function order(request,env){
   const o=body?.order&&typeof body.order==='object'?body.order:{};
   const number=/^RK-[A-Z0-9]{3,12}$/.test(String(o.number||''))?o.number:'RK-'+Date.now().toString(36).slice(-5).toUpperCase();
   const payment=o.payment==='reserve'?'reserve':'full';
-  const items=(Array.isArray(body?.items)?body.items:[]).slice(0,30)
-    .map(it=>({id:str(it?.id,40),qty:num(it?.qty,1,5,1),size:str(it?.size,24)})).filter(it=>it.id);
+  const items=parseItems(body);
+  const key=/^[a-f0-9]{32}$/.test(String(body?.hold||''))?await holdKey(body.hold):'';
 
-  // a piece that is already sold or reserved is refused before anything reaches the manager
-  let warn='';
+  // a piece that is already gone is refused before anything reaches the manager —
+  // unless the buyer has already paid (a receipt is attached): then the manager must see it to refund or swap
+  let warn='', problem=false;
   if(env.GITHUB_TOKEN&&items.length){
     try{
       const cat=await loadCatalog(env);
-      const bad=unavailable(cat.data,items);
-      if(bad.length)return json({ok:false,error:'unavailable',ids:bad},409);
+      const bad=unavailable(cat.data,items,key);
+      if(bad.length){
+        if(!receiptData)return refusal(bad);
+        problem=true;
+        text='⚠️ ВЕЩЬ УЖЕ НЕДОСТУПНА: покупатель оплатил, нужен возврат или замена\n\n'+text;
+      }
     }catch(e){warn=e.message;}
   }
 
@@ -236,12 +310,13 @@ async function order(request,env){
 
   // mark the pieces sold / reserved in the catalog (the site picks it up after GitHub Pages rebuilds, 1–2 min)
   let claims=[];
-  if(env.GITHUB_TOKEN&&items.length&&!warn){
+  if(env.GITHUB_TOKEN&&items.length&&!warn&&!problem){
     try{
       claims=await editCatalog(env,`Заказ ${number}: ${payment==='reserve'?'бронь':'продажа'}`,d=>{
-        const bad=unavailable(d,items);
-        if(bad.length)throw httpError(409,'уже купили в другом заказе: '+bad.join(', '));
-        return claim(d,items,payment);
+        sweepHolds(d,Date.now());
+        const bad=unavailable(d,items,key);
+        if(bad.length)throw httpError(409,'уже купили в другом заказе: '+bad.map(b=>b.id).join(', '));
+        return claim(d,items,payment,key);
       });
     }catch(e){warn=e.message;}
   }
@@ -251,17 +326,17 @@ async function order(request,env){
     const c=o.customer||{};
     const rec={
       key:'o:'+String(9999999999999-Date.now()).padStart(13,'0')+':'+number,
-      number,createdAt:new Date().toISOString(),status:payment==='reserve'?'reserved':'new',payment,
+      number,createdAt:new Date().toISOString(),status:problem?'problem':payment==='reserve'?'reserved':'new',payment,
       source:o.source==='site'?'site':'miniapp',tg:auth.id?{id:auth.id,username:auth.username}:null,
       items:(Array.isArray(o.items)?o.items:[]).slice(0,30).map(it=>({id:str(it?.id,40),name:str(it?.name,160),size:str(it?.size,24),qty:num(it?.qty,1,5,1),price:num(it?.price,0,1e7,0),order:!!it?.order,image:/^\/uploads\/[A-Za-z0-9._-]{1,120}$/.test(String(it?.image||''))?it.image:''})),
       subtotal:num(o.subtotal,0,1e8,0),cut:num(o.cut,0,1e8,0),total:num(o.total,0,1e8,0),pay:num(o.pay,0,1e8,0),
       discounts:(Array.isArray(o.discounts)?o.discounts:[]).slice(0,8).map(x=>str(x,80)),promo:str(o.promo,60),bank:str(o.bank,60),receipt:!!receiptData,
       customer:{name:str(c.name,80),contact:str(c.contact,80),phone:str(c.phone,32),city:str(c.city,80),delivery:str(c.delivery,40),address:str(c.address,300),comment:str(c.comment,600)},
-      claims,catalogNote:warn,released:false,note:''
+      claims,catalogNote:problem?'вещь уже недоступна — нужен возврат или замена':warn,released:false,note:''
     };
     await env.ORDERS.put(rec.key,JSON.stringify(rec),{expirationTtl:ORDER_TTL});
   }
-  return json({ok:true,number});
+  return json(problem?{ok:true,number,problem:'unavailable'}:{ok:true,number});
 }
 
 /* ---------- orders for the admin panel ---------- */

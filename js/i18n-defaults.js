@@ -119,6 +119,7 @@
   add('badge.sold', 'catalog', 'Метка: продано', 'Продано', 'Sold');
   add('badge.order', 'catalog', 'Метка: под заказ', 'Под заказ', 'To order');
   add('badge.reserved', 'catalog', 'Метка: бронь', 'Бронь', 'Reserved');
+  add('badge.held', 'catalog', 'Метка: оформляется', 'Оформляется', 'Being bought');
   add('cond.new', 'catalog', 'Состояние: новое', 'Новое', 'New');
   add('cond.vintage', 'catalog', 'Состояние: винтаж', 'Винтаж', 'Vintage');
   add('cond.used', 'catalog', 'Состояние: б/у', 'Б/у', 'Pre-owned');
@@ -141,6 +142,7 @@
   add('product.soldNote', 'product', 'Продано: пояснение', 'Эта вещь продана. Включай уведомления в канале, чтобы не пропустить новые поступления.', 'This piece is sold. Turn on notifications in the channel so you do not miss new arrivals.', { multi: true });
   add('product.reservedNote', 'product', 'Бронь: пояснение', 'Вещь забронирована. Если бронь снимут, она вернётся в продажу.', 'This piece is reserved. If the reservation is released, it goes back on sale.', { multi: true });
   add('product.reservedUntil', 'product', 'Бронь до даты ({date})', 'Вещь забронирована до {date}. Если её не выкупят, она вернётся в продажу.', 'This piece is reserved until {date}. If it is not bought out, it goes back on sale.', { multi: true });
+  add('product.heldNote', 'product', 'Оформляется: пояснение ({min})', 'Эту вещь сейчас оформляет другой покупатель. Если он не оплатит, она вернётся в продажу примерно через {min} мин.', 'Someone is checking out this piece right now. If they do not pay, it is back on sale in about {min} min.', { multi: true });
   add('product.orderNote', 'product', 'Под заказ: пояснение', 'Под заказ: выкупим и привезём для тебя.', 'Made to order: we will buy it and ship it to you.', { multi: true });
   add('product.stockNote', 'product', 'В наличии: пояснение', 'В наличии, одна единица.', 'In stock, one piece.');
   add('product.stockMany', 'product', 'В наличии: несколько ({n})', 'В наличии: {n} шт.', 'In stock: {n} pcs.');
@@ -166,6 +168,7 @@
   add('cart.promoBad', 'cart', 'Промокод: не найден', 'Такого промокода нет или он больше не действует.', 'This code does not exist or has expired.');
   add('cart.promoOk', 'cart', 'Промокод: применён', 'Промокод применён', 'Promo code applied');
   add('cart.promoRemove', 'cart', 'Промокод: убрать', 'Убрать промокод', 'Remove the code');
+  add('cart.heldLine', 'cart', 'Корзина: вещь оформляет другой ({min})', 'Сейчас оформляет другой покупатель, освободится через ~{min} мин.', 'Someone else is checking it out, free again in ~{min} min.');
   add('cart.checkout', 'cart', 'Кнопка: оформить', 'Оформить заказ', 'Checkout');
   add('cart.note', 'cart', 'Примечание под корзиной', 'Оплата переводом по реквизитам на следующем шаге. Доставка только по предоплате.', 'You pay by bank transfer on the next step. Shipping on prepayment only.', { multi: true });
   add('checkout.title', 'cart', 'Оформление: заголовок', 'Оформление', 'Checkout');
@@ -192,8 +195,15 @@
   add('checkout.err.rate', 'cart', 'Ошибка: слишком много заказов', 'Слишком много заказов подряд. Попробуй позже или напиши менеджеру.', 'Too many orders in a row. Try again later or message the manager.');
   add('checkout.err.generic', 'cart', 'Ошибка: общая', 'Не получилось отправить заказ автоматически.', 'We could not send the order automatically.');
   add('checkout.err.manual', 'cart', 'Ошибка: отправить вручную', 'Отправить менеджеру вручную', 'Send it to the manager manually');
+  add('checkout.err.held', 'cart', 'Ошибка: вещь оформляет другой ({min})', 'Эту вещь сейчас оформляет другой покупатель. Если он не оплатит, она освободится примерно через {min} мин.', 'Someone else is checking out this piece. If they do not pay, it is free again in about {min} min.', { multi: true });
+  add('checkout.err.offline', 'cart', 'Ошибка: нет связи', 'Не получилось связаться с магазином. Проверь интернет и попробуй ещё раз.', 'Could not reach the shop. Check the connection and try again.');
   add('pay.title', 'cart', 'Оплата: заголовок', 'Оплата', 'Payment');
   add('pay.back', 'cart', 'Оплата: назад', 'Назад к данным', 'Back to details');
+  add('pay.holding', 'cart', 'Кнопка: закрепляем вещь', 'Закрепляем вещь…', 'Holding the piece…');
+  add('pay.held', 'cart', 'Вещь закреплена ({time})', 'Вещь закреплена за тобой ещё {time}. Переведи деньги и отправь чек.', 'The piece is held for you for {time}. Transfer the money and send the receipt.');
+  add('pay.heldMany', 'cart', 'Вещи закреплены ({time})', 'Вещи закреплены за тобой ещё {time}. Переведи деньги и отправь чек.', 'The pieces are held for you for {time}. Transfer the money and send the receipt.');
+  add('pay.expired', 'cart', 'Закрепление закончилось', 'Время закрепления вышло. Если ещё не переводил(а) деньги, закрепи вещь снова.', 'The hold has ended. If you have not paid yet, hold the piece again.');
+  add('pay.rehold', 'cart', 'Кнопка: закрепить снова', 'Закрепить снова', 'Hold again');
   add('pay.leadFull', 'cart', 'Оплата: полная', 'Переведи полную сумму', 'Transfer the full amount');
   add('pay.leadReserve', 'cart', 'Оплата: задаток', 'Переведи задаток за бронь', 'Transfer the reservation deposit');
   add('pay.bank', 'cart', 'Реквизиты: банк', 'Банк', 'Bank');
@@ -215,6 +225,7 @@
   add('done.number', 'cart', 'Номер заказа', 'Номер заказа', 'Order number');
   add('done.text', 'cart', 'Заказ принят: текст', 'Осталось отправить заказ менеджеру: нажми кнопку ниже, текст уже готов. Чек об оплате приложи в том же чате.', 'One last step: send the order to the manager with the button below, the text is ready. Attach the payment receipt in the same chat.', { multi: true });
   add('done.sent', 'cart', 'Заказ отправлен: текст', 'Заказ и чек у менеджера. Он проверит оплату и напишет тебе в Telegram.', 'The manager has your order and receipt. They will check the payment and message you on Telegram.', { multi: true });
+  add('done.problem', 'cart', 'Заказ: вещь уже ушла', 'Эту вещь только что купил другой покупатель. Твой заказ и чек уже у менеджера: он свяжется с тобой, вернёт деньги или предложит замену.', 'Another buyer has just bought this piece. Your order and receipt are with the manager: they will contact you to refund or offer a replacement.', { multi: true });
   add('done.open', 'cart', 'Кнопка: написать менеджеру', 'Написать менеджеру', 'Message the manager');
   add('done.msg', 'cart', 'Сообщение менеджеру после заказа ({number}, {items}, {amount})', 'Здравствуйте! Пишу по заказу {number}: {items}. Оплачено: {amount}.', 'Hello! I am writing about order {number}: {items}. Paid: {amount}.', { multi: true });
   add('done.copy', 'cart', 'Кнопка: скопировать текст', 'Скопировать текст заказа', 'Copy order text');

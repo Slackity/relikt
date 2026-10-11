@@ -131,6 +131,10 @@
       createdAt: prev.createdAt || str(input.createdAt, 40) || now,
       updatedAt: now
     };
+    // buyers' holds on the payment step belong to the order Worker: an edit here keeps the ones still running
+    var holds = (Array.isArray(prev.holds) ? prev.holds : []).filter(function (x) { return x && typeof x.k === 'string' && Date.parse(x.u) > Date.now(); })
+      .map(function (x) { return { k: str(x.k, 64), q: int(x.q, 1, 999, 1), u: str(x.u, 40) }; });
+    if (holds.length && p.availability === 'instock') p.holds = holds;
     if (!p.ru && !p.en) throw err('NAME', 'Name is required');
     if (!p.ru) p.ru = p.en;
     if (!p.en) p.en = p.ru;

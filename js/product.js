@@ -120,6 +120,13 @@
       wrap.appendChild(h('a', { class: 'btn btn--ghost', href: RK.tg('channel'), target: '_blank', rel: 'noopener' }, h('span', null, h('span', { text: RK.t('cta.channel') }), ' ', h('b', { 'aria-hidden': 'true', text: '↗' }))));
       return wrap;
     }
+    var held = RK.heldUntil(p);
+    if (held && !RK.cart.has(p.id)) {
+      // someone else is paying for it right now
+      wrap.appendChild(h('p', { class: 'note', text: RK.t('product.heldNote', { min: RK.minutesLeft(held) }) }));
+      wrap.appendChild(h('div', { class: 'actions__row' }, RK.ui.favButton(p)));
+      return wrap;
+    }
     var max = RK.cart.max(p);
     var inCart = max === 1 && RK.cart.has(p.id);
     qty = Math.min(qty, max);
