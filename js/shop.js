@@ -121,14 +121,29 @@
       bodyEl, footEl);
     doc.body.appendChild(scrim);
     doc.body.appendChild(drawer);
-    /* on a phone the keyboard takes half the screen: while a field is being typed in, the total and the button
-       step aside (they come back when the keyboard closes) so the form keeps room to scroll */
+    /* on a phone the keyboard takes half the screen: while it is open over a field, the total and the button
+       step aside so the form keeps room to scroll, and come back as soon as the keyboard closes.
+       Android can hide the keyboard and leave the field focused, so the keyboard is told by the visible height:
+       noticeably shorter than the tallest seen (at this width) means it is open. */
     var touch = !!(window.matchMedia && matchMedia('(pointer: coarse)').matches);
+    var vv = window.visualViewport;
+    var visibleH = function () { return vv ? vv.height : window.innerHeight; };
+    var fullH = visibleH(), fullW = window.innerWidth;
     var typing = function (el) { return !!el && (el.tagName === 'TEXTAREA' || el.tagName === 'SELECT' || (el.tagName === 'INPUT' && !/^(checkbox|radio|button|submit|file|hidden)$/.test(el.type))); };
-    drawer.addEventListener('focusin', function (e) { if (touch && typing(e.target)) drawer.classList.add('is-typing'); });
+    var syncTyping = function () {
+      var hgt = visibleH();
+      if (window.innerWidth !== fullW) { fullW = window.innerWidth; fullH = hgt; }   // turned the phone
+      if (hgt > fullH) fullH = hgt;
+      var keyboard = hgt < fullH * 0.8;
+      var field = drawer.contains(doc.activeElement) && typing(doc.activeElement);
+      drawer.classList.toggle('is-typing', touch && field && keyboard);
+    };
+    if (vv) vv.addEventListener('resize', syncTyping);
+    window.addEventListener('resize', syncTyping);
+    drawer.addEventListener('focusin', function () { setTimeout(syncTyping, 350); });   // the keyboard slides in
     drawer.addEventListener('focusout', function () {
       // moving from one field to the next keeps the keyboard open: wait a moment before bringing the panel back
-      setTimeout(function () { if (!(drawer.contains(doc.activeElement) && typing(doc.activeElement))) drawer.classList.remove('is-typing'); }, 120);
+      setTimeout(syncTyping, 120);
     });
     doc.addEventListener('keydown', function (e) {
       if (drawer.hidden) return;
