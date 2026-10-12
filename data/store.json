@@ -1157,8 +1157,14 @@
     }
   ],
   "content": {
-    "ru": {},
-    "en": {}
+    "ru": {
+      "hero.eyebrow": "Винтаж · Стритвир",
+      "marquee.1": "Импорт"
+    },
+    "en": {
+      "hero.eyebrow": "Vintage · Streetwear",
+      "marquee.1": "Import"
+    }
   },
   "deletedTgPosts": []
 }
