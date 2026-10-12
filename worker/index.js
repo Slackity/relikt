@@ -13,6 +13,8 @@
  * POST /yandex/pickup-points  — реальные ПВЗ Яндекс Доставки
  * POST /tg                    — сообщения боту от Telegram (webhook): на /start бот присылает кнопку «Открыть каталог»
  * POST /bot/setup             — подключить webhook бота к этому Worker (кнопка в админке, нужен GitHub-токен админки)
+ *                               Новый пост канала с вещью (фото + цена): бот сразу пишет под ним «⬆️ Название · цена»
+ *                               с кнопкой «🛍 Открыть в каталоге» — под альбомом Telegram кнопки не разрешает
  * POST /bot/pin               — опубликовать в канале пост «RELIKT — каталог» с кнопкой и закрепить его (кнопка в админке;
  *                               бот — админ канала с правами публиковать и закреплять сообщения)
  * GET  /health                — проверка конфигурации без выдачи секретов
@@ -361,10 +363,49 @@ async function webhookSecret(env){
 async function shopSettings(env){
   try{return (await (await fetch(shopUrl(env)+'data/store.json?t='+Date.now())).json()).settings||{};}catch(e){return {};}
 }
+/* the price as the channel writes it: keycap digits with 🕖 for 0 (3️⃣2️⃣🕖🕖), or 3200 ₽; same rules as the import */
+function postPrice(text){
+  for(const m of text.match(/(?:\d\uFE0F?\u20E3|\u{1F556})+/gu)||[]){
+    const v=parseInt(m.replace(/\u{1F556}/gu,'0').replace(/\D/g,''),10);
+    if(v>=100)return v;                                          // a stray 3️⃣ bullet is not a price
+  }
+  const plain=text.match(/(\d[\d\s]{2,7})\s*(?:₽|руб|р\.|р\b)/i);
+  const v=plain?parseInt(plain[1].replace(/\s/g,''),10):0;
+  return v>=100?v:null;
+}
+/* A new post with a piece in the shop channel. Telegram allows no buttons under an album, so the bot posts a short
+   message right after it — "⬆️ Новая футболка Ed Hardy · 3 200 ₽" — with an "Open in catalog" button. The button
+   opens the Mini App on this piece (startapp=post_<n>: the piece imported from that post, the catalog until then).
+   The import skips it: it has no photos. Bots get no updates about their own posts, so this never loops. */
+async function channelPost(p,env){
+  if(!p||!p.chat||!p.photo||p.caption==null||p.forward_origin)return; // an album's other photos come without a caption
+  const text=String(p.caption);
+  const price=postPrice(text);
+  if(price==null||/продано/i.test(text))return;
+  const s=await shopSettings(env);
+  if(!s.channel||String(p.chat.username||'').toLowerCase()!==String(s.channel).toLowerCase())return;
+  const app=/^https:\/\/t\.me\/[A-Za-z0-9_]{4,32}(\/[A-Za-z0-9_]{3,30})?$/.test(String(s.miniAppUrl||''))?s.miniAppUrl:'';
+  if(!app)return;
+  // Telegram repeats an update it thinks was lost: one message per post
+  const key='cp:'+p.chat.id+':'+p.message_id;
+  if(env.ORDERS){if(await env.ORDERS.get(key))return;await env.ORDERS.put(key,'1',{expirationTtl:172800});}
+  const line=(text.split('\n').map(l=>l.trim()).filter(Boolean)[0]||'').replace(/\s+/g,' ');
+  const title=postPrice(line)!=null?'':line.length>60?line.slice(0,59)+'…':line;
+  const label=[title&&title.charAt(0).toUpperCase()+title.slice(1),String(price).replace(/\B(?=(\d{3})+(?!\d))/g,' ')+' ₽',/под\s+заказ/i.test(text)?'под заказ':''].filter(Boolean).join(' · ');
+  const res=await tgApi(env,'sendMessage',{chat_id:p.chat.id,text:'⬆️ '+label,disable_notification:true,
+    reply_markup:{inline_keyboard:[[{text:'🛍 Открыть в каталоге',url:app+'?startapp=post_'+p.message_id}]]}});
+  if(!res.ok){if(env.ORDERS)await env.ORDERS.delete(key);await channelWarning(env,res.description);}
+}
+/* the bot could not post in the channel: tell the manager, at most once a day */
+async function channelWarning(env,why){
+  if(env.ORDERS){if(await env.ORDERS.get('warn:channel'))return;await env.ORDERS.put('warn:channel','1',{expirationTtl:86400});}
+  await tgSend(env,'⚠️ Бот не смог отправить в канал кнопку «Открыть в каталоге» под постом ('+(why||'нет доступа')+'). Проверьте, что бот — админ канала с правом публиковать сообщения.').catch(()=>{});
+}
 async function telegramUpdate(request,env){
   if(request.method!=='POST'||!env.BOT_TOKEN)return new Response('ok');
   if(request.headers.get('X-Telegram-Bot-Api-Secret-Token')!==await webhookSecret(env))return new Response('forbidden',{status:403});
   const u=await request.json().catch(()=>null);
+  if(u&&u.channel_post){await channelPost(u.channel_post,env);return new Response('ok');}
   const m=u&&u.message;
   // only private chats and only the commands below: the manager's own chat with the bot stays quiet
   if(!m||!m.chat||m.chat.type!=='private'||typeof m.text!=='string')return new Response('ok');
@@ -392,7 +433,7 @@ async function botSetup(request,env){
   const info=await tgApi(env,'getWebhookInfo');
   const before=info.result&&info.result.url||'';
   // presses of Start that waited while nobody listened are answered now (Telegram keeps them up to a day)
-  const set=await tgApi(env,'setWebhook',{url:hook,secret_token:await webhookSecret(env),allowed_updates:['message'],drop_pending_updates:false});
+  const set=await tgApi(env,'setWebhook',{url:hook,secret_token:await webhookSecret(env),allowed_updates:['message','channel_post'],drop_pending_updates:false});
   if(!set.ok)return json({ok:false,error:set.description||'telegram_error'},502);
   await tgApi(env,'setMyCommands',{commands:[{command:'start',description:'Открыть магазин'},{command:'catalog',description:'Каталог'}]});
   let menuSet=false;
