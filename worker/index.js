@@ -13,8 +13,6 @@
  * POST /yandex/pickup-points  — реальные ПВЗ Яндекс Доставки
  * POST /tg                    — сообщения боту от Telegram (webhook): на /start бот присылает кнопку «Открыть каталог»
  * POST /bot/setup             — подключить webhook бота к этому Worker (кнопка в админке, нужен GitHub-токен админки)
- *                               Новые посты канала с вещами: в подпись альбома бот дописывает ссылку «🛍 Открыть в каталоге»,
- *                               под одиночным постом ставит кнопку (бот — админ канала с правом редактировать сообщения)
  * POST /bot/pin               — опубликовать в канале пост «RELIKT — каталог» с кнопкой и закрепить его (кнопка в админке;
  *                               бот — админ канала с правами публиковать и закреплять сообщения)
  * GET  /health                — проверка конфигурации без выдачи секретов
@@ -363,44 +361,10 @@ async function webhookSecret(env){
 async function shopSettings(env){
   try{return (await (await fetch(shopUrl(env)+'data/store.json?t='+Date.now())).json()).settings||{};}catch(e){return {};}
 }
-/* prices in the channel are written with keycap digits (🕖 = 0) or ₽: such a post is a piece for sale */
-const looksLikeItem=text=>/(\d\uFE0F?\u20E3|\u{1F556}|₽|руб)/u.test(String(text||''));
-const ITEM_LINK='Открыть в каталоге';
-/* A new post with a piece in the shop channel. Telegram allows no buttons under an album, so the album caption
-   gets a line with a link instead; a single post gets a real button. Both open the Mini App on this piece
-   (startapp=post_<n>: the piece imported from that post, or the catalog while it is not imported yet). */
-async function channelPost(p,env){
-  if(!p||!p.chat||p.reply_markup)return;                       // posts that already have buttons are left alone
-  const text=p.caption!=null?p.caption:p.text;
-  if(!looksLikeItem(text)||String(text).includes(ITEM_LINK))return;
-  const s=await shopSettings(env);
-  if(!s.channel||String(p.chat.username||'').toLowerCase()!==String(s.channel).toLowerCase())return;
-  const app=/^https:\/\/t\.me\/[A-Za-z0-9_]{4,32}(\/[A-Za-z0-9_]{3,30})?$/.test(String(s.miniAppUrl||''))?s.miniAppUrl:'';
-  if(!app)return;
-  const link=app+'?startapp=post_'+p.message_id;
-  let res;
-  if(p.media_group_id){
-    // each photo of an album arrives on its own; only the one with the caption is edited
-    if(p.caption==null)return;
-    const tail='\n\n🛍 '+ITEM_LINK;
-    if((p.caption+tail).length>1024)return;                     // Telegram's caption limit
-    const entities=(p.caption_entities||[]).concat([{type:'text_link',offset:p.caption.length+tail.length-ITEM_LINK.length,length:ITEM_LINK.length,url:link}]);
-    res=await tgApi(env,'editMessageCaption',{chat_id:p.chat.id,message_id:p.message_id,caption:p.caption+tail,caption_entities:entities});
-  }else{
-    res=await tgApi(env,'editMessageReplyMarkup',{chat_id:p.chat.id,message_id:p.message_id,reply_markup:{inline_keyboard:[[{text:'Открыть каталог',url:link}]]}});
-  }
-  if(!res.ok)await channelWarning(env,res.description);
-}
-/* the bot could not edit a channel post: tell the manager, at most once a day */
-async function channelWarning(env,why){
-  if(env.ORDERS){if(await env.ORDERS.get('warn:channel'))return;await env.ORDERS.put('warn:channel','1',{expirationTtl:86400});}
-  await tgSend(env,'⚠️ Бот не смог добавить ссылку на каталог к посту в канале ('+(why||'нет доступа')+'). Проверьте, что бот — админ канала с правом редактировать сообщения.').catch(()=>{});
-}
 async function telegramUpdate(request,env){
   if(request.method!=='POST'||!env.BOT_TOKEN)return new Response('ok');
   if(request.headers.get('X-Telegram-Bot-Api-Secret-Token')!==await webhookSecret(env))return new Response('forbidden',{status:403});
   const u=await request.json().catch(()=>null);
-  if(u&&u.channel_post){await channelPost(u.channel_post,env);return new Response('ok');}
   const m=u&&u.message;
   // only private chats and only the commands below: the manager's own chat with the bot stays quiet
   if(!m||!m.chat||m.chat.type!=='private'||typeof m.text!=='string')return new Response('ok');
@@ -428,7 +392,7 @@ async function botSetup(request,env){
   const info=await tgApi(env,'getWebhookInfo');
   const before=info.result&&info.result.url||'';
   // presses of Start that waited while nobody listened are answered now (Telegram keeps them up to a day)
-  const set=await tgApi(env,'setWebhook',{url:hook,secret_token:await webhookSecret(env),allowed_updates:['message','channel_post'],drop_pending_updates:false});
+  const set=await tgApi(env,'setWebhook',{url:hook,secret_token:await webhookSecret(env),allowed_updates:['message'],drop_pending_updates:false});
   if(!set.ok)return json({ok:false,error:set.description||'telegram_error'},502);
   await tgApi(env,'setMyCommands',{commands:[{command:'start',description:'Открыть магазин'},{command:'catalog',description:'Каталог'}]});
   let menuSet=false;
