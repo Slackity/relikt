@@ -35,6 +35,8 @@
 }
 
 *, *::before, *::after { box-sizing: border-box; }
+/* a double tap must not zoom the page (quick taps on + / − and buttons on iPhone); pinch zoom still works */
+* { touch-action: manipulation; }
 
 .skip-intro { --t0: 0s; }
 html.menu-open { overflow: hidden; }
