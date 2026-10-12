@@ -105,10 +105,10 @@
           if (!left) { ui.openCart(); return; }          // every unit is already in the cart
           var q = RK.clamp(cardQty[p.id] || 1, 1, left);
           cardQty[p.id] = 1;
-          ui.addToCart(p, (p.sizes || [])[0] || '', q);
+          added(e.currentTarget, ui.addToCart(p, (p.sizes || [])[0] || '', q));
           return;
         }
-        ui.addToCart(p, (p.sizes || [])[0] || '', 1);
+        added(e.currentTarget, ui.addToCart(p, (p.sizes || [])[0] || '', 1));
       }
     }, RK.svg(PLUS, 'card__add-icon')) : null;
     var el = h('article', { class: 'card' + (p.availability === 'sold' ? ' is-sold' : p.availability === 'reserved' ? ' is-reserved' : ''), 'data-id': p.id },
@@ -125,6 +125,12 @@
     RK.ornaments(el);
     return el;
   };
+  // the + pops with a ring once the piece is really in the cart (not when the cart only opens)
+  function added(btn, r) {
+    if (!btn || r === 'exists') return;
+    btn.classList.remove('is-added'); void btn.offsetWidth; btn.classList.add('is-added');
+    setTimeout(function () { btn.classList.remove('is-added'); }, 700);
+  }
   function qtyBox(p) { var box = h('div', { class: 'stepper stepper--card', 'data-qty-for': p.id, role: 'group', 'aria-label': RK.t('product.qty') }); drawCardQty(box, p); return box; }
 
 
