@@ -85,6 +85,7 @@
       'set.delivery': 'Службы доставки', 'set.deliveryHint': 'Показываются списком при оформлении заказа.', 'set.discounts': 'Скидки-галочки', 'set.discountsHint': 'Покупатель отмечает подходящие в корзине, менеджер проверяет. Не дублируйте их промокодами, иначе скидка сложится дважды.',
       'set.orders': 'Приём заказов', 'set.ordersHint': 'Адрес Cloudflare Worker: он пересылает заказ и чек менеджеру в Telegram. Без адреса покупатель отправляет заказ сообщением сам.',
       'set.webhook': 'Адрес Worker', 'set.secret': 'Секрет заказа (APP_SECRET)', 'set.secretHint': 'Нужен только для заказов с обычного сайта, не из Telegram. Он виден в данных сайта, поэтому защищает слабо. Если оставить пустым, через Worker принимаются только заказы из мини-аппа (их Telegram подписывает сам), а с сайта заказ уходит сообщением менеджеру.',
+      'set.pin': 'Закрепить пост с каталогом', 'set.pinHint': 'Бот опубликует в канале пост «RELIKT — каталог» с кнопкой «Открыть каталог» (она открывает мини-апп) и тихо закрепит его. Бот должен быть админом канала с правами публиковать и закреплять сообщения.', 'set.pinQ': 'Опубликовать в канале пост с кнопкой «Открыть каталог» и закрепить его?', 'set.pinOk': 'Готово: пост опубликован и закреплён.', 'set.pinNoPin': 'Пост опубликован, но закрепить не вышло — закрепите вручную.', 'set.pinNeed': 'Сначала заполните «Канал» и «Ссылку на мини-апп» в панели Telegram и сохраните.', 'set.pinRights': 'Telegram не дал опубликовать пост: проверьте, что бот — админ канала с правом публиковать сообщения.',
       'set.bot': 'Подключить бота', 'set.botHint': 'Чтобы бот отвечал на /start кнопкой «Открыть каталог». Нажать один раз после обновления Worker; повторно — если меняли адрес Worker или токен бота.', 'set.botOk': 'Готово: бот отвечает на /start и открывает каталог.', 'set.botMenu': 'Кнопка меню «Каталог» добавлена.', 'set.botPrev': 'Раньше сообщения бота уходили на другой адрес:',
       'set.check': 'Проверить Worker', 'set.checkOld': 'Worker отвечает, но это старая версия: заказы не сохраняются и вещи не отмечаются. Обновите его код (README).', 'set.checkMissing': 'Worker новый, но в нём не настроено:', 'set.checkAll': 'Worker на связи: Telegram, заказы и наличие в каталоге настроены.', 'set.webhookBad': 'Адрес Worker должен начинаться с https://', 'set.checkOk': 'Worker на связи, Telegram настроен.', 'set.checkNoTg': 'Worker отвечает, но в нём не заданы BOT_TOKEN и CHAT_ID.', 'set.checkFail': 'Worker не отвечает по этому адресу.',
       'set.access': 'Доступ', 'set.accessHint': 'Telegram ID тех, кому в мини-аппе видна кнопка «Админка» (через запятую). Свой ID можно узнать у @userinfobot. Для входа всё равно нужен GitHub-токен.',
@@ -135,6 +136,7 @@
       'set.delivery': 'Delivery services', 'set.deliveryHint': 'Shown as a dropdown at checkout.', 'set.discounts': 'Tick-box discounts', 'set.discountsHint': 'Buyers tick the ones that apply in the cart and the manager checks them. Do not duplicate them with promo codes or the discount adds up twice.',
       'set.orders': 'Order intake', 'set.ordersHint': 'Address of the Cloudflare Worker that forwards the order and receipt to the manager on Telegram. Without it the buyer sends the order as a message.',
       'set.webhook': 'Worker address', 'set.secret': 'Order secret (APP_SECRET)', 'set.secretHint': 'Only needed for orders from the plain website, not from Telegram. It is readable in the site data, so it protects weakly. Leave it empty and the Worker only accepts mini-app orders (signed by Telegram); website orders then go to the manager as a message.',
+      'set.pin': 'Pin a catalog post', 'set.pinHint': 'The bot publishes a “RELIKT — catalog” post with an “Open catalog” button (it opens the mini app) in the channel and pins it silently. The bot must be a channel admin allowed to post and pin messages.', 'set.pinQ': 'Publish a post with the “Open catalog” button in the channel and pin it?', 'set.pinOk': 'Done: the post is published and pinned.', 'set.pinNoPin': 'The post is published but could not be pinned — pin it by hand.', 'set.pinNeed': 'Fill in “Channel” and “Mini App link” in the Telegram panel and save first.', 'set.pinRights': 'Telegram refused the post: check that the bot is a channel admin allowed to post messages.',
       'set.bot': 'Connect the bot', 'set.botHint': 'Makes the bot answer /start with an “Open catalog” button. Press once after updating the Worker; again if the Worker address or the bot token changes.', 'set.botOk': 'Done: the bot answers /start and opens the catalog.', 'set.botMenu': 'A “Catalog” menu button was added.', 'set.botPrev': 'Before, the bot’s messages went to another address:',
       'set.check': 'Test the Worker', 'set.checkOld': 'The Worker answers but it is the old version: orders are not kept and pieces are not marked. Update its code (README).', 'set.checkMissing': 'The Worker is new but these are not set up:', 'set.checkAll': 'The Worker answers: Telegram, orders and catalog availability are set up.', 'set.webhookBad': 'The Worker address must start with https://', 'set.checkOk': 'The Worker answers and Telegram is set up.', 'set.checkNoTg': 'The Worker answers but BOT_TOKEN and CHAT_ID are not set in it.', 'set.checkFail': 'No Worker answers at this address.',
       'set.access': 'Access', 'set.accessHint': 'Telegram IDs of the people who see the Admin button in the mini app (comma separated). @userinfobot shows your ID. Signing in still needs the GitHub token.',
@@ -1044,12 +1046,29 @@
         botOut.textContent = t('set.botOk') + (r.menuSet ? ' ' + t('set.botMenu') : '') + (r.previous ? ' ' + t('set.botPrev') + ' ' + r.previous : '');
       }, function (e) { botBtn.disabled = false; botOut.textContent = e.code === 'telegram_not_configured' ? t('set.checkNoTg') : orderError(e); });
     } }, h('span', { text: t('set.bot') }));
+    var pinOut = h('span', { class: 'muted', style: 'font-size:13px' });
+    var pinBtn = h('button', { class: 'btn btn--sm', type: 'button', onclick: function () {
+      if (!workerBase()) { pinOut.textContent = t('ord.noWorker'); return; }
+      confirmBox(t('set.pinQ'), false).then(function (ok) {
+        if (!ok) return;
+        pinBtn.disabled = true; pinOut.textContent = '…';
+        worker('/bot/pin').then(function (r) {
+          pinBtn.disabled = false;
+          pinOut.textContent = r.pinned ? t('set.pinOk') : t('set.pinNoPin') + (r.pinError ? ' (' + r.pinError + ')' : '');
+        }, function (e) {
+          pinBtn.disabled = false;
+          pinOut.textContent = e.code === 'no_channel_or_link' ? t('set.pinNeed') : e.status === 502 ? t('set.pinRights') + ' (' + e.message + ')' : orderError(e);
+        });
+      });
+    } }, h('span', { text: t('set.pin') }));
     main.appendChild(panel(t('set.orders'), t('set.ordersHint'),
       h('div', { class: 'row row--2' }, fld(t('set.webhook'), inp('orderWebhook', s.orderWebhook, { type: 'url', placeholder: 'https://…workers.dev', spellcheck: 'false' })),
         fld(t('set.secret'), inp('orderSecret', s.orderSecret, { spellcheck: 'false', autocomplete: 'off' }), t('set.secretHint'))),
       h('div', { class: 'head__actions', style: 'align-items:center' }, checkBtn, checkOut),
       h('p', { class: 'panel__hint', text: t('set.botHint') }),
-      h('div', { class: 'head__actions', style: 'align-items:center' }, botBtn, botOut)));
+      h('div', { class: 'head__actions', style: 'align-items:center' }, botBtn, botOut),
+      h('p', { class: 'panel__hint', text: t('set.pinHint') }),
+      h('div', { class: 'head__actions', style: 'align-items:center' }, pinBtn, pinOut)));
     main.appendChild(panel(t('set.access'), t('set.accessHint'),
       h('div', { class: 'row row--2' }, fld(t('set.adminIds'), inp('adminIds', (s.adminIds || []).join(', '), { inputmode: 'numeric', spellcheck: 'false' })),
         tgUser ? fld(t('set.yourId'), h('input', { type: 'text', readonly: true, value: String(tgUser.id) })) : null)));

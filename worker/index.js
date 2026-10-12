@@ -13,6 +13,8 @@
  * POST /yandex/pickup-points  — реальные ПВЗ Яндекс Доставки
  * POST /tg                    — сообщения боту от Telegram (webhook): на /start бот присылает кнопку «Открыть каталог»
  * POST /bot/setup             — подключить webhook бота к этому Worker (кнопка в админке, нужен GitHub-токен админки)
+ * POST /bot/pin               — опубликовать в канале пост «RELIKT — каталог» с кнопкой и закрепить его (кнопка в админке;
+ *                               бот — админ канала с правами публиковать и закреплять сообщения)
  * GET  /health                — проверка конфигурации без выдачи секретов
  *
  * Secrets / settings:
@@ -55,6 +57,7 @@ export default {
       if(url.pathname==='/yandex/pickup-points') return await yandexPickupPoints(request,env);
       if(url.pathname==='/tg') return await telegramUpdate(request,env);
       if(url.pathname==='/bot/setup') return await botSetup(request,env);
+      if(url.pathname==='/bot/pin') return await botPin(request,env);
       if(url.pathname==='/hold') return await hold(request,env);
       if(url.pathname==='/order') return await order(request,env);
       if(url.pathname.startsWith('/orders/')) return await adminOrders(request,env,url.pathname.slice(8));
@@ -355,6 +358,9 @@ async function tgApi(env,method,payload){
 async function webhookSecret(env){
   return hex(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode('relikt-webhook:'+env.BOT_TOKEN)))).slice(0,48);
 }
+async function shopSettings(env){
+  try{return (await (await fetch(shopUrl(env)+'data/store.json?t='+Date.now())).json()).settings||{};}catch(e){return {};}
+}
 async function telegramUpdate(request,env){
   if(request.method!=='POST'||!env.BOT_TOKEN)return new Response('ok');
   if(request.headers.get('X-Telegram-Bot-Api-Secret-Token')!==await webhookSecret(env))return new Response('forbidden',{status:403});
@@ -364,8 +370,7 @@ async function telegramUpdate(request,env){
   if(!m||!m.chat||m.chat.type!=='private'||typeof m.text!=='string')return new Response('ok');
   const cmd=m.text.trim().match(/^\/(start|catalog|help)(?:@\w+)?(?:\s+(\S+))?/i);
   if(!cmd)return new Response('ok');
-  let s={};
-  try{s=(await (await fetch(shopUrl(env)+'data/store.json?t='+Date.now())).json()).settings||{};}catch(e){}
+  const s=await shopSettings(env);
   // t.me/<bot>?start=p_<product> — a link to one piece
   const product=/^p_[A-Za-z0-9_-]{1,100}$/.test(cmd[2]||'')?cmd[2].slice(2):'';
   const name=m.from&&m.from.first_name?', '+String(m.from.first_name).slice(0,40):'';
@@ -397,6 +402,22 @@ async function botSetup(request,env){
     menuSet=!!r.ok;
   }
   return json({ok:true,webhook:hook,previous:before&&before!==hook?before:'',menuSet});
+}
+/* one tap in the admin panel: a post with the catalog button in the channel, pinned silently.
+   In a channel a button cannot be a Mini App button, so it is a t.me link that opens the Mini App. */
+async function botPin(request,env){
+  if(request.method!=='POST')return json({ok:false,error:'method'},405);
+  if(!(await isAdmin(request,env)))return json({ok:false,error:'forbidden'},403);
+  if(!env.BOT_TOKEN)return json({ok:false,error:'telegram_not_configured'},501);
+  const s=await shopSettings(env);
+  const app=/^https:\/\/t\.me\/[A-Za-z0-9_]{4,32}(\/[A-Za-z0-9_]{3,30})?$/.test(String(s.miniAppUrl||''))?s.miniAppUrl:'';
+  if(!s.channel||!app)return json({ok:false,error:'no_channel_or_link'},400);
+  const sent=await tgApi(env,'sendMessage',{chat_id:'@'+s.channel,disable_notification:true,
+    text:'RELIKT — каталог\n\nВсе вещи в наличии и под заказ, корзина и оформление заказа — в приложении. Жми кнопку ниже.'+(s.manager?'\nВопросы — @'+s.manager:''),
+    reply_markup:{inline_keyboard:[[{text:'Открыть каталог',url:app+'?startapp'}]]}});
+  if(!sent.ok)return json({ok:false,error:sent.description||'telegram_error'},502);
+  const pin=await tgApi(env,'pinChatMessage',{chat_id:'@'+s.channel,message_id:sent.result.message_id,disable_notification:true});
+  return json({ok:true,pinned:!!pin.ok,pinError:pin.ok?'':pin.description||''});
 }
 
 /* ---------- orders for the admin panel ---------- */
