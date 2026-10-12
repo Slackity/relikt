@@ -13,8 +13,8 @@
  * POST /yandex/pickup-points  — реальные ПВЗ Яндекс Доставки
  * POST /tg                    — сообщения боту от Telegram (webhook): на /start бот присылает кнопку «Открыть каталог»
  * POST /bot/setup             — подключить webhook бота к этому Worker (кнопка в админке, нужен GitHub-токен админки)
- *                               Новый пост канала с вещью (фото + цена): бот сразу пишет под ним «⬆️ Название · цена»
- *                               с кнопкой «🛍 Открыть в каталоге» — под альбомом Telegram кнопки не разрешает
+ *                               Новый пост канала с вещью (фото + цена): бот сразу пишет под ним «Название · цена»
+ *                               с кнопкой «Открыть в каталоге» — под альбомом Telegram кнопки не разрешает
  * POST /bot/pin               — опубликовать в канале пост «RELIKT — каталог» с кнопкой и закрепить его (кнопка в админке;
  *                               бот — админ канала с правами публиковать и закреплять сообщения)
  * GET  /health                — проверка конфигурации без выдачи секретов
@@ -374,7 +374,7 @@ function postPrice(text){
   return v>=100?v:null;
 }
 /* A new post with a piece in the shop channel. Telegram allows no buttons under an album, so the bot posts a short
-   message right after it — "⬆️ Новая футболка Ed Hardy · 3 200 ₽" — with an "Open in catalog" button. The button
+   message right after it — "Новая футболка Ed Hardy · 3 200 ₽" — with an "Open in catalog" button. The button
    opens the Mini App on this piece (startapp=post_<n>: the piece imported from that post, the catalog until then).
    The import skips it: it has no photos. Bots get no updates about their own posts, so this never loops. */
 async function channelPost(p,env){
@@ -392,8 +392,8 @@ async function channelPost(p,env){
   const line=(text.split('\n').map(l=>l.trim()).filter(Boolean)[0]||'').replace(/\s+/g,' ');
   const title=postPrice(line)!=null?'':line.length>60?line.slice(0,59)+'…':line;
   const label=[title&&title.charAt(0).toUpperCase()+title.slice(1),String(price).replace(/\B(?=(\d{3})+(?!\d))/g,' ')+' ₽',/под\s+заказ/i.test(text)?'под заказ':''].filter(Boolean).join(' · ');
-  const res=await tgApi(env,'sendMessage',{chat_id:p.chat.id,text:'⬆️ '+label,disable_notification:true,
-    reply_markup:{inline_keyboard:[[{text:'🛍 Открыть в каталоге',url:app+'?startapp=post_'+p.message_id}]]}});
+  const res=await tgApi(env,'sendMessage',{chat_id:p.chat.id,text:label,disable_notification:true,
+    reply_markup:{inline_keyboard:[[{text:'Открыть в каталоге',url:app+'?startapp=post_'+p.message_id}]]}});
   if(!res.ok){if(env.ORDERS)await env.ORDERS.delete(key);await channelWarning(env,res.description);}
 }
 /* the bot could not post in the channel: tell the manager, at most once a day */
