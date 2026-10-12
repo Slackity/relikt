@@ -141,6 +141,12 @@
   };
   RK.minutesLeft = function (until) { return Math.max(1, Math.ceil((until - Date.now()) / 60000)); };
   RK.isRecent = function (p) { return Date.now() - new Date(p.createdAt).getTime() < 14 * 864e5; };
+  /* back: to the page the buyer came from (the catalog keeps its scroll and filters), else to the fallback page */
+  RK.back = function (fallback) {
+    var ref = doc.referrer && doc.referrer.indexOf(location.origin) === 0;
+    if (ref && history.length > 1) history.back();
+    else location.href = fallback || 'index.html';
+  };
   RK.productUrl = function (p) { return 'product.html?id=' + encodeURIComponent(p.slug || p.id); };
   /* link to share a product: opens it inside the Telegram Mini App when its link is set in the admin panel, otherwise the web page */
   RK.shareUrl = function (p) {

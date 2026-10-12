@@ -93,9 +93,7 @@
       app.BackButton.onClick(function () {
         RK.haptic('light');
         if (RK.overlay.closeTop()) return;
-        var ref = doc.referrer && doc.referrer.indexOf(location.origin) === 0;
-        if (ref && history.length > 1) history.back();
-        else location.href = 'index.html';
+        RK.back('index.html');
       });
     });
     RK.on('overlay', syncBack);

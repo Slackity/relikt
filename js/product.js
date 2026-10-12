@@ -222,6 +222,8 @@
             h('div', { class: 'acc__body' }, h('p', { text: RK.t('terms.a' + i) })));
         })));
 
+    root.appendChild(h('a', { class: 'pdp-back', href: 'catalog.html', 'aria-label': RK.lang === 'en' ? 'Back' : 'Назад',
+      onclick: function (e) { e.preventDefault(); RK.back('catalog.html'); } }));
     root.appendChild(h('article', { class: 'pdp', 'data-id': p.id }, gallery(p), info));
     if (photoIdx) requestAnimationFrame(function () { syncGallery('jump'); });
     RK.ornaments(root);
