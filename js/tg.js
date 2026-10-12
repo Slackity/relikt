@@ -39,8 +39,17 @@
     RK.tgInitData = app.initData;
     root.classList.add('in-tg');
 
-    /* opened from a product link (t.me/<bot>?startapp=p_<slug>): go to that product once */
+    /* opened from a product link (t.me/<bot>?startapp=p_<slug>): go to that product once;
+       from the link in a channel post (startapp=post_<n>): the piece imported from that post, if it is in the catalog */
     var start = app.initDataUnsafe && app.initDataUnsafe.start_param;
+    if (start && /^post_\d{1,9}$/.test(start)) {
+      var once = 'rk-start-' + start, first = false;
+      try { first = !sessionStorage.getItem(once); sessionStorage.setItem(once, '1'); } catch (e) { /* storage blocked */ }
+      if (first) RK.on('data', function (d) {
+        var n = +start.slice(5), p = (d.products || []).filter(function (x) { return x.tgPost === n; })[0];
+        if (p) location.replace(RK.productUrl(p));
+      });
+    }
     if (start && /^p_[A-Za-z0-9_-]{1,100}$/.test(start)) {
       var mark = 'rk-start-' + start, fresh = false;
       try { fresh = !sessionStorage.getItem(mark); sessionStorage.setItem(mark, '1'); } catch (e) { /* storage blocked */ }

@@ -194,7 +194,7 @@ function postToProduct(post) {
   }
 
   for (const line of lines.slice(1)) {
-    if (/^#/.test(line) || /купить\s*\/\s*спросить/i.test(line) || /продано/i.test(line) || /^[\p{Extended_Pictographic}\s️⃣\d]+$/u.test(line)) continue;
+    if (/^#/.test(line) || /купить\s*\/\s*спросить/i.test(line) || /продано/i.test(line) || /открыть в каталоге/i.test(line) || /^[\p{Extended_Pictographic}\s️⃣\d]+$/u.test(line)) continue;
     if (/доп\.?\s*фото/i.test(line)) { morePhotos = true; continue; }
     const paren = line.match(/^\((.*)\)$/);
     if (paren) {
