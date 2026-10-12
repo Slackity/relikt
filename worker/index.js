@@ -13,6 +13,8 @@
  * POST /yandex/pickup-points  — реальные ПВЗ Яндекс Доставки
  * POST /tg                    — сообщения боту от Telegram (webhook): на /start бот присылает кнопку «Открыть каталог»
  * POST /bot/setup             — подключить webhook бота к этому Worker (кнопка в админке, нужен GitHub-токен админки)
+ *                               Админ магазина (settings.adminIds) присылает боту текст, GIF, фото или видео — бот показывает
+ *                               пост с кнопкой «Открыть каталог» и по кнопке «Опубликовать» отправляет его в канал
  *                               Новый пост канала с вещью (фото + цена): бот сразу пишет под ним «Название · цена»
  *                               с кнопкой «Открыть в каталоге» — под альбомом Telegram кнопки не разрешает
  * POST /bot/pin               — опубликовать в канале пост «RELIKT — каталог» с кнопкой и закрепить его (кнопка в админке;
@@ -401,22 +403,92 @@ async function channelWarning(env,why){
   if(env.ORDERS){if(await env.ORDERS.get('warn:channel'))return;await env.ORDERS.put('warn:channel','1',{expirationTtl:86400});}
   await tgSend(env,'⚠️ Бот не смог отправить в канал кнопку «Открыть в каталоге» под постом ('+(why||'нет доступа')+'). Проверьте, что бот — админ канала с правом публиковать сообщения.').catch(()=>{});
 }
+/* ---------- channel posts with buttons, made through the bot ----------
+   A shop admin (settings.adminIds) sends the bot a message: text, or one GIF, photo or video with a caption. The bot answers
+   with the post exactly as it will look in the channel, with an "Open catalog" button that opens the Mini App, and asks
+   before publishing. Own buttons: last lines "Кнопка: Текст" (opens the Mini App) or "Кнопка: Текст - https://…". */
+const BUTTON_LINE=/^кнопка\s*:\s*(.+?)(?:\s+[-—–|]\s+((?:https?:\/\/)?t\.me\/\S+|https?:\/\/\S+))?\s*$/i;
+const isShopAdmin=(s,user)=>!!user&&!user.is_bot&&(s.adminIds||[]).map(String).indexOf(String(user.id))>=0;
+function draftOf(m,app){
+  const media=m.animation?'animation':m.video?'video':m.photo?'photo':m.document?'document':'';
+  const lines=String((media?m.caption:m.text)||'').split('\n'), rows=[];
+  while(lines.length){
+    const last=lines[lines.length-1].trim();
+    if(!last){lines.pop();continue;}
+    const b=last.match(BUTTON_LINE);
+    if(!b)break;
+    rows.unshift([{text:b[1].slice(0,64),url:!b[2]?app+'?startapp':/^https?:\/\//i.test(b[2])?b[2]:'https://'+b[2]}]);
+    lines.pop();
+  }
+  if(!rows.length)rows.push([{text:'Открыть каталог',url:app+'?startapp'}]);
+  const body=lines.join('\n').replace(/\s+$/,'');
+  // formatting (bold, links…) stays; whatever sat on the removed button lines goes with them
+  const entities=((media?m.caption_entities:m.entities)||[]).filter(e=>e.offset<body.length).map(e=>({...e,length:Math.min(e.length,body.length-e.offset)}));
+  return {media,body,entities,rows:rows.slice(0,8),from:m.chat.id,msg:m.message_id,preview:m.link_preview_options||null,above:!!m.show_caption_above_media};
+}
+function sendDraft(env,chat,d,silent){
+  const base={chat_id:chat,disable_notification:!!silent,reply_markup:{inline_keyboard:d.rows}};
+  if(!d.media)return tgApi(env,'sendMessage',{...base,text:d.body,entities:d.entities,...(d.preview?{link_preview_options:d.preview}:{})});
+  // the GIF / photo / video is copied from the admin's chat with the bot: no "forwarded from", no re-upload
+  return tgApi(env,'copyMessage',{...base,from_chat_id:d.from,message_id:d.msg,caption:d.body,caption_entities:d.entities,...(d.above?{show_caption_above_media:true}:{})});
+}
+async function adminDraft(m,env){
+  if(typeof m.text==='string'&&m.text.startsWith('/'))return;
+  const s=await shopSettings(env);
+  if(!isShopAdmin(s,m.from))return;                               // everyone else's messages stay unanswered, as before
+  const say=text=>tgApi(env,'sendMessage',{chat_id:m.chat.id,text,reply_parameters:{message_id:m.message_id,allow_sending_without_reply:true}});
+  const app=/^https:\/\/t\.me\/[A-Za-z0-9_]{4,32}(\/[A-Za-z0-9_]{3,30})?$/.test(String(s.miniAppUrl||''))?s.miniAppUrl:'';
+  if(!s.channel||!app)return say('Сначала заполните «Канал» и «Ссылку на мини-апп» в админке: Настройки → Telegram.');
+  if(m.media_group_id){if(m.caption!=null)await say('Под альбомом Telegram кнопки не разрешает. Пришлите одно фото, GIF или видео с текстом.');return;}
+  const d=draftOf(m,app);
+  if(!d.media&&typeof m.text!=='string')return say('Пришлите текст, GIF, фото или видео — сделаю из него пост с кнопкой.');
+  if(!d.media&&!d.body)return say('В посте нет текста: напишите его над строкой «Кнопка: …».');
+  if(!env.ORDERS)return say('Для публикации через бота Worker нужно хранилище ORDERS (README).');
+  const shown=await sendDraft(env,m.chat.id,d,true);
+  if(!shown.ok)return say('Не получилось собрать пост: '+(shown.description||'ошибка Telegram'));
+  await env.ORDERS.put('draft:'+m.chat.id+':'+m.message_id,JSON.stringify(d),{expirationTtl:86400});
+  await tgApi(env,'sendMessage',{chat_id:m.chat.id,text:'Так пост будет выглядеть в канале @'+s.channel+'. Опубликовать?\n\n'+
+    'Свои кнопки — последними строками поста: «Кнопка: Текст» открывает мини-апп, «Кнопка: Текст - ссылка» ведёт по ссылке. Одна строка — одна кнопка.',
+    reply_markup:{inline_keyboard:[[{text:'Опубликовать',callback_data:'pub:'+m.message_id+':0'},{text:'Без звука',callback_data:'pub:'+m.message_id+':1'}],[{text:'Отмена',callback_data:'del:'+m.message_id}]]}});
+}
+async function draftAction(q,env){
+  const answer=(text,alert)=>tgApi(env,'answerCallbackQuery',{callback_query_id:q.id,...(text?{text,show_alert:!!alert}:{})});
+  const a=String(q.data||'').match(/^(pub|del):(\d{1,12})(?::([01]))?$/);
+  if(!a||!q.message||!q.message.chat)return answer();
+  const s=await shopSettings(env);
+  if(!isShopAdmin(s,q.from))return answer('Нет доступа',true);
+  const chat=q.message.chat.id, key='draft:'+chat+':'+a[2];
+  const done=text=>tgApi(env,'editMessageText',{chat_id:chat,message_id:q.message.message_id,text,link_preview_options:{is_disabled:true}});
+  const d=env.ORDERS&&await env.ORDERS.get(key,'json');
+  if(!d){await answer('Уже опубликован или устарел');return done('Этот черновик уже опубликован или устарел. Пришлите пост заново.');}
+  await env.ORDERS.delete(key);                                  // a second tap must not post twice
+  if(a[1]==='del'){await answer('Отменено');return done('Отменено, в канал ничего не ушло.');}
+  const sent=s.channel?await sendDraft(env,'@'+s.channel,d,a[3]==='1'):{ok:false,description:'в админке не указан канал'};
+  if(!sent.ok){
+    await env.ORDERS.put(key,JSON.stringify(d),{expirationTtl:86400});  // keep the draft: fix the rights and tap again
+    return answer('Telegram не дал опубликовать ('+(sent.description||'ошибка')+'). Проверьте, что бот — админ канала с правом публиковать сообщения.',true);
+  }
+  await answer('Опубликовано');
+  return done('Опубликовано'+(a[3]==='1'?' без звука':'')+': https://t.me/'+s.channel+'/'+sent.result.message_id);
+}
 async function telegramUpdate(request,env){
   if(request.method!=='POST'||!env.BOT_TOKEN)return new Response('ok');
   if(request.headers.get('X-Telegram-Bot-Api-Secret-Token')!==await webhookSecret(env))return new Response('forbidden',{status:403});
   const u=await request.json().catch(()=>null);
   if(u&&u.channel_post){await channelPost(u.channel_post,env);return new Response('ok');}
+  if(u&&u.callback_query){await draftAction(u.callback_query,env);return new Response('ok');}
   const m=u&&u.message;
-  // only private chats and only the commands below: the manager's own chat with the bot stays quiet
-  if(!m||!m.chat||m.chat.type!=='private'||typeof m.text!=='string')return new Response('ok');
-  const cmd=m.text.trim().match(/^\/(start|catalog|help)(?:@\w+)?(?:\s+(\S+))?/i);
-  if(!cmd)return new Response('ok');
+  // only private chats: the commands below for everyone, other messages only from the shop admins (posts with buttons)
+  if(!m||!m.chat||m.chat.type!=='private')return new Response('ok');
+  const cmd=typeof m.text==='string'&&m.text.trim().match(/^\/(start|catalog|help)(?:@\w+)?(?:\s+(\S+))?/i);
+  if(!cmd){await adminDraft(m,env);return new Response('ok');}
   const s=await shopSettings(env);
   // t.me/<bot>?start=p_<product> — a link to one piece
   const product=/^p_[A-Za-z0-9_-]{1,100}$/.test(cmd[2]||'')?cmd[2].slice(2):'';
   const name=m.from&&m.from.first_name?', '+String(m.from.first_name).slice(0,40):'';
   const text='Привет'+name+'! Это RELIKT — твой личный импорт.\n\nКаталог, корзина и оформление заказа — в приложении: жми кнопку ниже.'+
-    (s.manager?'\nВопросы — менеджеру @'+s.manager+'.':'');
+    (s.manager?'\nВопросы — менеджеру @'+s.manager+'.':'')+
+    (isShopAdmin(s,m.from)&&s.channel?'\n\nВы админ магазина: пришлите мне текст, GIF, фото или видео — опубликую в @'+s.channel+' пост с кнопкой «Открыть каталог».':'');
   const rows=[];
   if(product)rows.push([{text:'Открыть вещь',web_app:{url:shopUrl(env)+'product.html?id='+encodeURIComponent(product)}}]);
   rows.push([{text:'Открыть каталог',web_app:{url:shopUrl(env)}}]);
@@ -433,7 +505,7 @@ async function botSetup(request,env){
   const info=await tgApi(env,'getWebhookInfo');
   const before=info.result&&info.result.url||'';
   // presses of Start that waited while nobody listened are answered now (Telegram keeps them up to a day)
-  const set=await tgApi(env,'setWebhook',{url:hook,secret_token:await webhookSecret(env),allowed_updates:['message','channel_post'],drop_pending_updates:false});
+  const set=await tgApi(env,'setWebhook',{url:hook,secret_token:await webhookSecret(env),allowed_updates:['message','channel_post','callback_query'],drop_pending_updates:false});
   if(!set.ok)return json({ok:false,error:set.description||'telegram_error'},502);
   await tgApi(env,'setMyCommands',{commands:[{command:'start',description:'Открыть магазин'},{command:'catalog',description:'Каталог'}]});
   let menuSet=false;
