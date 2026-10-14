@@ -323,18 +323,21 @@
       "reservedUntil": "",
       "stock": 1,
       "condition": "new",
-      "sizes": [],
+      "sizes": [
+        "M"
+      ],
       "descRu": "",
       "descEn": "",
       "images": [
         "/uploads/tg228-1.webp",
-        "/uploads/tg228-2.webp"
+        "/uploads/tg228-2.webp",
+        "/uploads/mv86ah83-efdcdf76.webp"
       ],
       "visible": true,
       "featured": false,
       "tgPost": 228,
       "createdAt": "2026-10-14T12:12:01+00:00",
-      "updatedAt": "2026-10-14T13:39:58.988Z",
+      "updatedAt": "2026-10-14T13:56:02.768Z",
       "slug": "zip-hoodie-hollister-228"
     },
     {
