@@ -169,18 +169,24 @@
       "reservedUntil": "",
       "stock": 1,
       "condition": "",
-      "sizes": [],
+      "sizes": [
+        "XL"
+      ],
       "descRu": "",
       "descEn": "",
       "images": [
         "/uploads/tg241-1.webp",
-        "/uploads/tg241-2.webp"
+        "/uploads/tg241-2.webp",
+        "/uploads/mv86ivhg-e8d8f6cc.webp",
+        "/uploads/mv86ixbv-52c48b6c.webp",
+        "/uploads/mv86izk4-08753e59.webp",
+        "/uploads/mv86j18r-12a606b1.webp"
       ],
       "visible": true,
       "featured": false,
       "tgPost": 241,
       "createdAt": "2026-10-14T13:31:03+00:00",
-      "updatedAt": "2026-10-14T13:39:59.603Z",
+      "updatedAt": "2026-10-14T14:02:44.930Z",
       "slug": "adidas-241"
     },
     {
