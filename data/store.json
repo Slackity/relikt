@@ -195,17 +195,23 @@
       "reservedUntil": "",
       "stock": 1,
       "condition": "",
-      "sizes": [],
+      "sizes": [
+        "S"
+      ],
       "descRu": "",
       "descEn": "",
       "images": [
-        "/uploads/tg239-1.webp"
+        "/uploads/tg239-1.webp",
+        "/uploads/mv86h4pt-5950fd4c.webp",
+        "/uploads/mv86h3a6-970e2361.webp",
+        "/uploads/mv86gzfx-3d219f39.webp",
+        "/uploads/mv86h1e2-ee240d3c.webp"
       ],
-      "visible": true,
+      "visible": false,
       "featured": false,
       "tgPost": 239,
       "createdAt": "2026-10-14T13:28:01+00:00",
-      "updatedAt": "2026-10-14T13:39:59.266Z",
+      "updatedAt": "2026-10-14T14:01:28.742Z",
       "slug": "t-shirt-adidas-239"
     },
     {
