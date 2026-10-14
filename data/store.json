@@ -375,18 +375,22 @@
       "reservedUntil": "",
       "stock": 1,
       "condition": "new",
-      "sizes": [],
+      "sizes": [
+        "S"
+      ],
       "descRu": "",
       "descEn": "",
       "images": [
         "/uploads/tg222-1.webp",
-        "/uploads/tg222-2.webp"
+        "/uploads/tg222-2.webp",
+        "/uploads/mv866haq-0f4de64b.webp",
+        "/uploads/mv866keq-1053345a.webp"
       ],
       "visible": true,
-      "featured": false,
+      "featured": true,
       "tgPost": 222,
       "createdAt": "2026-10-14T12:08:01+00:00",
-      "updatedAt": "2026-10-14T13:39:58.605Z",
+      "updatedAt": "2026-10-14T13:53:43.629Z",
       "slug": "hoodie-true-religion-222"
     },
     {
