@@ -42,11 +42,11 @@
   };
 
   var DEFAULT_CATEGORIES = [
+    { id: 'outerwear', ru: 'Худи и зипки', en: 'Hoodies & zip-ups', subRu: 'Худи, зипки, кофты', subEn: 'Hoodies, zip-ups, tops' },
+    { id: 'jackets', ru: 'Олимпийки и куртки', en: 'Track & other jackets', subRu: 'Олимпийки, бомберы, ветровки, куртки', subEn: 'Track jackets, bombers, windbreakers, jackets' },
     { id: 'tops', ru: 'Футболки и майки', en: 'Tees & tanks', subRu: 'Футболки, лонгсливы, майки', subEn: 'Tees, long sleeves, tank tops' },
-    { id: 'outerwear', ru: 'Куртки и худи', en: 'Jackets & hoodies', subRu: 'Бомберы, зипки, худи', subEn: 'Bombers, zip-ups, hoodies' },
+    { id: 'sets', ru: 'Костюмы и платья', en: 'Sets & dresses', subRu: 'Костюмы, платья, комбинезоны', subEn: 'Matching sets, dresses, jumpsuits' },
     { id: 'bottoms', ru: 'Штаны и шорты', en: 'Pants & shorts', subRu: 'Штаны, шорты', subEn: 'Pants, shorts' },
-    { id: 'sets', ru: 'Костюмы', en: 'Sets', subRu: 'Костюмы и комплекты', subEn: 'Suits and matching sets' },
-    { id: 'dresses', ru: 'Платья и комбинезоны', en: 'Dresses & jumpsuits', subRu: 'Платья, комбинезоны', subEn: 'Dresses, jumpsuits' },
     { id: 'bags', ru: 'Сумки', en: 'Bags', subRu: 'Сумки и сумочки', subEn: 'Handbags and shoulder bags' }
   ];
 

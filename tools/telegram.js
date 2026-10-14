@@ -130,10 +130,10 @@ function canonBrands(t) {
 /* category keywords -> category id (first match wins, order matters) */
 const CATEGORY_RULES = [
   ['bags', /сумк|сумоч|рюкзак/i],
-  ['sets', /костюм|комплект/i],
-  ['dresses', /платье|комбинезон|юбк/i],
+  ['sets', /костюм|комплект|платье|комбинезон|юбк/i],
   ['bottoms', /штаны|брюки|джинсы|шорты|лосины/i],
-  ['outerwear', /куртк|бомбер|зипк|худи|кофта|толстовк|свитшот|пальто|жилет|олимпийк|ветровк/i],
+  ['jackets', /олимпийк|ветровк|бомбер|куртк|пальто|жилет/i],
+  ['outerwear', /зипк|худи|кофт|толстовк|свитшот/i],
   ['tops', /футболк|майк|лонгслив|топ\b|рубашк/i]
 ];
 function detectCategory(title) {
@@ -149,7 +149,7 @@ const EN_RULES = [
   [/редкий винтажный костюм/i, 'Rare vintage suit'],
   [/редкая винтажная футболка/i, 'Rare vintage T-shirt'],
   [/лонгслив с флагом великобритании/i, 'Union Jack long sleeve'],
-  [/кофта с капюшоном/i, 'Hoodie'], [/кропнутая зипка/i, 'Cropped zip hoodie'], [/олимпийка/i, 'Track jacket'], [/ветровка/i, 'Windbreaker'], [/бомбер/i, 'Bomber jacket'],
+  [/кофта с капюшоном/i, 'Hoodie'], [/кропнутая зипка/i, 'Cropped zip jacket'], [/олимпийка/i, 'Track jacket'], [/ветровка/i, 'Windbreaker'], [/бомбер/i, 'Bomber jacket'],
   [/штаны/i, 'Pants'], [/шорты/i, 'Shorts'], [/сумочка/i, 'Handbag'], [/сумка/i, 'Bag'],
   [/костюм/i, 'Suit'], [/платье/i, 'Dress'], [/комбинезон/i, 'Jumpsuit'], [/футболка/i, 'T-shirt'],
   [/лонгслив/i, 'Long sleeve'], [/майка/i, 'Tank top'], [/зипка/i, 'Zip hoodie'], [/худи/i, 'Hoodie'], [/кофта/i, 'Top'],

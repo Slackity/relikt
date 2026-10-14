@@ -79,6 +79,20 @@
   },
   "categories": [
     {
+      "id": "outerwear",
+      "ru": "Худи и зипки",
+      "en": "Hoodies & zip-ups",
+      "subRu": "Худи, зипки, кофты",
+      "subEn": "Hoodies, zip-ups, tops"
+    },
+    {
+      "id": "jackets",
+      "ru": "Олимпийки и куртки",
+      "en": "Track & other jackets",
+      "subRu": "Олимпийки, бомберы, ветровки, куртки",
+      "subEn": "Track jackets, bombers, windbreakers, jackets"
+    },
+    {
       "id": "tops",
       "ru": "Футболки и майки",
       "en": "Tees & tanks",
@@ -86,11 +100,11 @@
       "subEn": "Tees, long sleeves, tank tops"
     },
     {
-      "id": "outerwear",
-      "ru": "Куртки и худи",
-      "en": "Jackets & hoodies",
-      "subRu": "Бомберы, зипки, худи",
-      "subEn": "Bombers, zip-ups, hoodies"
+      "id": "sets",
+      "ru": "Костюмы и платья",
+      "en": "Sets & dresses",
+      "subRu": "Костюмы, платья, комбинезоны",
+      "subEn": "Matching sets, dresses, jumpsuits"
     },
     {
       "id": "bottoms",
@@ -98,20 +112,6 @@
       "en": "Pants & shorts",
       "subRu": "Штаны, шорты",
       "subEn": "Pants, shorts"
-    },
-    {
-      "id": "sets",
-      "ru": "Костюмы",
-      "en": "Sets",
-      "subRu": "Костюмы и комплекты",
-      "subEn": "Suits and matching sets"
-    },
-    {
-      "id": "dresses",
-      "ru": "Платья и комбинезоны",
-      "en": "Dresses & jumpsuits",
-      "subRu": "Платья, комбинезоны",
-      "subEn": "Dresses, jumpsuits"
     },
     {
       "id": "bags",
@@ -127,7 +127,7 @@
       "ru": "Олимпийка Adidas",
       "en": "Track jacket Adidas",
       "brand": "Adidas",
-      "category": "outerwear",
+      "category": "jackets",
       "price": 3490,
       "oldPrice": null,
       "availability": "instock",
@@ -148,7 +148,7 @@
       "featured": false,
       "tgPost": 243,
       "createdAt": "2026-10-14T13:32:01+00:00",
-      "updatedAt": "2026-10-14T19:03:25.417Z",
+      "updatedAt": "2026-10-14T19:18:32.255Z",
       "slug": "adidas-243"
     },
     {
@@ -156,7 +156,7 @@
       "ru": "Олимпийка Adidas",
       "en": "Track jacket Adidas",
       "brand": "Adidas",
-      "category": "outerwear",
+      "category": "jackets",
       "price": 3490,
       "oldPrice": null,
       "availability": "instock",
@@ -180,7 +180,7 @@
       "featured": false,
       "tgPost": 241,
       "createdAt": "2026-10-14T13:31:03+00:00",
-      "updatedAt": "2026-10-14T19:03:25.417Z",
+      "updatedAt": "2026-10-14T19:18:32.255Z",
       "slug": "adidas-241"
     },
     {
@@ -310,7 +310,7 @@
       "ru": "Ветровка Adidas",
       "en": "Windbreaker Adidas",
       "brand": "Adidas",
-      "category": "outerwear",
+      "category": "jackets",
       "price": 3500,
       "oldPrice": null,
       "availability": "instock",
@@ -333,7 +333,7 @@
       "featured": false,
       "tgPost": 231,
       "createdAt": "2026-10-14T13:20:01+00:00",
-      "updatedAt": "2026-10-14T19:03:25.417Z",
+      "updatedAt": "2026-10-14T19:18:32.255Z",
       "slug": "adidas-231"
     },
     {
@@ -368,9 +368,9 @@
     {
       "id": "pfdbad058",
       "ru": "Кропнутая зипка Adidas",
-      "en": "Cropped zip hoodie Adidas",
+      "en": "Cropped zip jacket Adidas",
       "brand": "Adidas",
-      "category": "outerwear",
+      "category": "jackets",
       "price": 3400,
       "oldPrice": null,
       "availability": "instock",
@@ -395,7 +395,7 @@
       "featured": false,
       "tgPost": 225,
       "createdAt": "2026-10-14T12:10:01+00:00",
-      "updatedAt": "2026-10-14T19:03:25.417Z",
+      "updatedAt": "2026-10-14T19:18:32.255Z",
       "slug": "zip-hoodie-adidas-225"
     },
     {
@@ -495,7 +495,7 @@
       "ru": "Олимпийка Adidas",
       "en": "Track jacket Adidas",
       "brand": "Adidas",
-      "category": "outerwear",
+      "category": "jackets",
       "price": 4000,
       "oldPrice": null,
       "availability": "instock",
@@ -519,7 +519,7 @@
       "featured": false,
       "tgPost": 213,
       "createdAt": "2026-10-14T12:03:03+00:00",
-      "updatedAt": "2026-10-14T19:03:25.417Z",
+      "updatedAt": "2026-10-14T19:18:32.255Z",
       "slug": "adidas-213"
     },
     {
@@ -527,7 +527,7 @@
       "ru": "Бомбер Adidas",
       "en": "Bomber jacket Adidas",
       "brand": "Adidas",
-      "category": "outerwear",
+      "category": "jackets",
       "price": 3800,
       "oldPrice": null,
       "availability": "instock",
@@ -550,7 +550,7 @@
       "featured": false,
       "tgPost": 210,
       "createdAt": "2026-10-14T12:02:01+00:00",
-      "updatedAt": "2026-10-14T19:03:25.417Z",
+      "updatedAt": "2026-10-14T19:18:32.255Z",
       "slug": "adidas-210"
     },
     {
@@ -863,7 +863,7 @@
       "ru": "Платье Juicy Couture",
       "en": "Dress Juicy Couture",
       "brand": "Juicy Couture",
-      "category": "dresses",
+      "category": "sets",
       "price": 6500,
       "oldPrice": null,
       "availability": "instock",
@@ -884,7 +884,7 @@
       "featured": false,
       "tgPost": 115,
       "createdAt": "2026-08-16T23:35:00+00:00",
-      "updatedAt": "2026-10-11T20:58:10.546Z",
+      "updatedAt": "2026-10-14T19:18:32.255Z",
       "slug": "dress-juicy-couture-115",
       "reservedUntil": ""
     },
@@ -1226,7 +1226,7 @@
       "ru": "Комбинезон Dolls Kill",
       "en": "Jumpsuit Dolls Kill",
       "brand": "Dolls Kill",
-      "category": "dresses",
+      "category": "sets",
       "price": 6500,
       "oldPrice": null,
       "availability": "instock",
@@ -1249,7 +1249,7 @@
       "featured": false,
       "tgPost": 55,
       "createdAt": "2026-08-16T20:43:06+00:00",
-      "updatedAt": "2026-10-11T20:58:10.546Z",
+      "updatedAt": "2026-10-14T19:18:32.255Z",
       "slug": "jumpsuit-dolls-kill-55",
       "reservedUntil": ""
     },
@@ -1258,7 +1258,7 @@
       "ru": "Платье Dolls Kill",
       "en": "Dress Dolls Kill",
       "brand": "Dolls Kill",
-      "category": "dresses",
+      "category": "sets",
       "price": 6500,
       "oldPrice": null,
       "availability": "instock",
@@ -1280,7 +1280,7 @@
       "featured": false,
       "tgPost": 50,
       "createdAt": "2026-08-16T20:41:00+00:00",
-      "updatedAt": "2026-10-09T00:52:03.482Z",
+      "updatedAt": "2026-10-14T19:18:32.255Z",
       "slug": "dress-dolls-kill-50"
     },
     {
@@ -1500,7 +1500,7 @@
       "ru": "Дутая куртка-бомбер с мраморным камо",
       "en": "Puffer bomber jacket, marble camo",
       "brand": "",
-      "category": "outerwear",
+      "category": "jackets",
       "price": 2900,
       "oldPrice": null,
       "availability": "instock",
@@ -1519,7 +1519,7 @@
       "featured": false,
       "tgPost": 20,
       "createdAt": "2026-08-16T14:49:14+00:00",
-      "updatedAt": "2026-10-11T20:58:10.546Z",
+      "updatedAt": "2026-10-14T19:18:32.255Z",
       "slug": "puffer-bomber-jacket-marble-camo-20",
       "reservedUntil": ""
     },
