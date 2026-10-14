@@ -246,17 +246,22 @@
       "reservedUntil": "",
       "stock": 1,
       "condition": "",
-      "sizes": [],
+      "sizes": [
+        "M-L"
+      ],
       "descRu": "",
       "descEn": "",
       "images": [
-        "/uploads/tg235-2.webp"
+        "/uploads/tg235-2.webp",
+        "/uploads/mv86elmo-f9b0bf68.webp",
+        "/uploads/mv86eh9e-3879cf17.webp",
+        "/uploads/mv86ejgr-8f740439.webp"
       ],
       "visible": true,
       "featured": false,
       "tgPost": 235,
       "createdAt": "2026-10-14T13:24:01+00:00",
-      "updatedAt": "2026-10-14T13:39:59.786Z",
+      "updatedAt": "2026-10-14T13:59:25.401Z",
       "slug": "true-religion-235"
     },
     {
