@@ -399,20 +399,27 @@
       "oldPrice": null,
       "availability": "instock",
       "reservedUntil": "",
-      "stock": 1,
+      "stock": 3,
       "condition": "new",
-      "sizes": [],
-      "descRu": "В  наличии размеры: S, M",
+      "sizes": [
+        "S",
+        "M"
+      ],
+      "descRu": "В  наличии размеры: 2шт S, 1шт M",
       "descEn": "",
       "images": [
         "/uploads/tg219-1.webp",
-        "/uploads/tg219-2.webp"
+        "/uploads/tg219-2.webp",
+        "/uploads/mv860q1l-34c7449c.webp",
+        "/uploads/mv860s18-5e26f895.webp",
+        "/uploads/mv860tkl-c49ed8f6.webp",
+        "/uploads/mv860uy3-0e401792.webp"
       ],
       "visible": true,
       "featured": false,
       "tgPost": 219,
       "createdAt": "2026-10-14T12:06:01+00:00",
-      "updatedAt": "2026-10-14T13:39:58.606Z",
+      "updatedAt": "2026-10-14T13:48:43.049Z",
       "slug": "zip-hoodie-true-religion-219"
     },
     {
