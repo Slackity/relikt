@@ -54,7 +54,7 @@
       if (rank(a) !== rank(b)) return rank(a) - rank(b);
       if (st.sort === 'asc' || st.sort === 'desc') {
         var dir = st.sort === 'asc' ? 1 : -1;   // items without a price always go last
-        var pa = a.price == null ? dir * Infinity : a.price, pb = b.price == null ? dir * Infinity : b.price;
+        var pa = a.price == null ? dir * Infinity : RK.priceOf(a), pb = b.price == null ? dir * Infinity : RK.priceOf(b);
         if (pa !== pb) return dir * (pa - pb);
       }
       if (!!b.featured !== !!a.featured) return b.featured ? 1 : -1;

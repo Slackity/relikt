@@ -35,6 +35,9 @@
 }
 
 *, *::before, *::after { box-sizing: border-box; }
+/* the built-in texts never flash before the ones edited in the admin panel (boot.js / app.js); shown anyway after 2.5 s */
+.i18n-wait [data-i18n], .i18n-wait [data-i18n-html] { visibility: hidden; animation: i18n-show 0s 2.5s forwards; }
+@keyframes i18n-show { to { visibility: visible; } }
 /* a double tap must not zoom the page (quick taps on + / − and buttons on iPhone); pinch zoom still works */
 * { touch-action: manipulation; }
 

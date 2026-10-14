@@ -35,8 +35,9 @@
     orderWebhook: '',
     orderSecret: '',
     miniAppUrl: '',
-    postButtons: false,
-    autoImport: '',       // a new channel post with a price starts the import: '' off, 'draft' or 'publish'   // the bot answers a new channel post with a piece by a message with an «Открыть в каталоге» button
+    postButtons: false,   // the bot answers a new channel post with a piece by a message with an «Открыть в каталоге» button
+    autoImport: '',       // a new channel post with a price starts the import: '' off, 'draft' or 'publish'
+    sale: { on: false, percent: 10 },   // store-wide discount: every piece is that much cheaper while it is on
     adminIds: []
   };
 
@@ -67,6 +68,15 @@
     return bytes.map(function (b) { return ('0' + b.toString(16)).slice(-2); }).join('');
   }
   function clone(o) { return JSON.parse(JSON.stringify(o)); }
+
+  /* The sale on a piece: its own discount or the store-wide one, whichever is bigger (the site has the same rule in js/app.js). */
+  function discountOf(p, settings) {
+    var sale = (settings && settings.sale) || {};
+    if (!p || p.price == null) return 0;
+    return Math.min(90, Math.max(0, Number(p.discount) || 0, sale.on ? Number(sale.percent) || 0 : 0));
+  }
+  // rounded down to whole tens of rubles: in the buyer's favour (3 490 ₽ −15% = 2 966.5 → 2 960 ₽)
+  function salePrice(p, settings) { var d = discountOf(p, settings); return p.price == null ? null : d ? Math.floor(p.price * (100 - d) / 1000) * 10 : p.price; }
   function err(code, message) { var e = new Error(message || code); e.code = code; return e; }
 
   /* ---------- whole file ---------- */
@@ -75,6 +85,7 @@
     d.version = 2;
     d.settings = Object.assign(clone(DEFAULT_SETTINGS), d.settings || {});
     d.settings.payment = Object.assign(clone(DEFAULT_SETTINGS.payment), d.settings.payment || {});
+    d.settings.sale = Object.assign(clone(DEFAULT_SETTINGS.sale), d.settings.sale || {});
     ['delivery', 'discounts', 'promos', 'adminIds'].forEach(function (k) { if (!Array.isArray(d.settings[k])) d.settings[k] = clone(DEFAULT_SETTINGS[k]); });
     delete d.settings.notifyChatId;
     d.categories = Array.isArray(d.categories) && d.categories.length ? d.categories : clone(DEFAULT_CATEGORIES);
@@ -118,6 +129,7 @@
       category: cats.indexOf(input.category) >= 0 ? input.category : (cats.indexOf(prev.category) >= 0 ? prev.category : cats[0]),
       price: price('price'),
       oldPrice: price('oldPrice'),
+      discount: int(has('discount') ? input.discount : prev.discount || 0, 0, 90, 0),   // % off this piece
       availability: availability,
       reservedUntil: availability === 'reserved' ? str(input.reservedUntil != null ? input.reservedUntil : prev.reservedUntil, 40) : '',
       // back in stock from sold / made to order without a number: one piece
@@ -220,6 +232,7 @@
       next.miniAppUrl = m ? 'https://t.me/' + m : '';
     }
     if (input.postButtons != null) next.postButtons = !!input.postButtons;
+    if (input.sale) next.sale = { on: !!input.sale.on, percent: int(input.sale.percent, 1, 90, 10) };
     if (input.autoImport != null) next.autoImport = input.autoImport === 'draft' || input.autoImport === 'publish' ? input.autoImport : '';
     if (input.adminIds != null) {
       var ids = Array.isArray(input.adminIds) ? input.adminIds : String(input.adminIds).split(/[\s,;]+/);
@@ -247,6 +260,6 @@
   return {
     DEFAULT_SETTINGS: DEFAULT_SETTINGS, DEFAULT_CATEGORIES: DEFAULT_CATEGORIES, AVAILABILITY: AVAILABILITY, CONDITIONS: CONDITIONS,
     normalize: normalize, publicView: publicView, cleanProduct: cleanProduct, upsertProduct: upsertProduct, deleteProduct: deleteProduct,
-    setCategories: setCategories, setSettings: setSettings, setContent: setContent, slugify: slugify, str: str, int: int, rid: rid, clone: clone
+    setCategories: setCategories, setSettings: setSettings, setContent: setContent, discountOf: discountOf, salePrice: salePrice, slugify: slugify, str: str, int: int, rid: rid, clone: clone
   };
 });

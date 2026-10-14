@@ -56,14 +56,18 @@
   /* ---------- language ---------- */
   RK.lang = RK.store.get('rk-lang', 'ru') === 'en' ? 'en' : 'ru';
   RK.data = null;       // { settings, categories, products, content }
+  // texts and settings from the last visit, so the page opens with the shop's own texts while the catalog loads
+  var seen = RK.store.get('rk-catalog', null);
+  var early = seen && typeof seen === 'object' ? { content: seen.content || {}, settings: seen.settings || {} } : null;
+  function current() { return RK.data || early; }
 
   RK.vars = function () {
-    var s = (RK.data && RK.data.settings) || {};
+    var s = (current() && current().settings) || {};
     return { percent: s.reservePercent != null ? s.reservePercent : 20, days: s.reserveDays != null ? s.reserveDays : 3 };
   };
 
   RK.t = function (key, vars) {
-    var over = RK.data && RK.data.content && RK.data.content[RK.lang] && RK.data.content[RK.lang][key];
+    var d = current(), over = d && d.content && d.content[RK.lang] && d.content[RK.lang][key];
     var def = window.RK_I18N && RK_I18N[RK.lang] && RK_I18N[RK.lang][key];
     var s = over || def || (RK_I18N && RK_I18N.ru[key]) || key;
     var all = RK.vars();
@@ -147,6 +151,15 @@
     if (ref && history.length > 1) history.back();
     else location.href = fallback || 'index.html';
   };
+  /* the sale on a piece: its own discount or the store-wide one (Настройки → Скидка на весь ассортимент), whichever is bigger.
+     Same rule as Core.discountOf in js/core.js (the admin panel). */
+  RK.discountOf = function (p) {
+    var sale = (RK.data && RK.data.settings && RK.data.settings.sale) || {};
+    if (!p || p.price == null) return 0;
+    return Math.min(90, Math.max(0, Number(p.discount) || 0, sale.on ? Number(sale.percent) || 0 : 0));
+  };
+  // rounded down to whole tens of rubles, in the buyer's favour; same as Core.salePrice
+  RK.priceOf = function (p) { var d = RK.discountOf(p); return p.price == null ? null : d ? Math.floor(p.price * (100 - d) / 1000) * 10 : p.price; };
   RK.productUrl = function (p) { return 'product.html?id=' + encodeURIComponent(p.slug || p.id); };
   /* link to share a product: opens it inside the Telegram Mini App when its link is set in the admin panel, otherwise the web page */
   RK.shareUrl = function (p) {
@@ -266,7 +279,7 @@
     setPromo: function (code) { RK.store.set('rk-promo', String(code || '').trim().toUpperCase()); RK.emit('cart'); },
     totals: function () {
       var lines = RK.cart.lines();
-      var subtotal = lines.reduce(function (t, l) { return t + (l.product.price || 0) * l.item.qty; }, 0);
+      var subtotal = lines.reduce(function (t, l) { return t + (RK.priceOf(l.product) || 0) * l.item.qty; }, 0);
       var picked = RK.cart.discounts();
       var list = ((RK.data && RK.data.settings.discounts) || []).filter(function (d) { return picked.indexOf(d.id) >= 0; });
       var promo = RK.cart.promo();
@@ -413,16 +426,21 @@
     if (RK.chrome) RK.chrome.mount();
     RK.apply();
     RK.setLang(RK.lang);
+    // boot.js hides the texts until the shop's own are known: from the last visit right now, on a first visit once loaded
+    var showTexts = function () { root.classList.remove('i18n-wait'); };
+    if (early) showTexts();
     RK.ornaments();
     RK.initPointer();
     RK.load().then(function () {
       if (RK.chrome) RK.chrome.update();
       RK.setLang(RK.lang);
+      showTexts();
       starters.forEach(function (fn) { fn(); });
       RK.restoreScroll();
       RK.reveal();
     }).catch(function (e) {
       console.error(e);
+      showTexts();
       var m = RK.$('#pageMessage');
       if (m) m.textContent = RK.lang === 'en' ? 'Could not load the catalog. Please reload the page.' : 'Не удалось загрузить каталог. Обнови страницу.';
     });

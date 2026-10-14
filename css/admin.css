@@ -58,6 +58,7 @@ label.field > span, .field__label { font: 400 10px/1.3 var(--f-mono); letter-spa
 .row { display: grid; gap: 14px; }
 .row--2 { grid-template-columns: 1fr 1fr; }
 .row--3 { grid-template-columns: repeat(3, 1fr); }
+.row--4 { grid-template-columns: repeat(4, 1fr); }
 .check { display: flex; align-items: center; gap: 10px; cursor: pointer; }
 
 /* ----- login ----- */
@@ -113,6 +114,8 @@ label.field > span, .field__label { font: 400 10px/1.3 var(--f-mono); letter-spa
 .tag--new { background: var(--blood); } .tag--confirmed { background: #4a4030; color: var(--warn); } .tag--paid { background: #1f3a2b; color: var(--ok); }
 .tag--shipped { background: #20304a; color: #8db4ee; } .tag--done { background: var(--bone-14); color: var(--fog); } .tag--cancelled { background: #2a1416; color: #d98c91; }
 .tag--problem { background: var(--blood-hot); color: var(--bone); }
+.tag--sale { background: var(--blood-hot); color: var(--bone); }
+.sale-preview { margin: -6px 0 0; } .sale-preview s { color: var(--fog); } .sale-preview b { font-weight: 500; color: var(--bone); }
 .tag--reserved { background: #3a2a40; color: #d7b4e6; }
 .tag--draft { background: transparent; border: 1px dashed var(--bone-40); color: var(--bone-70); }
 .tag--sold { background: #2a1416; color: #d98c91; } .tag--instock { background: #1f3a2b; color: var(--ok); } .tag--order { background: #4a4030; color: var(--warn); }
@@ -238,6 +241,7 @@ label.field > span, .field__label { font: 400 10px/1.3 var(--f-mono); letter-spa
   .texts__nav { position: static; display: flex; flex-wrap: wrap; }
   .order summary { grid-template-columns: 1fr auto; } .order summary .order__who { grid-column: 1 / -1; order: 3; }
   .order__cols, .row--2, .row--3, .trow__cols { grid-template-columns: 1fr; }
+  .row--4 { grid-template-columns: 1fr 1fr; }
   .listrow, .listrow--d, .listrow--v, .listrow--p { grid-template-columns: 1fr 1fr; } .listrow__btns { grid-column: 1 / -1; }
   .table .hide-m { display: none; }
 }

@@ -15,6 +15,8 @@
     if (p.availability === 'sold') out.push(h('span', { class: 'badge badge--sold', text: RK.t('badge.sold') }));
     else if (p.availability === 'reserved') out.push(h('span', { class: 'badge badge--reserved', text: RK.t('badge.reserved') }));
     else {
+      var off = saleOff(p);
+      if (off) out.push(h('span', { class: 'badge badge--sale', text: '−' + off + '%' }));
       if (RK.heldUntil(p)) out.push(h('span', { class: 'badge badge--reserved', text: RK.t('badge.held') }));
       if (p.availability === 'order') out.push(h('span', { class: 'badge', text: RK.t('badge.order') }));
       if (p.condition) out.push(h('span', { class: 'badge badge--ghost', text: RK.t('cond.' + p.condition) }));
@@ -27,11 +29,15 @@
     if (!n) return null;
     return h('p', { class: cls || 'card__stock', text: n > 1 ? RK.t('product.stockMany', { n: n }) : RK.t('product.stockNote') });
   };
+  /* the price before the sale: the full price when a discount is on, else the "old price" typed in the admin panel */
+  function wasPrice(p) { return RK.discountOf(p) ? p.price : p.oldPrice && p.price != null && p.oldPrice > p.price ? p.oldPrice : null; }
+  function saleOff(p) { var was = wasPrice(p); return was ? RK.discountOf(p) || Math.round((was - p.price) / was * 100) : 0; }
   ui.price = function (p) {
     if (p.availability === 'sold') return h('span', { class: 'price price--sold', text: RK.t('badge.sold') });
-    return h('span', { class: 'price' },
-      p.oldPrice && p.price != null && p.oldPrice > p.price ? h('s', { text: RK.money(p.oldPrice) }) : null,
-      h('span', { text: RK.money(p.price) }));
+    var was = wasPrice(p);
+    return h('span', { class: 'price' + (was ? ' price--sale' : '') },
+      was ? h('s', { text: RK.money(was) }) : null,
+      h('span', { text: RK.money(RK.priceOf(p)) }));
   };
 
   /* ---------- favourites ---------- */
@@ -267,7 +273,7 @@
           RK.heldUntil(p) ? h('p', { class: 'line__meta line__meta--warn', text: RK.t('cart.heldLine', { min: RK.minutesLeft(RK.heldUntil(p)) }) }) : null,
           h('div', { class: 'line__row' },
             max > 1 ? stepper(l.idx, it.qty, max) : h('span', { class: 'line__meta', text: '1 ×' }),
-            h('span', { class: 'price', text: RK.money(p.price * it.qty) }))),
+            h('span', { class: 'price', text: RK.money(RK.priceOf(p) * it.qty) }))),
         h('button', { class: 'line__rm', type: 'button', 'aria-label': RK.t('cart.remove') + ': ' + RK.pname(p), onclick: function () { RK.haptic('light'); RK.cart.remove(l.idx); } }, '×')));
     });
     bodyEl.appendChild(list);
@@ -634,7 +640,8 @@
     return {
       number: 'RK-' + Date.now().toString(36).slice(-5).toUpperCase(),
       items: RK.cart.lines().map(function (l) {
-        return { id: l.product.id, name: l.product.ru, size: l.item.size, qty: l.item.qty, price: l.product.price,
+        var off = RK.discountOf(l.product);   // the manager sees the sale next to the name
+        return { id: l.product.id, name: l.product.ru + (off ? ' (скидка −' + off + '%)' : ''), size: l.item.size, qty: l.item.qty, price: RK.priceOf(l.product),
           order: l.product.availability === 'order', url: RK.shareUrl(l.product), image: (l.product.images || [])[0] || '' };
       }),
       subtotal: t.subtotal, cut: t.cut, total: t.total,

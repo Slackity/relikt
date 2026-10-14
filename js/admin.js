@@ -63,7 +63,9 @@
       'prod.stock': 'Наличие', 'prod.visible': 'Опубликован', 'prod.draft': 'Черновик', 'prod.filter.all': 'Все товары', 'prod.filter.pub': 'Опубликованные', 'prod.filter.draft': 'Черновики',
       'prod.allcats': 'Все категории', 'prod.selected': 'выбрано', 'prod.publish': 'Опубликовать', 'prod.hide': 'Скрыть', 'prod.deleteQ': 'Удалить выбранные товары?', 'prod.deleteOne': 'Удалить этот товар?',
       'av.instock': 'В наличии', 'av.order': 'Под заказ', 'av.reserved': 'Бронь', 'av.sold': 'Продано',
-      'prod.new': 'Новый товар', 'prod.edit': 'Редактирование товара', 'prod.nameRu': 'Название (рус.)', 'prod.nameEn': 'Название (англ.)', 'prod.brand': 'Бренд', 'prod.oldPrice': 'Старая цена (зачёркнутая)',
+      'prod.new': 'Новый товар', 'prod.edit': 'Редактирование товара', 'prod.nameRu': 'Название (рус.)', 'prod.nameEn': 'Название (англ.)', 'prod.brand': 'Бренд', 'prod.oldPrice': 'Старая цена (зачёркнутая)', 'prod.discount': 'Скидка, %', 'prod.saleSees': 'Покупатель увидит:', 'prod.saleAll': '(скидка на весь ассортимент)',
+      'set.sale': 'Скидка на весь ассортимент', 'set.saleOn': 'Включить скидку на все вещи', 'set.salePct': 'Скидка, %',
+      'set.saleHint': 'Пока включено, все вещи в каталоге дешевле на этот процент: старая цена зачёркнута, рядом новая, на карточке плашка «−N%». Если у вещи своя скидка больше, действует она. Цена со скидкой округляется вниз до десятков рублей. Промокоды и скидки-галочки в корзине считаются уже от сниженной цены.',
       'prod.qty': 'Штук в наличии', 'prod.cond': 'Состояние', 'prod.sizes': 'Размеры (через запятую)', 'prod.descRu': 'Описание (рус.)', 'prod.descEn': 'Описание (англ.)',
       'prod.tgPost': 'Номер поста в Telegram', 'prod.featured': 'Закрепить вверху каталога', 'prod.photos': 'Фото', 'prod.addPhotos': 'Добавить фото', 'prod.photosHint': 'Первое фото — обложка. Стрелками фото двигаются, × убирает.',
       'prod.nameReq': 'Сначала введите название.', 'prod.uploading': 'Загружаем фото…', 'prod.uploaded': 'Фото загружено', 'prod.cover': 'Обложка',
@@ -117,7 +119,9 @@
       'prod.stock': 'Availability', 'prod.visible': 'Published', 'prod.draft': 'Draft', 'prod.filter.all': 'All products', 'prod.filter.pub': 'Published', 'prod.filter.draft': 'Drafts',
       'prod.allcats': 'All categories', 'prod.selected': 'selected', 'prod.publish': 'Publish', 'prod.hide': 'Hide', 'prod.deleteQ': 'Delete the selected products?', 'prod.deleteOne': 'Delete this product?',
       'av.instock': 'In stock', 'av.order': 'Made to order', 'av.reserved': 'Reserved', 'av.sold': 'Sold',
-      'prod.new': 'New product', 'prod.edit': 'Edit product', 'prod.nameRu': 'Name (Russian)', 'prod.nameEn': 'Name (English)', 'prod.brand': 'Brand', 'prod.oldPrice': 'Old price (crossed out)',
+      'prod.new': 'New product', 'prod.edit': 'Edit product', 'prod.nameRu': 'Name (Russian)', 'prod.nameEn': 'Name (English)', 'prod.brand': 'Brand', 'prod.oldPrice': 'Old price (crossed out)', 'prod.discount': 'Discount, %', 'prod.saleSees': 'The buyer sees:', 'prod.saleAll': '(store-wide sale)',
+      'set.sale': 'Store-wide sale', 'set.saleOn': 'Discount every piece', 'set.salePct': 'Discount, %',
+      'set.saleHint': 'While on, every piece in the catalog is this much cheaper: the old price is crossed out, the new one next to it, and the card gets a “−N%” badge. A piece with a bigger discount of its own keeps it. The sale price is rounded down to tens of rubles. Promo codes and cart discounts apply to the reduced price.',
       'prod.qty': 'Units in stock', 'prod.cond': 'Condition', 'prod.sizes': 'Sizes (comma separated)', 'prod.descRu': 'Description (Russian)', 'prod.descEn': 'Description (English)',
       'prod.tgPost': 'Telegram post number', 'prod.featured': 'Pin to the top of the catalog', 'prod.photos': 'Photos', 'prod.addPhotos': 'Add photos', 'prod.photosHint': 'The first photo is the cover. Arrows move a photo, × removes it.',
       'prod.nameReq': 'Enter a name first.', 'prod.uploading': 'Uploading photo…', 'prod.uploaded': 'Photo uploaded', 'prod.cover': 'Cover',
@@ -653,7 +657,7 @@
         h('td', null, p.images[0] ? h('img', { class: 'thumb', src: img(p.images[0]), alt: '', loading: 'lazy' }) : h('span', { class: 'thumb' })),
         h('td', null, h('div', { class: 'name', text: p.ru }), h('div', { class: 'muted', text: [p.brand, p.en !== p.ru ? p.en : ''].filter(Boolean).join(' · ') }), !p.visible ? h('span', { class: 'tag tag--draft', text: t('prod.draft') }) : null),
         h('td', { class: 'hide-m' }, catName(p.category)),
-        h('td', { class: 'num' }, money(p.price)),
+        h('td', { class: 'num' }, Core.discountOf(p, S.settings) ? [h('s', { class: 'muted', text: money(p.price) }), h('br'), money(Core.salePrice(p, S.settings)) + ' ', h('span', { class: 'tag tag--sale', text: '−' + Core.discountOf(p, S.settings) + '%' })] : money(p.price)),
         h('td', null, av),
         h('td', null, sw),
         h('td', null, h('button', { class: 'btn btn--sm', type: 'button', onclick: function () { openProduct(p); } }, h('span', { text: t('common.edit') })))));
@@ -728,12 +732,29 @@
     }
     fileInput.addEventListener('change', function () { upload(fileInput.files); fileInput.value = ''; });
 
+    // "the buyer sees: 8 500 ₽ → 6 800 ₽ (−20%)", live while the price or the discount is typed
+    var salePreview = h('p', { class: 'field__hint sale-preview' });
+    function drawSale() {
+      var price = f.price.value === '' ? null : Number(f.price.value);
+      var q = { price: price, discount: Number(f.discount.value || 0) }, off = Core.discountOf(q, S.settings);
+      salePreview.textContent = '';
+      if (price == null || !off) { salePreview.hidden = true; return; }
+      salePreview.hidden = false;
+      salePreview.appendChild(h('span', { text: t('prod.saleSees') + ' ' }));
+      salePreview.appendChild(h('s', { text: money(price) }));
+      salePreview.appendChild(h('b', { text: ' ' + money(Core.salePrice(q, S.settings)) + ' ' }));
+      salePreview.appendChild(h('span', { class: 'tag tag--sale', text: '−' + off + '%' }));
+      if (S.settings.sale && S.settings.sale.on && off === S.settings.sale.percent && off > q.discount) salePreview.appendChild(h('span', { text: ' ' + t('prod.saleAll') }));
+    }
     var body = h('div', { class: 'stack' },
       h('div', { class: 'row row--2' }, fld(t('prod.nameRu'), inp('ru', 'text', d.ru, { maxlength: '160', required: true })), fld(t('prod.nameEn'), inp('en', 'text', d.en, { maxlength: '160' }))),
       h('div', { class: 'row row--2' }, fld(t('prod.brand'), inp('brand', 'text', d.brand, { maxlength: '80' })),
         fld(t('prod.category'), sel('category', S.categories.map(function (c) { return [c.id, lang === 'ru' ? c.ru : c.en]; }), d.category))),
-      h('div', { class: 'row row--3' }, fld(t('prod.price') + ' (' + S.settings.currency + ')', inp('price', 'number', d.price, { min: '0', step: '1', inputmode: 'numeric' })), fld(t('prod.oldPrice'), inp('oldPrice', 'number', d.oldPrice, { min: '0', step: '1', inputmode: 'numeric' })),
+      h('div', { class: 'row row--4' }, fld(t('prod.price') + ' (' + S.settings.currency + ')', inp('price', 'number', d.price, { min: '0', step: '1', inputmode: 'numeric' })),
+        fld(t('prod.discount'), inp('discount', 'number', d.discount || '', { min: '0', max: '90', step: '1', inputmode: 'numeric', placeholder: '0' })),
+        fld(t('prod.oldPrice'), inp('oldPrice', 'number', d.oldPrice, { min: '0', step: '1', inputmode: 'numeric' })),
         fld(t('prod.cond'), sel('condition', ['', 'new', 'vintage', 'used'].map(function (c) { return [c, t('cond.' + c)]; }), d.condition))),
+      salePreview,
       h('div', { class: 'row row--3' }, fld(t('prod.stock'), avSel), stockFld, fld(t('prod.sizes'), inp('sizes', 'text', (d.sizes || []).join(', '), { placeholder: 'S, M, L' }))),
       h('div', { class: 'row row--2' }, fld(t('prod.descRu'), ta('descRu', d.descRu)), fld(t('prod.descEn'), ta('descEn', d.descEn))),
       h('div', { class: 'row row--2' }, fld(t('prod.tgPost'), inp('tgPost', 'number', d.tgPost, { min: '0', inputmode: 'numeric' })),
@@ -742,10 +763,11 @@
           h('label', { class: 'check' }, (f.featured = h('input', { type: 'checkbox' })), h('span', { text: t('prod.featured') })))),
       h('div', { class: 'stack' }, h('span', { class: 'field__label', text: t('prod.photos') }), photosHost, h('p', { class: 'field__hint', text: t('prod.photosHint') })));
     f.visible.checked = !!d.visible; f.featured.checked = !!d.featured;
+    f.price.addEventListener('input', drawSale); f.discount.addEventListener('input', drawSale); drawSale();
     function formPayload() {
       return {
         ru: f.ru.value.trim(), en: f.en.value.trim(), brand: f.brand.value.trim(), category: f.category.value,
-        price: f.price.value === '' ? '' : Number(f.price.value), oldPrice: f.oldPrice.value === '' ? '' : Number(f.oldPrice.value),
+        price: f.price.value === '' ? '' : Number(f.price.value), oldPrice: f.oldPrice.value === '' ? '' : Number(f.oldPrice.value), discount: Number(f.discount.value || 0),
         availability: f.availability.value, stock: Number(f.stock.value || 0), condition: f.condition.value,
         sizes: f.sizes.value.split(',').map(function (x) { return x.trim(); }).filter(Boolean),
         descRu: f.descRu.value.trim(), descEn: f.descEn.value.trim(), images: photos.slice(),
@@ -959,6 +981,7 @@
 
     var banner = h('input', { type: 'checkbox' }); banner.checked = !!s.banner.on;
     var postButtons = h('input', { type: 'checkbox' }); postButtons.checked = s.postButtons === true;
+    var saleOn = h('input', { type: 'checkbox' }); saleOn.checked = !!(s.sale && s.sale.on);
     var autoImport = h('select', null, ['', 'draft', 'publish'].map(function (v) { return h('option', { value: v, text: t('set.autoImport_' + (v || 'off')) }); }));
     autoImport.value = s.autoImport || '';
     var delivery = s.delivery, discounts = s.discounts, promos = s.promos;
@@ -1002,6 +1025,7 @@
         banner: { on: banner.checked, ru: f.bannerRu.value, en: f.bannerEn.value },
         payment: { bank: f.payBank.value, recipient: f.payRecipient.value, details: f.payDetails.value, note: f.payNote.value },
         promos: promos, delivery: delivery, discounts: discounts,
+        sale: { on: saleOn.checked, percent: Number(f.salePercent.value) },
         orderWebhook: f.orderWebhook.value, orderSecret: f.orderSecret.value, adminIds: f.adminIds.value, miniAppUrl: f.miniAppUrl.value, postButtons: postButtons.checked, autoImport: autoImport.value
       };
       saveBtn.disabled = true;
@@ -1040,6 +1064,10 @@
       fld(t('set.payNote'), inp('payNote', s.payment.note, { maxlength: '300' }))));
     main.appendChild(panel(t('set.reserve'), null,
       h('div', { class: 'row row--3' }, fld(t('set.reservePct'), inp('reservePercent', s.reservePercent, { type: 'number', min: '0', max: '100', inputmode: 'numeric' })), fld(t('set.reserveDays'), inp('reserveDays', s.reserveDays, { type: 'number', min: '0', max: '60', inputmode: 'numeric' })))));
+    main.appendChild(panel(t('set.sale'), t('set.saleHint'),
+      h('div', { class: 'row row--3', style: 'align-items:end' },
+        h('label', { class: 'check', style: 'padding-bottom:10px' }, saleOn, h('span', { text: t('set.saleOn') })),
+        fld(t('set.salePct'), inp('salePercent', s.sale ? s.sale.percent : 10, { type: 'number', min: '1', max: '90', inputmode: 'numeric' })))));
     main.appendChild(panel(t('set.promos'), t('set.promosHint'), pHost,
       h('div', null, h('button', { class: 'btn btn--sm', type: 'button', onclick: function () { promos.push({ code: '', type: 'percent', value: 10, active: true }); drawPromos(); } }, h('span', { text: '+ ' + t('common.add') })))));
     main.appendChild(panel(t('set.discounts'), t('set.discountsHint'), vHost,

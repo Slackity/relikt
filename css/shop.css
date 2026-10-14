@@ -88,6 +88,7 @@ html.has-banner { --banner-h: 34px; }
 }
 .badge--ghost { color: var(--bone); background: rgba(8, 7, 7, .82); border: 1px solid var(--bone-14); }
 .badge--sold { color: var(--bone); background: var(--blood); }
+.badge--sale { color: var(--bone); background: var(--blood-hot); }
 .badge--reserved { color: var(--void); background: var(--bone); }
 
 .fav {
@@ -111,6 +112,7 @@ html.has-banner { --banner-h: 34px; }
 .card__add-icon { width: 18px; height: 18px; }
 .price { display: inline-flex; align-items: baseline; gap: 10px; margin-top: 8px; font-family: var(--f-mono); font-size: 13px; letter-spacing: .06em; color: var(--bone); }
 .price s { color: var(--fog); font-size: 11px; }
+.price--sale > span { color: var(--blood-hot); }
 .card__stock { margin: 6px 0 0; font-family: var(--f-mono); font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: var(--fog); }
 
 /* ---------- card frame: slightly rounded, a quiet contour with neo-tribal thorns growing out of the corners ----------
