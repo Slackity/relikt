@@ -655,7 +655,7 @@
       tbody.appendChild(h('tr', null,
         h('td', null, cb),
         h('td', null, p.images[0] ? h('img', { class: 'thumb', src: img(p.images[0]), alt: '', loading: 'lazy' }) : h('span', { class: 'thumb' })),
-        h('td', null, h('div', { class: 'name', text: p.ru }), h('div', { class: 'muted', text: [p.brand, p.en !== p.ru ? p.en : ''].filter(Boolean).join(' · ') }), !p.visible ? h('span', { class: 'tag tag--draft', text: t('prod.draft') }) : null),
+        h('td', null, h('div', { class: 'name', text: p.ru, onclick: function () { openProduct(p); } }), h('div', { class: 'muted', text: [p.brand, p.en !== p.ru ? p.en : ''].filter(Boolean).join(' · ') }), !p.visible ? h('span', { class: 'tag tag--draft', text: t('prod.draft') }) : null),
         h('td', { class: 'hide-m' }, catName(p.category)),
         h('td', { class: 'num' }, Core.discountOf(p, S.settings) ? [h('s', { class: 'muted', text: money(p.price) }), h('br'), money(Core.salePrice(p, S.settings)) + ' ', h('span', { class: 'tag tag--sale', text: '−' + Core.discountOf(p, S.settings) + '%' })] : money(p.price)),
         h('td', null, av),

@@ -170,6 +170,7 @@ html.has-banner { --banner-h: 34px; }
 .chip.is-on { color: var(--void); background: var(--bone); border-color: var(--bone); }
 .chip.is-on i { color: var(--void); opacity: .6; }
 .chips--sm .chip { padding: 8px 12px; font-size: 10px; }
+.chips-line { display: contents; }   /* availability + condition: one scrolling row on a phone */
 .search { position: relative; flex: 1 1 220px; min-width: 180px; max-width: 360px; margin-left: auto; }
 .search svg { position: absolute; left: 12px; top: 50%; width: 18px; height: 18px; transform: translateY(-50%); color: var(--fog); pointer-events: none; }
 .search input, .select select, .opt__input, .field input, .field select, .field textarea {
@@ -449,6 +450,31 @@ html.has-banner { --banner-h: 34px; }
   .chip { padding: 9px 12px; }
   .toast { white-space: normal; width: max-content; max-width: calc(100vw - 32px); }
   .lightbox__nav { width: 44px; height: 44px; }
+}
+/* catalog on a phone: the head and the filters take a few short rows, so the first cards show on the first screen */
+@media (max-width: 760px) {
+  .page-catalog .shop { padding-top: calc(var(--banner-h, 0px) + env(safe-area-inset-top, 0px) + 92px); }
+  .page-catalog .shop__head { gap: 6px; margin-bottom: 16px; }
+  .page-catalog #crumb { display: none; }
+  .page-catalog .shop__title { font-size: 40px; }
+  .page-catalog .shop__head .sec-head__lead { font-size: 14px; }
+  .page-catalog .filters { gap: 10px; padding-bottom: 14px; }
+  .page-catalog .filters__row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px; }
+  .page-catalog #catChips, .page-catalog .chips-line {
+    position: relative; display: flex; flex-wrap: nowrap; gap: 6px; overflow-x: auto; overscroll-behavior-x: contain; scrollbar-width: none;
+    margin: 0 calc(var(--gut) * -1); padding: 0 var(--gut);
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 var(--gut), #000 calc(100% - 28px), transparent);
+    mask-image: linear-gradient(90deg, transparent, #000 var(--gut), #000 calc(100% - 28px), transparent);
+  }
+  .page-catalog #catChips::-webkit-scrollbar, .page-catalog .chips-line::-webkit-scrollbar { display: none; }
+  .page-catalog .chips-line { grid-column: 1 / -1; }
+  .page-catalog .chips-line .chips { flex: none; flex-wrap: nowrap; gap: 6px; }
+  .page-catalog .chip { flex: none; white-space: nowrap; padding: 8px 11px; }
+  .page-catalog .search { min-width: 0; flex-basis: auto; }
+  .page-catalog .search input, .page-catalog .select select { padding-top: 10px; padding-bottom: 10px; }
+  .page-catalog .search input { padding-left: 34px; padding-right: 8px; font-size: 14px; } .page-catalog .search input::placeholder { font-size: 13px; } .page-catalog .search svg { left: 11px; width: 16px; height: 16px; }
+  .page-catalog .select select { font-size: 10px; letter-spacing: .04em; padding-left: 10px; padding-right: 24px; background-position: right 9px center; }
+  .page-catalog .shop__count { margin: 12px 0 16px; }
 }
 @media (max-width: 640px) {
   .header { grid-template-columns: auto 1fr auto; }

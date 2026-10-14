@@ -67,7 +67,19 @@
       h('span', { text: label }), count != null ? h('i', { text: String(count) }) : null);
   }
 
-  function renderChips() {
+  /* on a phone the chips sit in rows that scroll sideways: a redraw keeps the row where it was,
+     the first one shows the chosen category */
+  var chipRowsDrawn = false;
+  function keepScroll(draw) {
+    var rows = [RK.$('#catChips'), RK.$('#chipsLine')], at = rows.map(function (r) { return r ? r.scrollLeft : 0; });
+    draw();
+    rows.forEach(function (r, i) { if (r) r.scrollLeft = at[i]; });
+    var cc = rows[0], on = cc && RK.$('.is-on', cc);
+    if (!chipRowsDrawn && on && cc.scrollWidth > cc.clientWidth) cc.scrollLeft = on.offsetLeft - (cc.clientWidth - on.offsetWidth) / 2;
+    chipRowsDrawn = true;
+  }
+  function renderChips() { keepScroll(drawChips); }
+  function drawChips() {
     var all = base();
     var cc = RK.$('#catChips'); cc.textContent = '';
     cc.appendChild(chip(RK.t('catalog.all'), st.cat === 'all', function () { st.cat = 'all'; update(); }, all.length));

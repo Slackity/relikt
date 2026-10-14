@@ -114,8 +114,8 @@
   add('filter.reserved', 'catalog', 'Фильтр: бронь', 'Бронь', 'Reserved');
   add('filter.sold', 'catalog', 'Фильтр: продано', 'Продано', 'Sold');
   add('sort.new', 'catalog', 'Сортировка: новые', 'Сначала новые', 'Newest first');
-  add('sort.asc', 'catalog', 'Сортировка: дешевле', 'Цена: по возрастанию', 'Price: low to high');
-  add('sort.desc', 'catalog', 'Сортировка: дороже', 'Цена: по убыванию', 'Price: high to low');
+  add('sort.asc', 'catalog', 'Сортировка: дешевле', 'Сначала дешевле', 'Cheapest first');
+  add('sort.desc', 'catalog', 'Сортировка: дороже', 'Сначала дороже', 'Priciest first');
   add('badge.sold', 'catalog', 'Метка: продано', 'Продано', 'Sold');
   add('badge.order', 'catalog', 'Метка: под заказ', 'Под заказ', 'To order');
   add('badge.reserved', 'catalog', 'Метка: бронь', 'Бронь', 'Reserved');
