@@ -35,6 +35,7 @@
     orderWebhook: '',
     orderSecret: '',
     miniAppUrl: '',
+    postButtons: false,   // the bot answers a new channel post with a piece by a message with an «Открыть в каталоге» button
     adminIds: []
   };
 
@@ -217,6 +218,7 @@
       if (m && !/^[A-Za-z0-9_]{4,32}(\/[A-Za-z0-9_]{3,30})?$/.test(m)) throw err('MINIAPP', 'Mini App link must look like t.me/your_bot or t.me/your_bot/app');
       next.miniAppUrl = m ? 'https://t.me/' + m : '';
     }
+    if (input.postButtons != null) next.postButtons = !!input.postButtons;
     if (input.adminIds != null) {
       var ids = Array.isArray(input.adminIds) ? input.adminIds : String(input.adminIds).split(/[\s,;]+/);
       next.adminIds = ids.map(function (x) { return String(x).replace(/\D/g, ''); }).filter(Boolean).slice(0, 10);

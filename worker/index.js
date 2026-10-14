@@ -15,7 +15,7 @@
  * POST /bot/setup             — подключить webhook бота к этому Worker (кнопка в админке, нужен GitHub-токен админки)
  *                               Админ магазина (settings.adminIds) присылает боту текст, GIF, фото или видео — бот показывает
  *                               пост с кнопкой «Открыть каталог» и по кнопке «Опубликовать» отправляет его в канал
- *                               Новый пост канала с вещью (фото + цена): бот сразу пишет под ним «Название · цена»
+ *                               Если включено в админке: на новый пост канала с вещью (фото + цена) бот сразу пишет под ним «Название · цена»
  *                               с кнопкой «Открыть в каталоге» — под альбомом Telegram кнопки не разрешает
  * POST /bot/pin               — опубликовать в канале пост «RELIKT — каталог» с кнопкой и закрепить его (кнопка в админке;
  *                               бот — админ канала с правами публиковать и закреплять сообщения)
@@ -385,6 +385,7 @@ async function channelPost(p,env){
   const price=postPrice(text);
   if(price==null||/продано/i.test(text))return;
   const s=await shopSettings(env);
+  if(s.postButtons!==true)return;                                // switched off in the admin: Настройки → Telegram
   if(!s.channel||String(p.chat.username||'').toLowerCase()!==String(s.channel).toLowerCase())return;
   const app=/^https:\/\/t\.me\/[A-Za-z0-9_]{4,32}(\/[A-Za-z0-9_]{3,30})?$/.test(String(s.miniAppUrl||''))?s.miniAppUrl:'';
   if(!app)return;
