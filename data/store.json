@@ -271,18 +271,23 @@
       "reservedUntil": "",
       "stock": 1,
       "condition": "",
-      "sizes": [],
+      "sizes": [
+        "S"
+      ],
       "descRu": "",
       "descEn": "",
       "images": [
         "/uploads/tg233-1.webp",
-        "/uploads/tg233-2.webp"
+        "/uploads/tg233-2.webp",
+        "/uploads/mv86cjqz-113eace8.webp",
+        "/uploads/mv86clwj-c9e88404.webp",
+        "/uploads/mv86cns8-0b5b7740.webp"
       ],
-      "visible": true,
+      "visible": false,
       "featured": false,
       "tgPost": 233,
       "createdAt": "2026-10-14T13:22:01+00:00",
-      "updatedAt": "2026-10-14T13:39:59.006Z",
+      "updatedAt": "2026-10-14T13:57:51.216Z",
       "slug": "t-shirt-superdry-233"
     },
     {
