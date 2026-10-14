@@ -297,18 +297,23 @@
       "reservedUntil": "",
       "stock": 1,
       "condition": "",
-      "sizes": [],
+      "sizes": [
+        "S"
+      ],
       "descRu": "",
       "descEn": "",
       "images": [
         "/uploads/tg231-1.webp",
-        "/uploads/tg231-2.webp"
+        "/uploads/tg231-2.webp",
+        "/uploads/mv86bgca-dbed6624.webp",
+        "/uploads/mv86biek-0fdacf6e.webp",
+        "/uploads/mv86bk6a-9e436848.webp"
       ],
       "visible": true,
       "featured": false,
       "tgPost": 231,
       "createdAt": "2026-10-14T13:20:01+00:00",
-      "updatedAt": "2026-10-14T13:39:58.943Z",
+      "updatedAt": "2026-10-14T13:56:51.832Z",
       "slug": "adidas-231"
     },
     {
