@@ -82,6 +82,10 @@
     "miniAppUrl": "https://t.me/relikt_store_bot",
     "postButtons": false,
     "autoImport": "publish",
+    "sale": {
+      "on": false,
+      "percent": 10
+    },
     "adminIds": [
       "315859108"
     ]
