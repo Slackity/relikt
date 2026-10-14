@@ -49,20 +49,7 @@
         "en": "Avito"
       }
     ],
-    "discounts": [
-      {
-        "id": "boost",
-        "ru": "Буст канала",
-        "en": "Channel boost",
-        "percent": 5
-      },
-      {
-        "id": "friend",
-        "ru": "Приведи друга",
-        "en": "Referred a friend",
-        "percent": 15
-      }
-    ],
+    "discounts": [],
     "promos": [
       {
         "code": "RELIKT10",
