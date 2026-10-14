@@ -143,18 +143,21 @@
       "reservedUntil": "",
       "stock": 1,
       "condition": "",
-      "sizes": [],
+      "sizes": [
+        "M"
+      ],
       "descRu": "",
       "descEn": "",
       "images": [
         "/uploads/tg243-1.webp",
-        "/uploads/tg243-2.webp"
+        "/uploads/tg243-2.webp",
+        "/uploads/mv86lm7u-e18dcbb6.webp"
       ],
       "visible": true,
       "featured": false,
       "tgPost": 243,
       "createdAt": "2026-10-14T13:32:01+00:00",
-      "updatedAt": "2026-10-14T13:39:59.670Z",
+      "updatedAt": "2026-10-14T14:05:08.290Z",
       "slug": "adidas-243"
     },
     {
