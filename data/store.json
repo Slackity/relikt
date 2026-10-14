@@ -82,7 +82,8 @@
     "miniAppUrl": "https://t.me/relikt_store_bot",
     "adminIds": [
       "315859108"
-    ]
+    ],
+    "autoImport": "publish"
   },
   "categories": [
     {

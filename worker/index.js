@@ -15,6 +15,8 @@
  * POST /bot/setup             — подключить webhook бота к этому Worker (кнопка в админке, нужен GitHub-токен админки)
  *                               Админ магазина (settings.adminIds) присылает боту текст, GIF, фото или видео — бот показывает
  *                               пост с кнопкой «Открыть каталог» и по кнопке «Опубликовать» отправляет его в канал
+ *                               Автоимпорт (включается в админке): новый пост канала с фото и ценой или пост, где дописали
+ *                               «Продано», сразу запускает импорт на GitHub (нужно право Actions у GITHUB_TOKEN)
  *                               Если включено в админке: на новый пост канала с вещью (фото + цена) бот сразу пишет под ним «Название · цена»
  *                               с кнопкой «Открыть в каталоге» — под альбомом Telegram кнопки не разрешает
  * POST /bot/pin               — опубликовать в канале пост «RELIKT — каталог» с кнопкой и закрепить его (кнопка в админке;
@@ -379,14 +381,38 @@ function postPrice(text){
    message right after it — "Новая футболка Ed Hardy · 3 200 ₽" — with an "Open in catalog" button. The button
    opens the Mini App on this piece (startapp=post_<n>: the piece imported from that post, the catalog until then).
    The import skips it: it has no photos. Bots get no updates about their own posts, so this never loops. */
-async function channelPost(p,env){
-  if(!p||!p.chat||!p.photo||p.caption==null||p.forward_origin)return; // an album's other photos come without a caption
+/* every new or edited post of the shop's channel: auto-import, then the message with the button */
+async function channelUpdate(p,env,edited){
+  if(!p||!p.chat||p.forward_origin)return;
+  const s=await shopSettings(env);
+  if(!s.channel||String(p.chat.username||'').toLowerCase()!==String(s.channel).toLowerCase())return;
+  await channelImport(p,env,s,edited);
+  if(!edited)await channelPost(p,env,s);
+}
+/* Auto-import: a new post with a photo and a price, or a post edited to say «Продано», starts the shop's import right away
+   (.github/workflows/import.yml on GitHub). New pieces show up in the catalog in 2–3 minutes, sold ones get marked.
+   settings.autoImport: '' off, 'draft' — new pieces stay hidden until published in the admin, 'publish' — shown at once. */
+async function channelImport(p,env,s,edited){
+  if(s.autoImport!=='draft'&&s.autoImport!=='publish'||!env.GITHUB_TOKEN)return;
+  if(!p.photo||p.caption==null)return;                            // an album's other photos come without a caption
+  const text=String(p.caption), sold=/продано/i.test(text);
+  if(edited?!sold:sold||postPrice(text)==null)return;
+  // Telegram repeats an update it thinks was lost: one run per post (and one more once it says «Продано»)
+  const key='imp:'+p.chat.id+':'+p.message_id+(sold?':sold':'');
+  if(env.ORDERS){if(await env.ORDERS.get(key))return;await env.ORDERS.put(key,'1',{expirationTtl:172800});}
+  try{
+    await gh(env,env.GITHUB_TOKEN,'POST','/actions/workflows/import.yml/dispatches',{ref:branchName(env),inputs:{publish:s.autoImport==='publish'?'true':'false'}});
+  }catch(e){
+    if(env.ORDERS)await env.ORDERS.delete(key);
+    await warnOnce(env,'warn:import','⚠️ Автоимпорт из канала не запустился ('+e.message+'). У GITHUB_TOKEN в Worker должно быть право Actions: Read and write. Пока можно импортировать кнопкой в админке.');
+  }
+}
+async function channelPost(p,env,s){
+  if(!p.photo||p.caption==null)return;                            // an album's other photos come without a caption
   const text=String(p.caption);
   const price=postPrice(text);
   if(price==null||/продано/i.test(text))return;
-  const s=await shopSettings(env);
   if(s.postButtons!==true)return;                                // switched off in the admin: Настройки → Telegram
-  if(!s.channel||String(p.chat.username||'').toLowerCase()!==String(s.channel).toLowerCase())return;
   const app=/^https:\/\/t\.me\/[A-Za-z0-9_]{4,32}(\/[A-Za-z0-9_]{3,30})?$/.test(String(s.miniAppUrl||''))?s.miniAppUrl:'';
   if(!app)return;
   // Telegram repeats an update it thinks was lost: one message per post
@@ -397,12 +423,12 @@ async function channelPost(p,env){
   const label=[title&&title.charAt(0).toUpperCase()+title.slice(1),String(price).replace(/\B(?=(\d{3})+(?!\d))/g,' ')+' ₽',/под\s+заказ/i.test(text)?'под заказ':''].filter(Boolean).join(' · ');
   const res=await tgApi(env,'sendMessage',{chat_id:p.chat.id,text:label,disable_notification:true,
     reply_markup:{inline_keyboard:[[{text:'Открыть в каталоге',url:app+'?startapp=post_'+p.message_id}]]}});
-  if(!res.ok){if(env.ORDERS)await env.ORDERS.delete(key);await channelWarning(env,res.description);}
+  if(!res.ok){if(env.ORDERS)await env.ORDERS.delete(key);await warnOnce(env,'warn:channel','⚠️ Бот не смог отправить в канал кнопку «Открыть в каталоге» под постом ('+(res.description||'нет доступа')+'). Проверьте, что бот — админ канала с правом публиковать сообщения.');}
 }
-/* the bot could not post in the channel: tell the manager, at most once a day */
-async function channelWarning(env,why){
-  if(env.ORDERS){if(await env.ORDERS.get('warn:channel'))return;await env.ORDERS.put('warn:channel','1',{expirationTtl:86400});}
-  await tgSend(env,'⚠️ Бот не смог отправить в канал кнопку «Открыть в каталоге» под постом ('+(why||'нет доступа')+'). Проверьте, что бот — админ канала с правом публиковать сообщения.').catch(()=>{});
+/* something about the channel went wrong: tell the manager, at most once a day per kind */
+async function warnOnce(env,key,text){
+  if(env.ORDERS){if(await env.ORDERS.get(key))return;await env.ORDERS.put(key,'1',{expirationTtl:86400});}
+  await tgSend(env,text).catch(()=>{});
 }
 /* ---------- channel posts with buttons, made through the bot ----------
    A shop admin (settings.adminIds) sends the bot a message: text, or one GIF, photo or video with a caption. The bot answers
@@ -476,7 +502,7 @@ async function telegramUpdate(request,env){
   if(request.method!=='POST'||!env.BOT_TOKEN)return new Response('ok');
   if(request.headers.get('X-Telegram-Bot-Api-Secret-Token')!==await webhookSecret(env))return new Response('forbidden',{status:403});
   const u=await request.json().catch(()=>null);
-  if(u&&u.channel_post){await channelPost(u.channel_post,env);return new Response('ok');}
+  if(u&&(u.channel_post||u.edited_channel_post)){await channelUpdate(u.channel_post||u.edited_channel_post,env,!u.channel_post);return new Response('ok');}
   if(u&&u.callback_query){await draftAction(u.callback_query,env);return new Response('ok');}
   const m=u&&u.message;
   // only private chats: the commands below for everyone, other messages only from the shop admins (posts with buttons)
@@ -506,7 +532,7 @@ async function botSetup(request,env){
   const info=await tgApi(env,'getWebhookInfo');
   const before=info.result&&info.result.url||'';
   // presses of Start that waited while nobody listened are answered now (Telegram keeps them up to a day)
-  const set=await tgApi(env,'setWebhook',{url:hook,secret_token:await webhookSecret(env),allowed_updates:['message','channel_post','callback_query'],drop_pending_updates:false});
+  const set=await tgApi(env,'setWebhook',{url:hook,secret_token:await webhookSecret(env),allowed_updates:['message','channel_post','edited_channel_post','callback_query'],drop_pending_updates:false});
   if(!set.ok)return json({ok:false,error:set.description||'telegram_error'},502);
   await tgApi(env,'setMyCommands',{commands:[{command:'start',description:'Открыть магазин'},{command:'catalog',description:'Каталог'}]});
   let menuSet=false;

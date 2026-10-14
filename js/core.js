@@ -35,7 +35,8 @@
     orderWebhook: '',
     orderSecret: '',
     miniAppUrl: '',
-    postButtons: false,   // the bot answers a new channel post with a piece by a message with an «Открыть в каталоге» button
+    postButtons: false,
+    autoImport: '',       // a new channel post with a price starts the import: '' off, 'draft' or 'publish'   // the bot answers a new channel post with a piece by a message with an «Открыть в каталоге» button
     adminIds: []
   };
 
@@ -219,6 +220,7 @@
       next.miniAppUrl = m ? 'https://t.me/' + m : '';
     }
     if (input.postButtons != null) next.postButtons = !!input.postButtons;
+    if (input.autoImport != null) next.autoImport = input.autoImport === 'draft' || input.autoImport === 'publish' ? input.autoImport : '';
     if (input.adminIds != null) {
       var ids = Array.isArray(input.adminIds) ? input.adminIds : String(input.adminIds).split(/[\s,;]+/);
       next.adminIds = ids.map(function (x) { return String(x).replace(/\D/g, ''); }).filter(Boolean).slice(0, 10);

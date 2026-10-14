@@ -77,6 +77,8 @@
       'tx.title': 'Тексты', 'tx.hint': 'Все тексты сайта на русском и английском. Правьте прямо в поле и нажмите «Сохранить». «Сбросить» возвращает исходный текст. *Звёздочки* дают курсив в большом тексте «О нас», а {percent} и {days} подставляют числа брони из настроек.',
       'tx.changed': 'несохранённых правок', 'tx.reset': 'Сбросить', 'tx.search': 'Поиск по текстам…', 'tx.html': 'Можно <br> и <em>',
       'set.postButtons': 'Сообщение с кнопкой «Открыть в каталоге» после постов с вещами', 'set.postButtonsHint': 'Бот отвечает на каждый новый пост в канале с фото и ценой коротким сообщением «Название · цена» с кнопкой, которая открывает эту вещь в мини-аппе. Работает с Worker новее 14.10.2026.',
+      'set.autoImport': 'Автоимпорт новых постов с вещами', 'set.autoImport_off': 'Выключен — только кнопкой «Импорт»', 'set.autoImport_draft': 'Черновиками — опубликую сам', 'set.autoImport_publish': 'Сразу в каталог',
+      'set.autoImportHint': 'Новый пост в канале с фото и ценой сам запускает импорт: вещь появится в каталоге через 2–3 минуты. Если дописать в пост «Продано», вещь отметится проданной. Нужны Worker от 14.10.2026, право Actions: Read and write у GITHUB_TOKEN в Worker и нажатая «Подключить бота».',
       'set.title': 'Настройки', 'set.telegram': 'Telegram', 'set.channel': 'Канал', 'set.manager': 'Менеджер (ссылки «Написать»)', 'set.reviews': 'Канал с отзывами', 'set.currency': 'Знак валюты',
       'set.reserve': 'Бронь', 'set.reservePct': 'Задаток, % от цены (0 — без брони)', 'set.reserveDays': 'Вещь держим, дней', 'set.banner': 'Плашка-объявление', 'set.bannerOn': 'Показывать плашку вверху каждой страницы', 'set.bannerRu': 'Текст (рус.)', 'set.bannerEn': 'Текст (англ.)',
       'set.payment': 'Реквизиты для оплаты', 'set.paymentHint': 'Покупатель видит их на шаге оплаты и прикладывает чек. Если номер пустой, заказ уходит менеджеру без шага оплаты.',
@@ -129,6 +131,8 @@
       'tx.title': 'Texts', 'tx.hint': 'Every text on the site, in Russian and English. Edit it in place and press Save. “Reset” brings back the original wording. Use *stars* for italics in the large About text, and {percent} / {days} for the reservation numbers from Settings.',
       'tx.changed': 'unsaved changes', 'tx.reset': 'Reset', 'tx.search': 'Search texts…', 'tx.html': 'May contain <br> and <em>',
       'set.postButtons': 'Message with an “Открыть в каталоге” button after posts with pieces', 'set.postButtonsHint': 'The bot answers each new channel post with a photo and a price by a short “Name · price” message with a button that opens the piece in the mini app. Needs the Worker from 14.10.2026 or newer.',
+      'set.autoImport': 'Auto-import of new posts with pieces', 'set.autoImport_off': 'Off — only with the Import button', 'set.autoImport_draft': 'As drafts — I publish them', 'set.autoImport_publish': 'Straight into the catalog',
+      'set.autoImportHint': 'A new channel post with a photo and a price starts the import by itself: the piece shows up in the catalog in 2–3 minutes. Add “Продано” to a post and the piece is marked sold. Needs the Worker from 14.10.2026, Actions: Read and write on the Worker’s GITHUB_TOKEN and “Connect the bot” pressed.',
       'set.title': 'Settings', 'set.telegram': 'Telegram', 'set.channel': 'Channel handle', 'set.manager': 'Manager handle (“Message” links)', 'set.reviews': 'Reviews channel handle', 'set.currency': 'Currency symbol',
       'set.reserve': 'Reservation', 'set.reservePct': 'Deposit, % of the price (0 = no reservations)', 'set.reserveDays': 'Held for, days', 'set.banner': 'Announcement bar', 'set.bannerOn': 'Show the bar at the top of every page', 'set.bannerRu': 'Text (Russian)', 'set.bannerEn': 'Text (English)',
       'set.payment': 'Payment details', 'set.paymentHint': 'Shown to the buyer on the payment step, who then attaches the receipt. With an empty number the order goes to the manager without a payment step.',
@@ -955,6 +959,8 @@
 
     var banner = h('input', { type: 'checkbox' }); banner.checked = !!s.banner.on;
     var postButtons = h('input', { type: 'checkbox' }); postButtons.checked = s.postButtons === true;
+    var autoImport = h('select', null, ['', 'draft', 'publish'].map(function (v) { return h('option', { value: v, text: t('set.autoImport_' + (v || 'off')) }); }));
+    autoImport.value = s.autoImport || '';
     var delivery = s.delivery, discounts = s.discounts, promos = s.promos;
     var dHost = h('div'), vHost = h('div'), pHost = h('div');
     function drawDelivery() {
@@ -996,7 +1002,7 @@
         banner: { on: banner.checked, ru: f.bannerRu.value, en: f.bannerEn.value },
         payment: { bank: f.payBank.value, recipient: f.payRecipient.value, details: f.payDetails.value, note: f.payNote.value },
         promos: promos, delivery: delivery, discounts: discounts,
-        orderWebhook: f.orderWebhook.value, orderSecret: f.orderSecret.value, adminIds: f.adminIds.value, miniAppUrl: f.miniAppUrl.value, postButtons: postButtons.checked
+        orderWebhook: f.orderWebhook.value, orderSecret: f.orderSecret.value, adminIds: f.adminIds.value, miniAppUrl: f.miniAppUrl.value, postButtons: postButtons.checked, autoImport: autoImport.value
       };
       saveBtn.disabled = true;
       mutate(function (d) { return Core.setSettings(d, payload); }, 'Настройки магазина').then(function () { toast(t('common.saved')); saveBtn.disabled = false; route(); })
@@ -1026,6 +1032,7 @@
       h('div', { class: 'row row--3' }, fld(t('set.channel'), inp('channel', s.channel)), fld(t('set.manager'), inp('manager', s.manager)), fld(t('set.reviews'), inp('reviews', s.reviews))),
       h('div', { class: 'row row--3' }, fld(t('set.currency'), inp('currency', s.currency, { maxlength: '6' })),
         h('div', { style: 'grid-column: span 2' }, fld(t('set.miniApp'), inp('miniAppUrl', s.miniAppUrl, { placeholder: 'https://t.me/your_bot', spellcheck: 'false' }), t('set.miniAppHint')))),
+      h('div', { class: 'row row--3' }, h('div', { style: 'grid-column: span 2' }, fld(t('set.autoImport'), autoImport, t('set.autoImportHint')))),
       h('label', { class: 'check' }, postButtons, h('span', { text: t('set.postButtons') })),
       h('p', { class: 'panel__hint', text: t('set.postButtonsHint') })));
     main.appendChild(panel(t('set.payment'), t('set.paymentHint'),
