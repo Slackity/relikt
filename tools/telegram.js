@@ -104,7 +104,8 @@ const SIZE_TOKEN = '(xxs|xs|s|m|l|xl|xxl)';
 const SIZE_RANGE_RE = new RegExp('(?:^|[\\s(])' + SIZE_TOKEN + '(?:\\s*[-–]\\s*' + SIZE_TOKEN + ')?(?=$|[\\s).,])', 'i');
 
 const BRANDS = ['Ed Hardy', 'Juicy Couture', 'Dolls Kill', 'Roberto Cavalli', 'Paul Frank', 'True Religion', 'Playboy',
-  'Melanie Martinez', 'TCH', 'Christian Audigier', 'Urban Outfitters', 'Polo Ralph Lauren', 'Balenciaga'];
+  'Melanie Martinez', 'TCH', 'Christian Audigier', 'Urban Outfitters', 'Polo Ralph Lauren', 'Balenciaga',
+  'Adidas', 'Superdry', 'Hollister', 'Abercrombie & Fitch'];
 
 function detectBrand(title) {
   const found = [];
@@ -132,7 +133,7 @@ const CATEGORY_RULES = [
   ['sets', /костюм|комплект/i],
   ['dresses', /платье|комбинезон|юбк/i],
   ['bottoms', /штаны|брюки|джинсы|шорты|лосины/i],
-  ['outerwear', /куртк|бомбер|зипк|худи|кофта|толстовк|свитшот|пальто|жилет/i],
+  ['outerwear', /куртк|бомбер|зипк|худи|кофта|толстовк|свитшот|пальто|жилет|олимпийк|ветровк/i],
   ['tops', /футболк|майк|лонгслив|топ\b|рубашк/i]
 ];
 function detectCategory(title) {
@@ -148,10 +149,10 @@ const EN_RULES = [
   [/редкий винтажный костюм/i, 'Rare vintage suit'],
   [/редкая винтажная футболка/i, 'Rare vintage T-shirt'],
   [/лонгслив с флагом великобритании/i, 'Union Jack long sleeve'],
-  [/кофта с капюшоном/i, 'Hoodie'],
+  [/кофта с капюшоном/i, 'Hoodie'], [/кропнутая зипка/i, 'Cropped zip hoodie'], [/олимпийка/i, 'Track jacket'], [/ветровка/i, 'Windbreaker'], [/бомбер/i, 'Bomber jacket'],
   [/штаны/i, 'Pants'], [/шорты/i, 'Shorts'], [/сумочка/i, 'Handbag'], [/сумка/i, 'Bag'],
   [/костюм/i, 'Suit'], [/платье/i, 'Dress'], [/комбинезон/i, 'Jumpsuit'], [/футболка/i, 'T-shirt'],
-  [/лонгслив/i, 'Long sleeve'], [/майка/i, 'Tank top'], [/зипка/i, 'Zip hoodie'], [/худи/i, 'Hoodie'],
+  [/лонгслив/i, 'Long sleeve'], [/майка/i, 'Tank top'], [/зипка/i, 'Zip hoodie'], [/худи/i, 'Hoodie'], [/кофта/i, 'Top'],
   [/мерч/i, 'merch'], [/редкая/i, 'Rare'], [/редкий/i, 'Rare'], [/винтажная/i, 'vintage'], [/винтажный/i, 'vintage']
 ];
 function toEnglish(ru) {
