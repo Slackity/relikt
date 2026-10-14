@@ -1,95 +1,10 @@
 {
-  "at": "2026-10-14T13:39:57.207Z",
+  "at": "2026-10-14T13:43:01.064Z",
   "channel": "relikt_store",
   "posts": 59,
-  "added": [
-    {
-      "id": "ped1f3cd2",
-      "ru": "Олимпийка Adidas",
-      "price": 4000,
-      "availability": "instock"
-    },
-    {
-      "id": "p7cc0d4f1",
-      "ru": "Бомбер Adidas",
-      "price": 3800,
-      "availability": "instock"
-    },
-    {
-      "id": "pffe947c3",
-      "ru": "Зипка Abercrombie & Fitch",
-      "price": 2990,
-      "availability": "instock"
-    },
-    {
-      "id": "p07deb729",
-      "ru": "Худи True Religion",
-      "price": 4500,
-      "availability": "instock"
-    },
-    {
-      "id": "pf239358d",
-      "ru": "Зипка True Religion",
-      "price": 4600,
-      "availability": "instock"
-    },
-    {
-      "id": "pfdbad058",
-      "ru": "Кропнутая зипка Adidas",
-      "price": 3400,
-      "availability": "instock"
-    },
-    {
-      "id": "p777d9a72",
-      "ru": "Ветровка Adidas",
-      "price": 3500,
-      "availability": "instock"
-    },
-    {
-      "id": "pbc9edfa3",
-      "ru": "Зипка Hollister",
-      "price": 4500,
-      "availability": "instock"
-    },
-    {
-      "id": "p357ec9b2",
-      "ru": "Футболка Superdry",
-      "price": 2700,
-      "availability": "instock"
-    },
-    {
-      "id": "p52f78d95",
-      "ru": "Футболка Adidas",
-      "price": 1290,
-      "availability": "instock"
-    },
-    {
-      "id": "pe79b4263",
-      "ru": "Худи Superdry",
-      "price": 2390,
-      "availability": "instock"
-    },
-    {
-      "id": "p1bcde74c",
-      "ru": "Олимпийка Adidas",
-      "price": 3490,
-      "availability": "instock"
-    },
-    {
-      "id": "p76c22041",
-      "ru": "Олимпийка Adidas",
-      "price": 3490,
-      "availability": "instock"
-    },
-    {
-      "id": "p8643fd8c",
-      "ru": "Кофта True Religion",
-      "price": 3290,
-      "availability": "instock"
-    }
-  ],
+  "added": [],
   "markedSold": [],
   "skipped": 9,
-  "imageErrors": 2,
+  "imageErrors": 0,
   "published": true
 }
