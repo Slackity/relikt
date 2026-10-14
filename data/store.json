@@ -486,18 +486,23 @@
       "reservedUntil": "",
       "stock": 1,
       "condition": "",
-      "sizes": [],
+      "sizes": [
+        "XS-S"
+      ],
       "descRu": "",
       "descEn": "",
       "images": [
         "/uploads/tg210-1.webp",
-        "/uploads/tg210-2.webp"
+        "/uploads/tg210-2.webp",
+        "/uploads/mv862btd-38915c0a.webp",
+        "/uploads/mv862e5k-94f6e727.webp",
+        "/uploads/mv862fxl-6a0be31f.webp"
       ],
       "visible": true,
       "featured": false,
       "tgPost": 210,
       "createdAt": "2026-10-14T12:02:01+00:00",
-      "updatedAt": "2026-10-14T13:39:58.272Z",
+      "updatedAt": "2026-10-14T13:49:46.604Z",
       "slug": "adidas-210"
     },
     {
