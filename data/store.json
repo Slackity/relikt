@@ -349,18 +349,25 @@
       "reservedUntil": "",
       "stock": 1,
       "condition": "",
-      "sizes": [],
+      "sizes": [
+        "XS"
+      ],
       "descRu": "",
       "descEn": "",
       "images": [
         "/uploads/tg225-1.webp",
-        "/uploads/tg225-2.webp"
+        "/uploads/tg225-2.webp",
+        "/uploads/mv868ucq-4cf60013.webp",
+        "/uploads/mv868qnm-465fa6db.webp",
+        "/uploads/mv868ska-bf940b74.webp",
+        "/uploads/mv868vv3-b0acd30c.webp",
+        "/uploads/mv868xgu-6b92eb7d.webp"
       ],
       "visible": true,
       "featured": false,
       "tgPost": 225,
       "createdAt": "2026-10-14T12:10:01+00:00",
-      "updatedAt": "2026-10-14T13:39:58.631Z",
+      "updatedAt": "2026-10-14T13:55:15.896Z",
       "slug": "zip-hoodie-adidas-225"
     },
     {
