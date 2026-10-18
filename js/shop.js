@@ -211,6 +211,7 @@
 
   ui.openCart = function (v) {
     mountDrawer();
+    var toast = RK.$('#toast'); if (toast) toast.classList.remove('show');   // an earlier note must not sit on the cart's buttons
     opener = doc.activeElement;
     view = v || 'cart';
     scrim.hidden = false; drawer.hidden = false;
@@ -251,6 +252,12 @@
       pay != null && pay !== t.total ? h('div', { class: 'sum__pay' }, h('dt', { text: RK.t('pay.now') }), h('dd', { text: RK.money(pay) })) : null);
   }
 
+  /* «Мои заказы» right from the cart: status and tracking of what was ordered before */
+  function ordersLink() {
+    return h('a', { class: 'drawer__orders', href: 'account.html', onclick: function () { ui.closeCart(); } },
+      h('span', null, h('b', { text: RK.t('nav.account') }), h('small', { text: RK.t('cart.ordersHint') })),
+      h('i', { 'aria-hidden': 'true', text: '→' }));
+  }
   function renderCart() {
     var lines = RK.cart.lines();
     titleEl.textContent = RK.t('cart.title') + (lines.length ? ' (' + RK.cart.count() + ')' : '');
@@ -259,6 +266,7 @@
         RK.svg('<path d="M5 8.5h14l-1 11.5H6L5 8.5z" fill="none" stroke="currentColor" stroke-width="0.8" stroke-linejoin="round"/><path d="M9 8.5V7a3 3 0 0 1 6 0v1.5" fill="none" stroke="currentColor" stroke-width="0.8"/>', 'drawer__empty-icon'),
         h('p', { text: RK.t('cart.empty') }),
         h('a', { class: 'btn btn--ghost', href: 'catalog.html', onclick: function () { ui.closeCart(); } }, h('span', { text: RK.t('cta.catalog') }))));
+      bodyEl.appendChild(ordersLink());
       return;
     }
     var list = h('ul', { class: 'lines' });
@@ -296,6 +304,7 @@
         })));
     }
     if ((S().promos || []).some(function (x) { return x.active !== false; })) bodyEl.appendChild(promoBox());
+    bodyEl.appendChild(ordersLink());
 
     footEl.appendChild(sumList(RK.cart.totals()));
     footEl.appendChild(h('button', { class: 'btn btn--solid btn--block', type: 'button', onclick: function () { go('checkout'); } },

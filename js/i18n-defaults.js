@@ -282,6 +282,7 @@
   add('acc.ask', 'account', 'Кнопка: вопрос по заказу', 'Вопрос по заказу', 'Ask about this order');
   add('acc.msg', 'account', 'Сообщение менеджеру ({number})', 'Привет! У меня вопрос по заказу {number}.', 'Hi! I have a question about order {number}.');
   add('done.sentTrack', 'cart', 'Заказ отправлен из Telegram: текст', 'Заказ и чек у менеджера: он проверит оплату и напишет тебе в Telegram. Статус заказа — всегда в «Мои заказы».', 'Your order and receipt are with the manager, who will check the payment and message you on Telegram. The status is always in “My orders”.');
+  add('cart.ordersHint', 'cart', 'Корзина: подпись под «Мои заказы»', 'Статус и трек-номер твоих заказов', 'Status and tracking of your orders');
   add('done.track', 'cart', 'Кнопка: мои заказы после заказа', 'Следить за заказом', 'Track this order');
 
   var I18N = { ru: {}, en: {} };

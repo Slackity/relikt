@@ -239,6 +239,13 @@ html.has-banner { --banner-h: 34px; }
 .opt.has-error .sizes { animation: nudge .4s ease; }
 @keyframes nudge { 20%, 60% { transform: translateX(-5px); } 40%, 80% { transform: translateX(5px); } }
 /* the bank on the pay step in one tap */
+/* «Мои заказы» in the cart */
+.drawer__orders { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-top: 20px; padding: 12px 14px; color: var(--bone); border: 1px solid var(--bone-14); border-radius: 10px; transition: border-color .2s, background .2s; }
+.drawer__orders:hover, .drawer__orders:focus-visible { border-color: var(--bone-40); background: var(--bone-08); }
+.drawer__orders b { display: block; font: 500 11px/1.2 var(--f-mono); letter-spacing: .14em; text-transform: uppercase; }
+.drawer__orders small { display: block; margin-top: 5px; font-size: 12px; color: var(--fog); }
+.drawer__orders i { font-style: normal; color: var(--bone-70); }
+.drawer__empty + .drawer__orders { margin-top: 28px; }
 .bank-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 4px; }
 .bank-chip { padding: 7px 10px; border: 1px solid var(--bone-14); border-radius: 6px; font: 400 12px/1 var(--f-body); color: var(--bone-70); transition: border-color .2s, color .2s; }
 .bank-chip:hover, .bank-chip:focus-visible { border-color: var(--bone-40); color: var(--bone); }
