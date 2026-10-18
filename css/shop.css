@@ -475,6 +475,9 @@ html.has-banner { --banner-h: 34px; }
 .acc-step.is-done { color: var(--bone); } .acc-step.is-done i { background: var(--bone); border-color: var(--bone); } .acc-step.is-done::before { background: var(--bone-70); }
 .acc-step.is-now { color: var(--bone); } .acc-step.is-now i { border-color: var(--blood-hot); box-shadow: 0 0 0 4px rgba(216, 38, 47, .18); animation: acc-pulse 1.8s ease-in-out infinite; }
 @keyframes acc-pulse { 50% { box-shadow: 0 0 0 7px rgba(216, 38, 47, 0); } }
+.acc-msg { display: grid; gap: 6px; padding: 12px 14px; border-left: 2px solid var(--blood-hot); border-radius: 0 8px 8px 0; background: var(--bone-08); }
+.acc-msg .eyebrow { margin: 0; }
+.acc-msg p:last-child { margin: 0; font-size: 14px; line-height: 1.5; color: var(--bone); white-space: pre-line; overflow-wrap: anywhere; }
 .acc-track { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; padding: 12px 14px; border: 1px dashed var(--bone-40); border-radius: 8px; }
 .acc-track .eyebrow { margin: 0; flex-basis: 100%; }
 .acc-track__val { font: 500 15px/1.3 var(--f-mono); letter-spacing: .06em; color: var(--bone); word-break: break-all; }

@@ -269,6 +269,7 @@
   add('acc.note.shippedNoTrack', 'account', 'Пояснение: отправлен без трек-номера', 'Заказ передан в доставку. Трек-номер появится здесь.', 'Your order has been handed to delivery. The tracking number will show up here.');
   add('acc.note.done', 'account', 'Пояснение: выполнен', 'Заказ получен. Спасибо, что выбрали RELIKT!', 'Order received. Thank you for choosing RELIKT!');
   add('acc.note.cancelled', 'account', 'Пояснение: отменён', 'Заказ отменён.', 'This order was cancelled.');
+  add('acc.fromShop', 'account', 'Сообщение менеджера: подпись', 'Сообщение от RELIKT', 'A note from RELIKT');
   add('acc.track', 'account', 'Трек-номер', 'Трек-номер', 'Tracking number');
   add('acc.trackOpen', 'account', 'Ссылка на отслеживание', 'Отследить посылку', 'Track the parcel');
   add('acc.copy', 'account', 'Кнопка: скопировать трек', 'Скопировать', 'Copy');
