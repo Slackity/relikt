@@ -65,7 +65,7 @@
     var r = RK.cart.add(p, size, qty);
     if (r === 'exists') { ui.openCart(); return r; }
     RK.haptic('success');
-    RK.toast(RK.t('toast.cart'));
+    if (!(opts && opts.open)) RK.toast(RK.t('toast.cart'));   // an opened cart says it already, and a toast would cover its button
     var btn = RK.$('#cartBtn');
     if (btn) { btn.classList.remove('bump'); void btn.offsetWidth; btn.classList.add('bump'); }
     if (opts && opts.open) ui.openCart();
@@ -245,7 +245,7 @@
 
   function sumList(t, pay) {
     return h('dl', { class: 'sum' },
-      h('div', null, h('dt', { text: RK.t('cart.subtotal') }), h('dd', { text: RK.money(t.subtotal) })),
+      t.cut ? h('div', null, h('dt', { text: RK.t('cart.subtotal') }), h('dd', { text: RK.money(t.subtotal) })) : null,
       t.cut ? h('div', null, h('dt', { text: RK.t('cart.discount') + (t.percent ? ' −' + t.percent + '%' : '') }), h('dd', { text: '−' + RK.money(t.cut) })) : null,
       h('div', { class: 'sum__total' }, h('dt', { text: RK.t('cart.total') }), h('dd', { text: RK.money(t.total) })),
       pay != null && pay !== t.total ? h('div', { class: 'sum__pay' }, h('dt', { text: RK.t('pay.now') }), h('dd', { text: RK.money(pay) })) : null);
@@ -385,9 +385,19 @@
       h('p', { class: 'form__error', id: 'formError', role: 'alert' }));
     form.addEventListener('submit', next);
     phoneMask(RK.$('#f_phone', form));
-    form.addEventListener('input', function () { formState = collect(); });
+    // 1. a field the buyer is fixing loses its red note at once, not on the next press of the button
+    form.addEventListener('input', function (e) { formState = collect(); if (e.target && e.target.id && e.target.getAttribute('aria-invalid') === 'true') setErr(e.target.id, ''); });
+    // the pickup point is needed only once a delivery service is chosen
+    var syncAddress = function () {
+      var later = !delivery.value, lbl = RK.$('label[for="f_address"]', form), area = RK.$('#f_address', form);
+      lbl.textContent = RK.t('checkout.address') + (later ? ' ' + RK.t('checkout.addressLater') : ' *');
+      area.required = !later;
+      if (later) setErr('f_address', '');
+    };
+    delivery.addEventListener('change', syncAddress);
     bodyEl.appendChild(h('button', { class: 'back', type: 'button', onclick: stepBack }, '← ' + RK.t('checkout.back')));
     bodyEl.appendChild(form);
+    syncAddress();
 
     footEl.appendChild(sumList(t));
     footEl.appendChild(h('button', { class: 'btn btn--solid btn--block', type: 'submit', form: 'checkoutForm', id: 'submitBtn' },
@@ -466,6 +476,7 @@
     var c = formState = collect();
     var bad = false;
     REQUIRED.forEach(function (k) {
+      if (k === 'address' && !c.delivery) return;      // delivery chosen with the manager: no pickup point yet
       var short = k === 'phone' ? c.phone.replace(/\D/g, '').length !== 11 : c[k].length < 2;
       setErr('f_' + k, short ? RK.t(k === 'phone' && c.phone.replace(/\D/g, '').length > 1 ? 'checkout.phoneBad' : 'checkout.required') : '');
       if (short) bad = true;
@@ -545,7 +556,16 @@
     return bar;
   }
 
+  /* a phone number as +7 988 355-64-46, a card number in fours; anything else as typed in the settings */
+  function readable(v) {
+    var d = String(v || '').replace(/\D/g, '');
+    if (/^[78]9\d{9}$/.test(d) && /^[\s+()\d-]+$/.test(v)) return '+7 ' + d.slice(1, 4) + ' ' + d.slice(4, 7) + '-' + d.slice(7, 9) + '-' + d.slice(9);
+    if (/^\d{16,19}$/.test(d) && /^[\s\d]+$/.test(v)) return d.replace(/(\d{4})(?=\d)/g, '$1 ');
+    return String(v || '');
+  }
+
   /* ----- pay: details to transfer to, the bank and the receipt ----- */
+  var BANKS = ['Сбер', 'Т-Банк', 'Альфа-Банк', 'ВТБ', 'Озон Банк', 'Яндекс Банк'];
   function renderPay() {
     titleEl.textContent = RK.t('pay.title');
     var t = RK.cart.totals(), c = formState, p = payDetails();
@@ -556,7 +576,7 @@
     var row = function (label, value, copyable) {
       return h('div', { class: 'paycard__row' },
         h('dt', { class: 'eyebrow', text: label }),
-        h('dd', null, h('span', { text: value }),
+        h('dd', null, h('span', { text: copyable === 'details' ? readable(value) : value }),
           copyable ? h('button', { class: 'paycard__copy', type: 'button', onclick: function () { RK.copy(value).then(function () { RK.haptic('success'); RK.toast(RK.t('pay.copied')); }); } }, RK.t('pay.copy')) : null));
     };
     bodyEl.appendChild(h('button', { class: 'back', type: 'button', onclick: stepBack }, '← ' + RK.t('pay.back')));
@@ -567,14 +587,17 @@
       h('dl', { class: 'paycard__list' },
         p.bank ? row(RK.t('pay.bank'), p.bank) : null,
         p.recipient ? row(RK.t('pay.recipient'), p.recipient) : null,
-        row(RK.t('pay.details'), p.details, true),
+        row(RK.t('pay.details'), p.details, 'details'),
         row(RK.t('pay.sum'), String(amount), true)),
       p.note ? h('p', { class: 'paycard__note', text: p.note }) : null));
 
     var form = h('form', { class: 'form', id: 'payForm', novalidate: true });
     if (direct) {
       var bankInput = h('input', { type: 'text', id: 'f_bank', maxlength: '60', autocomplete: 'off', placeholder: RK.t('pay.fromBankPh'), value: c.bank || '' });
-      bankInput.addEventListener('input', function () { formState.bank = bankInput.value.trim(); });
+      bankInput.addEventListener('input', function () { formState.bank = bankInput.value.trim(); if (formState.bank) setErr('f_bank', ''); });
+      var bankChips = h('div', { class: 'bank-chips' }, BANKS.map(function (b) {
+        return h('button', { class: 'bank-chip', type: 'button', onclick: function () { bankInput.value = b; formState.bank = b; setErr('f_bank', ''); RK.haptic('select'); } }, b);
+      }));
       var file = h('input', { type: 'file', id: 'f_receipt', accept: 'image/*,application/pdf', class: 'receipt__input' });
       var fileName = h('span', { class: 'receipt__name', text: receipt ? receipt.name : RK.t('pay.receiptPick') });
       var label = h('label', { class: 'receipt' + (receipt ? ' is-set' : ''), for: 'f_receipt' },
@@ -588,7 +611,7 @@
         r.onload = function () { receipt = { name: f.name.slice(0, 100), mime: f.type || 'application/octet-stream', data: r.result }; fileName.textContent = receipt.name; label.classList.add('is-set'); RK.haptic('light'); };
         r.readAsDataURL(f);
       });
-      form.appendChild(h('div', { class: 'field' }, h('label', { for: 'f_bank', text: RK.t('pay.fromBank') + ' *' }), bankInput, h('p', { class: 'field__err', id: 'f_bankErr', role: 'alert' })));
+      form.appendChild(h('div', { class: 'field' }, h('label', { for: 'f_bank', text: RK.t('pay.fromBank') + ' *' }), bankChips, bankInput, h('p', { class: 'field__err', id: 'f_bankErr', role: 'alert' })));
       form.appendChild(h('div', { class: 'field' }, h('span', { class: 'field__label', text: RK.t('pay.receipt') + ' *' }), label, file, h('p', { class: 'field__err', id: 'f_receiptErr', role: 'alert' })));
     } else {
       form.appendChild(h('p', { class: 'field__hint', text: RK.t('pay.manualHint') }));
@@ -620,7 +643,8 @@
       L.push((i + 1) + '. ' + it.name + (it.size ? ' (' + it.size + ')' : '') + (it.qty > 1 ? ' × ' + it.qty : '') + ' — ' + money(it.price * it.qty) + (it.order ? ' · под заказ' : ''));
       L.push('   ' + it.url);
     });
-    L.push('', 'Сумма: ' + money(o.subtotal));
+    L.push('');
+    if (o.cut) L.push('Сумма: ' + money(o.subtotal));
     if (o.discounts.length) L.push('Скидки: ' + o.discounts.join(', ') + ' (проверить)');
     if (o.promo) L.push('Промокод: ' + o.promo);
     if (o.cut) L.push('Скидка всего: −' + money(o.cut));
@@ -630,7 +654,8 @@
     if (o.receipt) L.push('Чек: прикреплён ниже');
     L.push('', 'Имя: ' + c.name, 'Telegram: ' + c.contact, 'Телефон: ' + c.phone, 'Город: ' + c.city);
     if (c.delivery) L.push('Доставка: ' + c.delivery);
-    L.push('Пункт выдачи: ' + c.address);
+    if (!c.delivery) L.push('Доставка: выберет вместе с менеджером');
+    if (c.address) L.push('Пункт выдачи: ' + c.address);
     if (c.comment) L.push('Комментарий: ' + c.comment);
     return L.join('\n');
   }
@@ -728,11 +753,13 @@
       h('div', { class: 'done__mark', 'data-orn': 'sigil', 'data-n': '8' }),
       h('p', { class: 'eyebrow', text: RK.t('done.number') }),
       h('p', { class: 'done__num', text: o.number }),
-      h('p', { class: 'done__text' + (o.problem ? ' done__text--warn' : ''), text: RK.t(o.problem ? 'done.problem' : o.sent ? 'done.sent' : 'done.text') }),
+      h('p', { class: 'done__text' + (o.problem ? ' done__text--warn' : ''), text: RK.t(o.problem ? 'done.problem' : o.sent ? (RK.tgInitData ? 'done.sentTrack' : 'done.sent') : 'done.text') }),
       o.sent ? null : h('pre', { class: 'done__summary', text: o.text })));
     RK.ornaments(bodyEl);
     // after an automatic order the chat opens with a short note, so the buyer never has to copy the number
     var followUp = RK.tg('manager') + '?text=' + encodeURIComponent(RK.t('done.msg', { number: o.number, items: o.items.map(function (it) { return it.name + (it.qty > 1 ? ' × ' + it.qty : ''); }).join(', '), amount: RK.money(o.pay) }));
+    var trackable = o.sent && RK.tgInitData;
+    if (trackable) footEl.appendChild(h('a', { class: 'btn btn--solid btn--block', href: 'account.html' }, h('span', { text: RK.t('done.track') + ' →' })));
     footEl.appendChild(h('a', { class: 'btn ' + (o.sent ? 'btn--ghost' : 'btn--solid') + ' btn--block', href: o.sent ? followUp : o.chatUrl, target: '_blank', rel: 'noopener' },
       h('span', null, h('span', { text: RK.t('done.open') }), ' ', h('b', { 'aria-hidden': 'true', text: '↗' }))));
     if (!o.sent) {
@@ -740,8 +767,6 @@
       copyBtn.addEventListener('click', function () { RK.copy(o.text).then(function () { RK.toast(RK.t('done.copied')); }); });
       footEl.appendChild(copyBtn);
     }
-    // the order went through the Worker from inside Telegram: it is in «Мои заказы» right away
-    if (o.sent && RK.tgInitData) footEl.appendChild(h('a', { class: 'btn btn--ghost btn--block', href: 'account.html' }, h('span', { text: RK.t('done.track') })));
     footEl.appendChild(h('button', { class: 'back back--center', type: 'button', onclick: function () { ui.closeCart(); } }, RK.t('done.close')));
   }
 

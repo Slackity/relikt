@@ -103,7 +103,7 @@
     return h('dl', { class: 'acc-sum' },
       o.cut ? row(RK.t('cart.discount'), '−' + RK.money(o.cut)) : null,
       row(RK.t('cart.total'), RK.money(o.total), 'acc-sum__total'),
-      o.status === 'cancelled' ? null : row(RK.t(reserve ? 'acc.deposit' : 'acc.paid'), RK.money(o.pay)),
+      o.status === 'cancelled' ? null : row(RK.t(reserve ? 'acc.deposit' : o.status === 'new' ? 'acc.sent' : 'acc.paid'), RK.money(o.pay)),
       reserve && o.status === 'reserved' && o.total > o.pay ? row(RK.t('acc.left'), RK.money(o.total - o.pay)) : null,
       o.delivery || o.city ? row(RK.t('acc.delivery'), [o.delivery, o.city].filter(Boolean).join(', ') + (o.address ? ' — ' + o.address : '')) : null);
   }

@@ -165,8 +165,10 @@
     addBtn.addEventListener('click', function () {
       if (inCart) { RK.ui.openCart(); return; }
       if ((p.sizes || []).length > 1 && !size) {
-        RK.$('#sizeBlock').classList.add('has-error');
-        RK.toast(RK.t('product.pickSize'));
+        var sb = RK.$('#sizeBlock');
+        sb.classList.remove('has-error'); void sb.offsetWidth; sb.classList.add('has-error');
+        sb.scrollIntoView({ behavior: RK.reduce ? 'auto' : 'smooth', block: 'center' });
+        RK.haptic('error');
         return;
       }
       RK.ui.addToCart(p, size, qty, { open: true });

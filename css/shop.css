@@ -236,8 +236,14 @@ html.has-banner { --banner-h: 34px; }
 .opt__err { display: none; margin: 0; font-size: 13px; color: var(--blood-hot); }
 .opt.has-error .opt__err { display: block; }
 .opt.has-error .size { border-color: var(--blood); }
+.opt.has-error .sizes { animation: nudge .4s ease; }
+@keyframes nudge { 20%, 60% { transform: translateX(-5px); } 40%, 80% { transform: translateX(5px); } }
+/* the bank on the pay step in one tap */
+.bank-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 4px; }
+.bank-chip { padding: 7px 10px; border: 1px solid var(--bone-14); border-radius: 6px; font: 400 12px/1 var(--f-body); color: var(--bone-70); transition: border-color .2s, color .2s; }
+.bank-chip:hover, .bank-chip:focus-visible { border-color: var(--bone-40); color: var(--bone); }
 .sizes { display: flex; flex-wrap: wrap; gap: 8px; }
-.size { min-width: 52px; padding: 12px 14px; font-family: var(--f-mono); font-size: 12px; letter-spacing: .1em; border: 1px solid var(--bone-14); transition: all .3s; }
+.size { min-width: 52px; border-radius: 8px; padding: 12px 14px; font-family: var(--f-mono); font-size: 12px; letter-spacing: .1em; border: 1px solid var(--bone-14); transition: all .3s; }
 .size:hover { border-color: var(--bone-40); }
 .size.is-on { color: var(--void); background: var(--bone); border-color: var(--bone); }
 .actions { display: grid; gap: 16px; }
@@ -326,6 +332,7 @@ html.has-banner { --banner-h: 34px; }
 .sum > div { display: flex; justify-content: space-between; font-size: 14px; color: var(--bone-70); }
 .sum dt, .sum dd { margin: 0; }
 .sum__total { padding-top: 10px; margin-top: 4px; border-top: 1px solid var(--bone-14); color: var(--bone) !important; }
+.sum__total:first-child { padding-top: 0; margin-top: 0; border-top: 0; }   /* no discount: «Итого» alone, the footer already has its line */
 .sum__total dt { font-family: var(--f-mono); font-size: 11px; letter-spacing: .2em; text-transform: uppercase; align-self: center; }
 .sum__total dd { font-family: var(--f-display); font-size: 32px; line-height: 1; }
 

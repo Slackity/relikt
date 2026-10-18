@@ -62,7 +62,7 @@
       "bank": "Т-Банк",
       "recipient": "Глеб Б",
       "details": "89883556446",
-      "note": "После перевода пожалуйста прикрепите чек!"
+      "note": "После перевода прикрепи чек ниже — так мы быстрее подтвердим оплату."
     },
     "orderWebhook": "https://relikt-orders.gleb-bugay.workers.dev",
     "orderSecret": "",

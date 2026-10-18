@@ -183,6 +183,7 @@
   add('checkout.delivery', 'cart', 'Поле: доставка', 'Служба доставки', 'Delivery service');
   add('checkout.deliveryAny', 'cart', 'Доставка: выберу с менеджером', 'Выберу вместе с менеджером', 'Decide with the manager');
   add('checkout.address', 'cart', 'Поле: адрес', 'Адрес пункта выдачи', 'Pickup point address');
+  add('checkout.addressLater', 'cart', 'Поле адреса, когда доставка не выбрана', '(если уже знаешь)', '(if you already know it)');
   add('checkout.addressPh', 'cart', 'Адрес: пример', 'Например: Краснодар, ул. Красная, 25, ПВЗ Ozon', 'For example: Krasnodar, Krasnaya st. 25, Ozon pickup point');
   add('checkout.comment', 'cart', 'Поле: комментарий', 'Комментарий', 'Comment');
   add('checkout.payment', 'cart', 'Оплата: заголовок', 'Оплата', 'Payment');
@@ -273,12 +274,14 @@
   add('acc.track', 'account', 'Трек-номер', 'Трек-номер', 'Tracking number');
   add('acc.trackOpen', 'account', 'Ссылка на отслеживание', 'Отследить посылку', 'Track the parcel');
   add('acc.copy', 'account', 'Кнопка: скопировать трек', 'Скопировать', 'Copy');
+  add('acc.sent', 'account', 'Переведено (пока проверяем оплату)', 'Переведено', 'Sent');
   add('acc.paid', 'account', 'Оплачено', 'Оплачено', 'Paid');
   add('acc.deposit', 'account', 'Задаток', 'Задаток', 'Deposit');
   add('acc.left', 'account', 'Осталось доплатить', 'Осталось доплатить', 'Left to pay');
   add('acc.delivery', 'account', 'Доставка', 'Доставка', 'Delivery');
   add('acc.ask', 'account', 'Кнопка: вопрос по заказу', 'Вопрос по заказу', 'Ask about this order');
   add('acc.msg', 'account', 'Сообщение менеджеру ({number})', 'Привет! У меня вопрос по заказу {number}.', 'Hi! I have a question about order {number}.');
+  add('done.sentTrack', 'cart', 'Заказ отправлен из Telegram: текст', 'Заказ и чек у менеджера: он проверит оплату и напишет тебе в Telegram. Статус заказа — всегда в «Мои заказы».', 'Your order and receipt are with the manager, who will check the payment and message you on Telegram. The status is always in “My orders”.');
   add('done.track', 'cart', 'Кнопка: мои заказы после заказа', 'Следить за заказом', 'Track this order');
 
   var I18N = { ru: {}, en: {} };
