@@ -48,6 +48,10 @@ html.has-banner { --banner-h: 34px; }
   transition: opacity .4s, transform .5s var(--ease);
 }
 .toast.show { opacity: 1; transform: translate(-50%, 0); }
+.toast--action.show { pointer-events: auto; cursor: pointer; }
+.toast--action:active { transform: translate(-50%, 0) scale(.97); }
+.toast__go { margin-left: 10px; font-weight: 400; display: inline-block; transition: transform .3s var(--ease); }
+.toast--action:hover .toast__go { transform: translateX(3px); }
 
 /* ---------- shared bits ---------- */
 .btn--block { display: flex; width: 100%; }

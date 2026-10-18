@@ -293,13 +293,22 @@
 
   /* ---------- toast ---------- */
   var toastTimer;
-  RK.toast = function (msg) {
+  /* a short note at the bottom; with an action it is a button ("Добавлено в корзину →" opens the cart) and stays a little longer */
+  RK.toast = function (msg, action) {
     var el = RK.$('#toast');
-    if (!el) { el = RK.h('div', { id: 'toast', class: 'toast', role: 'status', 'aria-live': 'polite' }); doc.body.appendChild(el); }
+    if (!el) {
+      el = RK.h('div', { id: 'toast', class: 'toast', role: 'status', 'aria-live': 'polite' }); doc.body.appendChild(el);
+      var run = function () { var fn = el.rkAction; if (!fn) return; el.classList.remove('show'); clearTimeout(toastTimer); fn(); };
+      el.addEventListener('click', run);
+      el.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); run(); } });
+    }
     el.textContent = msg;
+    el.rkAction = action || null;
+    el.classList.toggle('toast--action', !!action);
+    if (action) { el.appendChild(RK.h('b', { class: 'toast__go', 'aria-hidden': 'true', text: '→' })); el.setAttribute('tabindex', '0'); } else el.removeAttribute('tabindex');
     el.classList.add('show');
     clearTimeout(toastTimer);
-    toastTimer = setTimeout(function () { el.classList.remove('show'); }, 2400);
+    toastTimer = setTimeout(function () { el.classList.remove('show'); }, action ? 4000 : 2400);
   };
 
   RK.copy = function (text) {

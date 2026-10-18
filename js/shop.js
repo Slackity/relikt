@@ -65,7 +65,7 @@
     var r = RK.cart.add(p, size, qty);
     if (r === 'exists') { ui.openCart(); return r; }
     RK.haptic('success');
-    if (!(opts && opts.open)) RK.toast(RK.t('toast.cart'));   // an opened cart says it already, and a toast would cover its button
+    if (!(opts && opts.open)) RK.toast(RK.t('toast.cart'), function () { ui.openCart(); });   // tap the note to open the cart   // an opened cart says it already, and a toast would cover its button
     var btn = RK.$('#cartBtn');
     if (btn) { btn.classList.remove('bump'); void btn.offsetWidth; btn.classList.add('bump'); }
     if (opts && opts.open) ui.openCart();
