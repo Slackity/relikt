@@ -389,7 +389,7 @@ function buyerView(r){
   const c=r.customer||{};
   return {number:r.number,createdAt:r.createdAt,updatedAt:r.updatedAt||r.createdAt,status:r.status,payment:r.payment,
     items:(r.items||[]).map(it=>({id:it.id,name:it.name,size:it.size,qty:it.qty,price:it.price,order:!!it.order,image:it.image})),
-    subtotal:r.subtotal,cut:r.cut,total:r.total,pay:r.pay,delivery:c.delivery,city:c.city,address:c.address,track:r.track||'',message:r.message||''};
+    subtotal:r.subtotal,cut:r.cut,total:r.total,pay:r.pay,delivery:c.delivery,city:c.city,address:c.address,track:r.track||'',message:r.message||'',label:r.label||''};
 }
 async function myOrders(request,env){
   if(request.method!=='POST')return json({ok:false,error:'method'},405);
@@ -652,6 +652,7 @@ async function adminOrders(request,env,action){
   if(action==='update'){
     if(body.note!=null)rec.note=str(body.note,1000);
     if(body.track!=null)rec.track=str(body.track,200);     // shown to the buyer in «Мои заказы»
+    if(body.label!=null)rec.label=str(body.label,60);      // the manager's own status words ("Едет на склад"), shown to the buyer instead of the standard name
     if(body.message!=null)rec.message=str(body.message,800); // the manager's words to the buyer, shown in «Мои заказы» instead of the standard status text
     const next=body.status;
     try{

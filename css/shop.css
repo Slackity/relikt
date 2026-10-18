@@ -459,7 +459,7 @@ html.has-banner { --banner-h: 34px; }
 .acc-order__head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
 .acc-order__head .eyebrow { margin: 0 0 4px; }
 .acc-order__num { margin: 0; font: 400 22px/1.1 var(--f-mono); letter-spacing: .06em; }
-.acc-status { flex: none; padding: 7px 10px; border-radius: 6px; font: 500 10px/1 var(--f-mono); letter-spacing: .14em; text-transform: uppercase; color: var(--bone); border: 1px solid var(--bone-40); }
+.acc-status { flex: 0 1 auto; max-width: 55%; text-align: center; line-height: 1.3 !important; padding: 7px 10px; border-radius: 6px; font: 500 10px/1 var(--f-mono); letter-spacing: .14em; text-transform: uppercase; color: var(--bone); border: 1px solid var(--bone-40); }
 .acc-status--paid, .acc-status--shipped { color: var(--void); background: var(--bone); border-color: var(--bone); }
 .acc-status--reserved { border-color: var(--bone); }
 .acc-status--problem { background: var(--blood-hot); border-color: var(--blood-hot); }

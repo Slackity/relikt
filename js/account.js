@@ -113,7 +113,7 @@
     return h('article', { class: 'acc-order acc-order--' + o.status },
       h('header', { class: 'acc-order__head' },
         h('div', null, h('p', { class: 'eyebrow', text: day(o.createdAt) }), h('h2', { class: 'acc-order__num', text: o.number })),
-        h('span', { class: 'acc-status acc-status--' + o.status, text: RK.t('acc.st.' + o.status) })),
+        h('span', { class: 'acc-status acc-status--' + o.status, text: o.label || RK.t('acc.st.' + o.status) })),
       REACHED[o.status] ? steps(o) : null,
       // the manager's own words, when there are any, instead of the standard text for the status
       o.message ? h('div', { class: 'acc-msg' }, h('p', { class: 'eyebrow', text: RK.t('acc.fromShop') }), h('p', { text: o.message })) : h('p', { class: 'acc-order__note', text: note(o) }),
