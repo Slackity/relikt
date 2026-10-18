@@ -21,6 +21,8 @@
  *                               с кнопкой «Открыть в каталоге» — под альбомом Telegram кнопки не разрешает
  * POST /bot/pin               — опубликовать в канале пост «RELIKT — каталог» с кнопкой и закрепить его (кнопка в админке;
  *                               бот — админ канала с правами публиковать и закреплять сообщения)
+ * POST /my/orders             — «Мои заказы» покупателя: только из мини-аппа, по подписи Telegram (initData),
+ *                               только его заказы и только то, что ему нужно видеть
  * GET  /health                — проверка конфигурации без выдачи секретов
  *
  * Secrets / settings:
@@ -56,6 +58,7 @@ export default {
         yandexDelivery:!!env.YANDEX_DELIVERY_TOKEN,
         orders:!!env.ORDERS,
         bot:true,
+        account:true,
         catalog:!!env.GITHUB_TOKEN
       });
       if(url.pathname==='/cdek') return await cdek(request,env);
@@ -66,6 +69,7 @@ export default {
       if(url.pathname==='/bot/pin') return await botPin(request,env);
       if(url.pathname==='/hold') return await hold(request,env);
       if(url.pathname==='/order') return await order(request,env);
+      if(url.pathname==='/my/orders') return await myOrders(request,env);
       if(url.pathname.startsWith('/orders/')) return await adminOrders(request,env,url.pathname.slice(8));
       return json({ok:false,error:'not_found'},404);
     }catch(e){
@@ -350,8 +354,56 @@ async function order(request,env){
       claims,catalogNote:problem?'вещь уже недоступна — нужен возврат или замена':warn,released:false,note:''
     };
     await env.ORDERS.put(rec.key,JSON.stringify(rec),{expirationTtl:ORDER_TTL});
+    if(auth.id)await rememberOrder(env,auth.id,rec.key).catch(()=>{});
   }
   return json(problem?{ok:true,number,problem:'unavailable'}:{ok:true,number});
+}
+
+/* ---------- «Мои заказы»: the buyer's own orders ----------
+   Works only inside the Mini App. The request carries the initData Telegram gives the Mini App, signed with the bot token:
+   the Worker checks the signature and its age (24 h) and takes the buyer's Telegram id from it. There is no password,
+   cookie or id in the URL to steal or guess, and nobody can ask for someone else's orders. Only the buyer's own fields
+   go out: no manager notes, receipts, phone numbers or anything about other buyers. Website orders (no Telegram) are not listed. */
+const buyerKey=id=>'u:'+id;                  // u:<telegram id> → the keys of that buyer's orders, newest first
+async function rememberOrder(env,id,key){
+  const list=(await env.ORDERS.get(buyerKey(id),'json'))||[];
+  if(!list.includes(key))list.push(key);
+  await env.ORDERS.put(buyerKey(id),JSON.stringify(list.sort().slice(0,200)),{expirationTtl:ORDER_TTL});
+}
+// orders placed before «Мои заказы» existed: sorted into their buyers' lists once
+async function indexOldOrders(env){
+  if(await env.ORDERS.get('idx:buyers'))return;
+  const by={};let cursor;
+  do{
+    const page=await env.ORDERS.list({prefix:'o:',cursor});
+    for(const k of page.keys){const r=await env.ORDERS.get(k.name,'json');if(r&&r.tg&&r.tg.id)(by[r.tg.id]=by[r.tg.id]||[]).push(k.name);}
+    cursor=page.list_complete?null:page.cursor;
+  }while(cursor);
+  for(const [id,keys] of Object.entries(by)){
+    const prev=(await env.ORDERS.get(buyerKey(id),'json'))||[];
+    await env.ORDERS.put(buyerKey(id),JSON.stringify([...new Set(prev.concat(keys))].sort().slice(0,200)),{expirationTtl:ORDER_TTL});
+  }
+  await env.ORDERS.put('idx:buyers','1');
+}
+function buyerView(r){
+  const c=r.customer||{};
+  return {number:r.number,createdAt:r.createdAt,updatedAt:r.updatedAt||r.createdAt,status:r.status,payment:r.payment,
+    items:(r.items||[]).map(it=>({id:it.id,name:it.name,size:it.size,qty:it.qty,price:it.price,order:!!it.order,image:it.image})),
+    subtotal:r.subtotal,cut:r.cut,total:r.total,pay:r.pay,delivery:c.delivery,city:c.city,address:c.address,track:r.track||''};
+}
+async function myOrders(request,env){
+  if(request.method!=='POST')return json({ok:false,error:'method'},405);
+  if(!env.ORDERS||!env.BOT_TOKEN)return json({ok:false,error:'orders_not_configured'},501);
+  const body=await request.json().catch(()=>({}));
+  const user=await verifyTelegramInitData(String(body?.initData||'').slice(0,4096),env.BOT_TOKEN);
+  if(!user||!user.id)return json({ok:false,error:'forbidden'},403);
+  await indexOldOrders(env);
+  const id=String(user.id), keys=(await env.ORDERS.get(buyerKey(id),'json'))||[];
+  const recs=await Promise.all(keys.slice(0,60).map(k=>env.ORDERS.get(k,'json')));
+  // the owner is checked once more on every order; deleted or expired ones leave the list
+  const mine=recs.filter(r=>r&&r.tg&&String(r.tg.id)===id);
+  if(mine.length<recs.length)await env.ORDERS.put(buyerKey(id),JSON.stringify(mine.map(r=>r.key).concat(keys.slice(60))),{expirationTtl:ORDER_TTL});
+  return json({ok:true,orders:mine.map(buyerView)},200,{'Cache-Control':'no-store'});
 }
 
 /* ---------- the bot itself: /start opens the shop ---------- */
@@ -507,8 +559,13 @@ async function telegramUpdate(request,env){
   const m=u&&u.message;
   // only private chats: the commands below for everyone, other messages only from the shop admins (posts with buttons)
   if(!m||!m.chat||m.chat.type!=='private')return new Response('ok');
-  const cmd=typeof m.text==='string'&&m.text.trim().match(/^\/(start|catalog|help)(?:@\w+)?(?:\s+(\S+))?/i);
+  const cmd=typeof m.text==='string'&&m.text.trim().match(/^\/(start|catalog|help|orders)(?:@\w+)?(?:\s+(\S+))?/i);
   if(!cmd){await adminDraft(m,env);return new Response('ok');}
+  if(cmd[1].toLowerCase()==='orders'){
+    await tgApi(env,'sendMessage',{chat_id:m.chat.id,text:'Ваши заказы, их статус и трек-номер — в личном кабинете. Его видите только вы: вход подтверждает Telegram.',
+      reply_markup:{inline_keyboard:[[{text:'Мои заказы',web_app:{url:shopUrl(env)+'account.html'}}]]}});
+    return new Response('ok');
+  }
   const s=await shopSettings(env);
   // t.me/<bot>?start=p_<product> — a link to one piece
   const product=/^p_[A-Za-z0-9_-]{1,100}$/.test(cmd[2]||'')?cmd[2].slice(2):'';
@@ -519,6 +576,7 @@ async function telegramUpdate(request,env){
   const rows=[];
   if(product)rows.push([{text:'Открыть вещь',web_app:{url:shopUrl(env)+'product.html?id='+encodeURIComponent(product)}}]);
   rows.push([{text:'Открыть каталог',web_app:{url:shopUrl(env)}}]);
+  rows.push([{text:'Мои заказы',web_app:{url:shopUrl(env)+'account.html'}}]);
   if(s.channel)rows.push([{text:'Канал RELIKT',url:'https://t.me/'+s.channel}]);
   await tgApi(env,'sendMessage',{chat_id:m.chat.id,text,reply_markup:{inline_keyboard:rows}});
   return new Response('ok');
@@ -534,7 +592,7 @@ async function botSetup(request,env){
   // presses of Start that waited while nobody listened are answered now (Telegram keeps them up to a day)
   const set=await tgApi(env,'setWebhook',{url:hook,secret_token:await webhookSecret(env),allowed_updates:['message','channel_post','edited_channel_post','callback_query'],drop_pending_updates:false});
   if(!set.ok)return json({ok:false,error:set.description||'telegram_error'},502);
-  await tgApi(env,'setMyCommands',{commands:[{command:'start',description:'Открыть магазин'},{command:'catalog',description:'Каталог'}]});
+  await tgApi(env,'setMyCommands',{commands:[{command:'start',description:'Открыть магазин'},{command:'catalog',description:'Каталог'},{command:'orders',description:'Мои заказы'}]});
   let menuSet=false;
   const menu=await tgApi(env,'getChatMenuButton',{});
   if(menu.ok&&menu.result&&menu.result.type==='default'){
@@ -593,6 +651,7 @@ async function adminOrders(request,env,action){
 
   if(action==='update'){
     if(body.note!=null)rec.note=str(body.note,1000);
+    if(body.track!=null)rec.track=str(body.track,200);     // shown to the buyer in «Мои заказы»
     const next=body.status;
     try{
     if(next!=null&&next!==rec.status){

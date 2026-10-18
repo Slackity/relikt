@@ -50,6 +50,11 @@
         if (p) location.replace(RK.productUrl(p));
       });
     }
+    if (start === 'account' && !/account\.html$/.test(location.pathname)) {
+      var acc = 'rk-start-account', go = false;
+      try { go = !sessionStorage.getItem(acc); sessionStorage.setItem(acc, '1'); } catch (e) { /* storage blocked */ }
+      if (go) { call(function () { app.ready(); }); location.replace('account.html'); return; }
+    }
     if (start && /^p_[A-Za-z0-9_-]{1,100}$/.test(start)) {
       var mark = 'rk-start-' + start, fresh = false;
       try { fresh = !sessionStorage.getItem(mark); sessionStorage.setItem(mark, '1'); } catch (e) { /* storage blocked */ }

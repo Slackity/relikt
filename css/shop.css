@@ -451,6 +451,54 @@ html.has-banner { --banner-h: 34px; }
   .toast { white-space: normal; width: max-content; max-width: calc(100vw - 32px); }
   .lightbox__nav { width: 44px; height: 44px; }
 }
+/* ---------- «Мои заказы» ---------- */
+.acc-orders { display: grid; gap: 18px; max-width: 760px; }
+.acc-empty { padding-top: clamp(20px, 5vw, 60px); }
+.acc-order { display: grid; gap: 16px; padding: 18px; border: 1px solid var(--bone-14); border-radius: 12px; background: linear-gradient(180deg, rgba(233, 227, 215, .03), rgba(233, 227, 215, 0) 60%); }
+.acc-order--cancelled { opacity: .6; }
+.acc-order__head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+.acc-order__head .eyebrow { margin: 0 0 4px; }
+.acc-order__num { margin: 0; font: 400 22px/1.1 var(--f-mono); letter-spacing: .06em; }
+.acc-status { flex: none; padding: 7px 10px; border-radius: 6px; font: 500 10px/1 var(--f-mono); letter-spacing: .14em; text-transform: uppercase; color: var(--bone); border: 1px solid var(--bone-40); }
+.acc-status--paid, .acc-status--shipped { color: var(--void); background: var(--bone); border-color: var(--bone); }
+.acc-status--reserved { border-color: var(--bone); }
+.acc-status--problem { background: var(--blood-hot); border-color: var(--blood-hot); }
+.acc-status--done, .acc-status--cancelled { color: var(--fog); border-color: var(--bone-14); }
+.acc-order__note { margin: 0; color: var(--bone-70); font-size: 14px; line-height: 1.5; }
+.acc-order--problem .acc-order__note { color: var(--bone); }
+/* the line Оформлен → Оплачен → Отправлен → Получен */
+.acc-steps { display: grid; grid-template-columns: repeat(4, 1fr); margin: 0; padding: 0; list-style: none; }
+.acc-step { position: relative; display: grid; justify-items: center; gap: 8px; text-align: center; font: 400 9px/1.2 var(--f-mono); letter-spacing: .1em; text-transform: uppercase; color: var(--fog); }
+.acc-step::before { content: ""; position: absolute; top: 5px; left: -50%; width: 100%; height: 1px; background: var(--bone-14); }
+.acc-step:first-child::before { display: none; }
+.acc-step i { position: relative; z-index: 1; width: 11px; height: 11px; border-radius: 50%; border: 1px solid var(--bone-40); background: var(--void); }
+.acc-step.is-done { color: var(--bone); } .acc-step.is-done i { background: var(--bone); border-color: var(--bone); } .acc-step.is-done::before { background: var(--bone-70); }
+.acc-step.is-now { color: var(--bone); } .acc-step.is-now i { border-color: var(--blood-hot); box-shadow: 0 0 0 4px rgba(216, 38, 47, .18); animation: acc-pulse 1.8s ease-in-out infinite; }
+@keyframes acc-pulse { 50% { box-shadow: 0 0 0 7px rgba(216, 38, 47, 0); } }
+.acc-track { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; padding: 12px 14px; border: 1px dashed var(--bone-40); border-radius: 8px; }
+.acc-track .eyebrow { margin: 0; flex-basis: 100%; }
+.acc-track__val { font: 500 15px/1.3 var(--f-mono); letter-spacing: .06em; color: var(--bone); word-break: break-all; }
+.acc-items { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; }
+.acc-item { display: grid; grid-template-columns: 48px minmax(0, 1fr) auto; gap: 12px; align-items: center; }
+.acc-item img, .acc-item__ph { width: 48px; height: 60px; object-fit: cover; border-radius: 6px; border: 1px solid var(--bone-08); background: var(--soot); }
+.acc-item__text { display: grid; gap: 3px; min-width: 0; }
+.acc-item__text a, .acc-item__text span { font-size: 14px; color: var(--bone); }
+.acc-item__text small { font: 400 10px/1.3 var(--f-mono); letter-spacing: .1em; text-transform: uppercase; color: var(--fog); }
+.acc-item__price { font: 400 13px/1 var(--f-mono); color: var(--bone); white-space: nowrap; }
+.acc-sum { display: grid; gap: 8px; margin: 0; padding-top: 14px; border-top: 1px solid var(--bone-08); }
+.acc-sum div { display: flex; justify-content: space-between; gap: 14px; font-size: 13px; color: var(--bone-70); }
+.acc-sum dd { margin: 0; text-align: right; color: var(--bone); }
+.acc-sum__total { font-size: 15px !important; color: var(--bone) !important; }
+.acc-order__ask { justify-self: start; }
+@media (max-width: 760px) {
+  .page-account .shop { padding-top: calc(var(--banner-h, 0px) + env(safe-area-inset-top, 0px) + 92px); }
+  .page-account .shop__head { gap: 6px; margin-bottom: 20px; }
+  .page-account .shop__head .eyebrow { display: none; }
+  .page-account .shop__title { font-size: 40px; }
+  .page-account .shop__head .sec-head__lead { font-size: 14px; }
+  .acc-order { padding: 16px 14px; }
+}
+
 /* catalog on a phone: the head and the filters take a few short rows, so the first cards show on the first screen */
 @media (max-width: 760px) {
   .page-catalog .shop { padding-top: calc(var(--banner-h, 0px) + env(safe-area-inset-top, 0px) + 92px); }

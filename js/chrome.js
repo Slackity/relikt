@@ -34,6 +34,7 @@
     '  <nav class="menu__links" aria-label="Mobile">' +
     '    <a href="catalog.html" data-i18n="nav.catalog">Каталог</a>' +
     '    <a href="catalog.html?fav=1" data-i18n="header.fav">Избранное</a>' +
+    '    <a href="account.html" data-i18n="nav.account">Мои заказы</a>' +
     '    <a href="index.html#process" data-i18n="nav.how">Как заказать</a>' +
     '    <a href="index.html#manifest" data-i18n="nav.about">О нас</a>' +
     '    <a href="index.html#contact" data-i18n="nav.contact">Контакты</a>' +
@@ -49,6 +50,7 @@
     '      <a href="catalog.html" data-i18n="nav.catalog">Каталог</a>' +
     '      <a href="index.html#process" data-i18n="nav.how">Как заказать</a>' +
     '      <a href="index.html#manifest" data-i18n="nav.about">О нас</a>' +
+    '      <a href="account.html" data-i18n="nav.account">Мои заказы</a>' +
     '      <a href="https://t.me/relikt_store" data-tg="channel" target="_blank" rel="noopener">Telegram ↗</a>' +
     '    </nav>' +
     '    <p class="footer__tag" data-i18n="hero.tag">Твой личный импорт</p>' +

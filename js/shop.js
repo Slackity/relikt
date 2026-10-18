@@ -740,6 +740,8 @@
       copyBtn.addEventListener('click', function () { RK.copy(o.text).then(function () { RK.toast(RK.t('done.copied')); }); });
       footEl.appendChild(copyBtn);
     }
+    // the order went through the Worker from inside Telegram: it is in «Мои заказы» right away
+    if (o.sent && RK.tgInitData) footEl.appendChild(h('a', { class: 'btn btn--ghost btn--block', href: 'account.html' }, h('span', { text: RK.t('done.track') })));
     footEl.appendChild(h('button', { class: 'back back--center', type: 'button', onclick: function () { ui.closeCart(); } }, RK.t('done.close')));
   }
 

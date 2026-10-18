@@ -20,7 +20,8 @@
     ['nav', 'Меню и кнопки / Menu & buttons'],
     ['catalog', 'Каталог / Catalog'],
     ['product', 'Страница товара / Product page'],
-    ['cart', 'Корзина и заказ / Cart & checkout']
+    ['cart', 'Корзина и заказ / Cart & checkout'],
+    ['account', 'Мои заказы / My orders']
   ];
 
   var T = [];
@@ -235,6 +236,49 @@
   add('toast.cart', 'cart', 'Уведомление: добавлено в корзину', 'Добавлено в корзину', 'Added to cart');
   add('toast.fav', 'cart', 'Уведомление: в избранном', 'Добавлено в избранное', 'Saved to favourites');
   add('toast.unfav', 'cart', 'Уведомление: убрано из избранного', 'Убрано из избранного', 'Removed from favourites');
+
+  /* ---- «Мои заказы» ---- */
+  add('nav.account', 'nav', 'Меню: мои заказы', 'Мои заказы', 'My orders');
+  add('acc.title', 'account', 'Заголовок', 'Мои заказы', 'My orders');
+  add('acc.lead', 'account', 'Подзаголовок', 'Статус, состав и трек-номер ваших заказов.', 'Status, contents and tracking of your orders.');
+  add('acc.hello', 'account', 'Подзаголовок в Telegram ({name})', 'Вы вошли через Telegram как {name}. Эти заказы видите только вы.', 'Signed in with Telegram as {name}. Only you can see these orders.');
+  add('acc.outside', 'account', 'Открыто не в Telegram', 'Заказы открываются в Telegram: там вход подтверждает сам Telegram, без паролей, и ваши заказы не увидит никто другой.', 'Your orders open in Telegram: Telegram confirms it is you, no passwords, and nobody else can see them.');
+  add('acc.openTg', 'account', 'Кнопка: открыть в Telegram', 'Открыть в Telegram', 'Open in Telegram');
+  add('acc.loading', 'account', 'Загрузка', 'Загружаем ваши заказы…', 'Loading your orders…');
+  add('acc.empty', 'account', 'Заказов нет', 'Здесь появятся заказы, оформленные в этом Telegram-аккаунте.', 'Orders placed from this Telegram account will show up here.');
+  add('acc.error', 'account', 'Ошибка загрузки', 'Не получилось загрузить заказы. Попробуйте ещё раз или напишите менеджеру.', 'Could not load your orders. Try again or message the manager.');
+  add('acc.expired', 'account', 'Сессия устарела', 'Сессия Telegram устарела. Закройте и снова откройте магазин.', 'The Telegram session is out of date. Close the shop and open it again.');
+  add('acc.retry', 'account', 'Кнопка: ещё раз', 'Попробовать ещё раз', 'Try again');
+  add('acc.progress', 'account', 'Шкала заказа (для экранного диктора)', 'Ход заказа', 'Order progress');
+  add('acc.step.placed', 'account', 'Шаг: оформлен', 'Оформлен', 'Placed');
+  add('acc.step.paid', 'account', 'Шаг: оплачен', 'Оплачен', 'Paid');
+  add('acc.step.shipped', 'account', 'Шаг: отправлен', 'Отправлен', 'Shipped');
+  add('acc.step.done', 'account', 'Шаг: получен', 'Получен', 'Received');
+  add('acc.st.new', 'account', 'Статус: новый', 'Проверяем оплату', 'Checking payment');
+  add('acc.st.reserved', 'account', 'Статус: бронь', 'Бронь', 'Reserved');
+  add('acc.st.problem', 'account', 'Статус: возврат/замена', 'Нужна связь', 'Please get in touch');
+  add('acc.st.paid', 'account', 'Статус: оплачен', 'Оплачен', 'Paid');
+  add('acc.st.shipped', 'account', 'Статус: отправлен', 'Отправлен', 'Shipped');
+  add('acc.st.done', 'account', 'Статус: выполнен', 'Получен', 'Received');
+  add('acc.st.cancelled', 'account', 'Статус: отменён', 'Отменён', 'Cancelled');
+  add('acc.note.new', 'account', 'Пояснение: новый', 'Оплата получена, менеджер проверяет чек и скоро напишет вам.', 'Payment received: the manager is checking the receipt and will message you soon.');
+  add('acc.note.reserved', 'account', 'Пояснение: бронь ({date}, {left})', 'Задаток получен, вещь отложена за вами до {date}. Осталось доплатить {left}.', 'Deposit received: the piece is held for you until {date}. {left} left to pay.');
+  add('acc.note.problem', 'account', 'Пояснение: возврат/замена', 'Эту вещь успели купить раньше. Менеджер свяжется с вами: вернёт деньги или предложит замену.', 'Someone bought this piece first. The manager will get in touch to refund you or offer another one.');
+  add('acc.note.paid', 'account', 'Пояснение: оплачен', 'Оплата подтверждена, готовим заказ к отправке.', 'Payment confirmed: we are getting your order ready to ship.');
+  add('acc.note.shipped', 'account', 'Пояснение: отправлен', 'Заказ в пути. Отслеживайте его по трек-номеру.', 'Your order is on its way. Track it with the number below.');
+  add('acc.note.shippedNoTrack', 'account', 'Пояснение: отправлен без трек-номера', 'Заказ передан в доставку. Трек-номер появится здесь.', 'Your order has been handed to delivery. The tracking number will show up here.');
+  add('acc.note.done', 'account', 'Пояснение: выполнен', 'Заказ получен. Спасибо, что выбрали RELIKT!', 'Order received. Thank you for choosing RELIKT!');
+  add('acc.note.cancelled', 'account', 'Пояснение: отменён', 'Заказ отменён.', 'This order was cancelled.');
+  add('acc.track', 'account', 'Трек-номер', 'Трек-номер', 'Tracking number');
+  add('acc.trackOpen', 'account', 'Ссылка на отслеживание', 'Отследить посылку', 'Track the parcel');
+  add('acc.copy', 'account', 'Кнопка: скопировать трек', 'Скопировать', 'Copy');
+  add('acc.paid', 'account', 'Оплачено', 'Оплачено', 'Paid');
+  add('acc.deposit', 'account', 'Задаток', 'Задаток', 'Deposit');
+  add('acc.left', 'account', 'Осталось доплатить', 'Осталось доплатить', 'Left to pay');
+  add('acc.delivery', 'account', 'Доставка', 'Доставка', 'Delivery');
+  add('acc.ask', 'account', 'Кнопка: вопрос по заказу', 'Вопрос по заказу', 'Ask about this order');
+  add('acc.msg', 'account', 'Сообщение менеджеру ({number})', 'Здравствуйте! Вопрос по заказу {number}.', 'Hi! A question about order {number}.');
+  add('done.track', 'cart', 'Кнопка: мои заказы после заказа', 'Следить за заказом', 'Track this order');
 
   var I18N = { ru: {}, en: {} };
   T.forEach(function (t) { I18N.ru[t.k] = t.ru; I18N.en[t.k] = t.en; });
