@@ -406,9 +406,9 @@
       "category": "outerwear",
       "price": 4500,
       "oldPrice": null,
-      "availability": "sold",
+      "availability": "instock",
       "reservedUntil": "",
-      "stock": 0,
+      "stock": 1,
       "condition": "new",
       "sizes": [
         "S"
@@ -425,7 +425,7 @@
       "featured": true,
       "tgPost": 222,
       "createdAt": "2026-10-14T12:08:01+00:00",
-      "updatedAt": "2026-10-18T16:15:40.248Z",
+      "updatedAt": "2026-10-18T16:17:51.315Z",
       "slug": "hoodie-true-religion-222"
     },
     {
