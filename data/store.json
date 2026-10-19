@@ -426,7 +426,14 @@
       "tgPost": 222,
       "createdAt": "2026-10-14T12:08:01+00:00",
       "updatedAt": "2026-10-18T16:17:51.315Z",
-      "slug": "hoodie-true-religion-222"
+      "slug": "hoodie-true-religion-222",
+      "holds": [
+        {
+          "k": "8c48f0a7c755ea0d1bad106f",
+          "q": 1,
+          "u": "2026-10-19T02:07:14.582Z"
+        }
+      ]
     },
     {
       "id": "pf239358d",
