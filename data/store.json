@@ -833,7 +833,9 @@
       "category": "bags",
       "price": 7990,
       "oldPrice": null,
+      "discount": 0,
       "availability": "instock",
+      "reservedUntil": "",
       "stock": 1,
       "condition": "new",
       "sizes": [],
@@ -843,13 +845,12 @@
         "/uploads/tg129-1.webp",
         "/uploads/tg129-2.webp"
       ],
-      "visible": true,
+      "visible": false,
       "featured": false,
       "tgPost": 129,
       "createdAt": "2026-08-23T05:20:01+00:00",
-      "updatedAt": "2026-10-11T20:58:10.546Z",
-      "slug": "bag-juicy-couture-129",
-      "reservedUntil": ""
+      "updatedAt": "2026-10-22T15:17:34.148Z",
+      "slug": "bag-juicy-couture-129"
     },
     {
       "id": "pba568bb2",
