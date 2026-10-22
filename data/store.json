@@ -8,8 +8,8 @@
     "reservePercent": 20,
     "reserveDays": 3,
     "banner": {
-      "on": false,
-      "ru": "СКИДКИ 15% НА ВСЁ",
+      "on": true,
+      "ru": "СКИДКИ 15% НА ВЕСЬ АССОРТИМЕНТ",
       "en": ""
     },
     "delivery": [
@@ -70,8 +70,8 @@
     "postButtons": false,
     "autoImport": "publish",
     "sale": {
-      "on": false,
-      "percent": 10
+      "on": true,
+      "percent": 15
     },
     "adminIds": [
       "315859108"
