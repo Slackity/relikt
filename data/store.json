@@ -344,9 +344,10 @@
       "category": "outerwear",
       "price": 4500,
       "oldPrice": null,
-      "availability": "instock",
+      "discount": 0,
+      "availability": "sold",
       "reservedUntil": "",
-      "stock": 1,
+      "stock": 0,
       "condition": "new",
       "sizes": [
         "M"
@@ -362,7 +363,7 @@
       "featured": false,
       "tgPost": 228,
       "createdAt": "2026-10-14T12:12:01+00:00",
-      "updatedAt": "2026-10-14T19:03:25.417Z",
+      "updatedAt": "2026-10-25T17:18:40.816Z",
       "slug": "zip-hoodie-hollister-228"
     },
     {
