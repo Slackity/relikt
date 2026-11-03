@@ -252,9 +252,10 @@
       "category": "outerwear",
       "price": 3290,
       "oldPrice": null,
-      "availability": "instock",
+      "discount": 0,
+      "availability": "sold",
       "reservedUntil": "",
-      "stock": 1,
+      "stock": 0,
       "condition": "",
       "sizes": [
         "M-L"
@@ -271,7 +272,7 @@
       "featured": false,
       "tgPost": 235,
       "createdAt": "2026-10-14T13:24:01+00:00",
-      "updatedAt": "2026-10-14T19:03:25.417Z",
+      "updatedAt": "2026-11-03T15:55:17.215Z",
       "slug": "true-religion-235"
     },
     {
