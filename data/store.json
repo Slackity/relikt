@@ -315,9 +315,10 @@
       "category": "jackets",
       "price": 3500,
       "oldPrice": null,
-      "availability": "instock",
+      "discount": 0,
+      "availability": "sold",
       "reservedUntil": "",
-      "stock": 1,
+      "stock": 0,
       "condition": "",
       "sizes": [
         "S"
@@ -335,7 +336,7 @@
       "featured": false,
       "tgPost": 231,
       "createdAt": "2026-10-14T13:20:01+00:00",
-      "updatedAt": "2026-10-14T19:18:32.255Z",
+      "updatedAt": "2026-11-11T00:22:42.539Z",
       "slug": "adidas-231"
     },
     {
