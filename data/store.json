@@ -222,9 +222,10 @@
       "category": "outerwear",
       "price": 2390,
       "oldPrice": null,
-      "availability": "instock",
+      "discount": 0,
+      "availability": "sold",
       "reservedUntil": "",
-      "stock": 1,
+      "stock": 0,
       "condition": "",
       "sizes": [],
       "descRu": "Super Dry JPN Classics на красном. Белые полосы на рукавах.",
@@ -241,7 +242,7 @@
       "featured": false,
       "tgPost": 237,
       "createdAt": "2026-10-14T13:26:01+00:00",
-      "updatedAt": "2026-10-14T19:03:25.417Z",
+      "updatedAt": "2026-11-11T00:22:36.211Z",
       "slug": "hoodie-superdry-237"
     },
     {
